@@ -81,57 +81,60 @@ import (
     "github.com/azrod/kivigo/pkg/encoder"
 )
 
+
 func main() {
-    // Configure client with Redis backend and YAML encoder
-    c, err := kivigo.New(
-        backend.Redis(redis.Option{
-            Addr: "localhost:6379",
-        }),
-        func(opt client.Option) client.Option {
-            opt.Encoder = encoder.YAML
-            return opt
-        },
-    )
-    if err != nil {
-        panic(err)
-    }
-    defer c.Close()
+ // Configure client with Redis backend and YAML encoder
+ c, err := kivigo.New(
+  backend.Redis(redis.Option{
+   Addr: "localhost:6379",
+  }),
+  func(opt client.Option) client.Option {
+   opt.Encoder = encoder.YAML
+   return opt
+  },
+ )
+ if err != nil {
+  panic(err)
+ }
+ defer c.Close()
 
-    type User struct {
-        Name string
-        Age  int
-    }
+ type User struct {
+  Name string
+  Age  int
+ }
 
-    // Store a struct
-    user := User{Name: "Alice", Age: 30}
-    if err := c.Set(context.Background(), "user:1", user); err != nil {
-        panic(err)
-    }
+ // Store a struct
+ user := User{Name: "Alice", Age: 30}
+ if err := c.Set(context.Background(), "user:1", user); err != nil {
+  panic(err)
+ }
 
-    // Retrieve the struct
-    var u User
-    if err := c.Get(context.Background(), "user:1", &u); err != nil {
-        panic(err)
-    }
-    fmt.Printf("Retrieved user: %+v\n", u)
+ // Retrieve the struct
+ var u User
+ if err := c.Get(context.Background(), "user:1", &u); err != nil {
+  panic(err)
+ }
+ fmt.Printf("Retrieved user: %+v\n", u)
 
-    // Periodic health check
-    healthCh := c.HealthCheck(context.Background(), client.HealthOptions{
-        Interval: 10 * time.Second,
-    })
-    go func() {
-        for err := range healthCh {
-            if err != nil {
-                fmt.Println("Health issue:", err)
-            } else {
-                fmt.Println("Backend healthy")
-            }
-        }
-    }()
+ // Periodic health check
+ healthCh := c.HealthCheck(context.Background(), client.HealthOptions{
+  Interval: 10 * time.Second,
+ })
+ go func() {
+  for err := range healthCh {
+   if err != nil {
+    fmt.Println("Health issue:", err)
+   } else {
+    fmt.Println("Backend healthy")
+   }
+  }
+ }()
 
-    time.Sleep(12 * time.Second) // Let the health check run at least once
+ time.Sleep(12 * time.Second) // Let the health check run at least once
 }
 ```
+
+Full example is available in the [`examples/advanced/main.go`](examples/advanced/main.go) file.
 
 ## 🩺 Custom Health Check Example
 
@@ -178,19 +181,36 @@ func main() {
         Interval:         5 * time.Second,
         AdditionalChecks: []client.HealthFunc{myCustomHealth},
     })
+
     go func() {
         for err := range healthCh {
             if err != nil {
-                println("Custom health issue:", err.Error())
+                println(time.Now().Format(time.RFC3339), "Custom health issue:", err.Error())
             } else {
-                println("Custom health OK")
+                println(time.Now().Format(time.RFC3339), "Custom health OK")
             }
         }
     }()
 
     time.Sleep(7 * time.Second)
+
+    // Simulate setting a health key
+    if err := client.Set(context.Background(), "health:ping", "pong"); err != nil {
+        panic(err)
+    }
+
+    time.Sleep(10 * time.Second)
 }
 ```
+
+**Output:**
+
+```
+$> 2025-06-13T17:04:56+02:00 Custom health issue: custom health check failed: key not found
+$> 2025-06-13T17:05:01+02:00 Custom health OK
+```
+
+Full example is available in the [`examples/custom_health_check/main.go`](examples/custom_health_check/main.go) file.
 
 ## 🧩 Extending KiviGo: Custom In-Memory Backend Example
 
@@ -265,17 +285,20 @@ You can then use your backend with KiviGo:
 ```go
 import (
     "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/pkg/client"
+    "github.com/azrod/kivigo/pkg/backend"
     "yourmodule/memory"
 )
 
+[...]
+
 client, err := kivigo.New(
-    func(opt client.Option) client.Option {
-        opt.Backend = memory.New()
-        return opt
-    },
+    backend.CustomBackend(memory.New()),
 )
+
+[...]
 ```
+
+Full example is available in the [`examples/custom_backend/main.go`](examples/custom_backend/main.go) file.
 
 ## 📚 Documentation
 
