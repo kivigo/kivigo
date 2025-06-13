@@ -5,15 +5,13 @@ import (
 	"fmt"
 
 	"github.com/azrod/kivigo"
+	"github.com/azrod/kivigo/examples/custom-backend/internal/backend/memory"
 	"github.com/azrod/kivigo/pkg/backend"
-	"github.com/azrod/kivigo/pkg/backend/local"
 )
 
 func main() {
 	client, err := kivigo.New(
-		backend.Local(local.Option{
-			Path: "./",
-		}),
+		backend.CustomBackend(memory.New()),
 	)
 	if err != nil {
 		panic(err)
