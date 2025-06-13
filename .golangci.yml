@@ -1,0 +1,175 @@
+version: "2"
+linters:
+  enable:
+    - asciicheck # Simple linter to check that your code does not contain non-ASCII identifiers [fast: true, auto-fix: false]
+    - bidichk # Checks for dangerous unicode character sequences [fast: true, auto-fix: false]
+    - bodyclose # Checks that http.Response.Body is closed [fast: true, auto-fix: false]
+    - copyloopvar # Checks for loop variables that are reused in the loop [fast: true, auto-fix: false]
+    - decorder # check declaration order and count of types, constants, variables and functions [fast: true, auto-fix: false]
+    - dogsled # Checks assignments with too many blank identifiers (e.g. x, _, _, _, := f()) [fast: true, auto-fix: false]
+    - durationcheck # check for two durations multiplied together [fast: false, auto-fix: false]
+    - errchkjson # Checks types passed to the json encoding functions. Reports unsupported types and optionally reports occasions, where the check for the returned error can be omitted. [fast: false, auto-fix: false]
+    - errname # Checks that sentinel errors are prefixed with the `Err` and error types are suffixed with the `Error`. [fast: false, auto-fix: false]
+    - errorlint # Linter for error strings [fast: false, auto-fix: false]
+    - forbidigo # Forbids identifiers [fast: true, auto-fix: false]
+    - goconst # Finds repeated strings [fast: true, auto-fix: false]
+    - gocritic # Provides diagnostics that check for bugs, performance and style issues. [fast: false, auto-fix: false]
+    - gocyclo # Computes and checks the cyclomatic complexity of functions [fast: true, auto-fix: false]
+    - goheader # Checks is file header matches to pattern [fast: true, auto-fix: false]
+    - gomoddirectives # Manage the use of 'replace', 'retract', and 'excludes' directives in go.mod. [fast: true, auto-fix: false]
+    - gomodguard # Allow and block list linter for direct Go module dependencies. This is different from depguard where there are different block types for example version constraints and module recommendations. [fast: true, auto-fix: false]
+    - goprintffuncname # Checks that printf-like functions are named with `f` at the end [fast: true, auto-fix: false]
+    - gosec #(gas): Inspects source code for security problems [fast: false, auto-fix: false]
+    - grouper # An analyzer to analyze expression groups. [fast: true, auto-fix: false]
+    - importas # Enforces consistent import aliases [fast: false, auto-fix: false]
+    - makezero # Finds slice declarations with non-zero initial length [fast: false, auto-fix: false]
+    - misspell # Finds commonly misspelled English words in comments [fast: true, auto-fix: true]
+    - nilerr # Finds the code that returns nil even if it checks that the error is not nil. [fast: false, auto-fix: false]
+    - noctx # noctx finds sending http request without context.Context [fast: false, auto-fix: false]
+    - nolintlint # Reports ill-formed or insufficient nolint directives [fast: true, auto-fix: false]
+    - nosprintfhostport # Checks for misuse of Sprintf to construct a host with port in a URL. [fast: true, auto-fix: false]
+    - predeclared # find code that shadows one of Go's predeclared identifiers [fast: true, auto-fix: false]
+    - promlinter # Check Prometheus metrics naming via promlint [fast: true, auto-fix: false]
+    - revive # Fast, configurable, extensible, flexible, and beautiful linter for Go. Drop-in replacement of golint. [fast: false, auto-fix: false]
+    - rowserrcheck # checks whether Err of rows is checked successfully [fast: false, auto-fix: false]
+    - sqlclosecheck # Checks that sql.Rows and sql.Stmt are closed. [fast: false, auto-fix: false]
+    - staticcheck # Staticcheck is `go vet` on steroids [fast: false, auto-fix: false]
+    - tparallel # tparallel detects inappropriate usage of t.Parallel() method in your Go test codes [fast: false, auto-fix: false]
+    - unconvert # Remove unnecessary type conversions [fast: false, auto-fix: false]
+    - usetesting # Use the testing package [fast: false, auto-fix: false]
+    - wastedassign # Finds assignments to variables that are never used [fast: false, auto-fix: false]
+    - whitespace # Checks for trailing whitespace [fast: true, auto-fix: false]
+  disable:
+    - containedctx
+    - cyclop
+    - depguard
+    - dupl
+    - exhaustive
+    - funlen
+    - gochecknoglobals
+    - gochecknoinits
+    - gocognit
+    - godox
+    - lll
+    - maintidx
+    - nakedret
+    - nestif
+    - nlreturn
+    - thelper
+    - varnamelen
+    - wrapcheck
+    - wsl
+  settings:
+    staticcheck:
+      checks:
+        - -QF1008
+    revive:
+      severity: error
+      rules:
+        - name: exported
+          severity: warning
+          disabled: false
+        - name: indent-error-flow
+          severity: warning
+          disabled: false
+        - name: var-naming
+          arguments:
+            - []
+            - - ACL
+              - API
+              - ASCII
+              - CPU
+              - CSS
+              - DNS
+              - EOF
+              - GUID
+              - HTML
+              - HTTP
+              - HTTPS
+              - ID
+              - IP
+              - JSON
+              - LHS
+              - QPS
+              - RAM
+              - RHS
+              - RPC
+              - SLA
+              - SMTP
+              - SQL
+              - SSH
+              - TCP
+              - TLS
+              - TTL
+              - UDP
+              - UI
+              - UID
+              - UUID
+              - URI
+              - URL
+              - UTF8
+              - VM
+              - XML
+              - XMPP
+              - XSRF
+              - XSS
+              - SSL
+              - VDC
+              - DFW
+              - VLAN
+              - IAM
+              - VCDA
+              - NAT
+              - VPN
+              - BMS
+              - SAML
+              - VDCG
+          severity: warning
+          disabled: false
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+  settings:
+    gci:
+      sections:
+        - standard # Standard section: captures all standard packages.
+        - default # Default section: contains all imports that could not be matched to another section type.
+        - prefix(github.com/vmware)
+        - prefix(github.com/hashicorp/terraform-plugin-framework/)
+        - prefix(github.com/hashicorp/terraform-plugin-framework/resource,github.com/hashicorp/terraform-plugin-framework/datasource)
+        - prefix(github.com/hashicorp/terraform-plugin-framework/resource/schema/,github.com/hashicorp/terraform-plugin-framework/datasource/schema/)
+        - prefix(github.com/hashicorp/terraform-plugin-framework-validators/)
+        - prefix(github.com/hashicorp)
+        - prefix(github.com/FrangipaneTeam)
+        - prefix(github.com/orange-cloudavenue/cloudavenue-sdk-go,github.com/orange-cloudavenue/cloudavenue-sdk-go,github.com/orange-cloudavenue/infrapi-sdk-go)
+        - blank # Blank section: captures all blank lines.
+        - dot # Dot section: captures all dot imports.
+      custom-order: true
+    gofumpt:
+      module-path: github.com/orange-cloudavenue/cloudavenue-sdk-go
+      extra-rules: true
+    goimports:
+      local-prefixes:
+        - github.com/orange-cloudavenue/cloudavenue-sdk-go
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
