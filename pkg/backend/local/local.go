@@ -12,7 +12,11 @@ import (
 	"github.com/azrod/kivigo/pkg/models"
 )
 
-var _ models.KV = (*Client)(nil)
+var (
+	_ models.KV           = (*Client)(nil)
+	_ models.KVWithHealth = (*Client)(nil)
+	_ models.KVWithBatch  = (*Client)(nil)
+)
 
 const dbName = "kivigo"
 
@@ -141,6 +145,60 @@ func (c Client) Health(_ context.Context) error {
 		b := tx.Bucket([]byte(dbName))
 		if b == nil {
 			return errs.ErrHealthCheckFailed(fmt.Errorf("bucket %s not found", dbName))
+		}
+		return nil
+	})
+}
+
+// BatchGet retrieves multiple keys from the database.
+func (c Client) BatchGet(ctx context.Context, keys []string) (map[string][]byte, error) {
+	results := make(map[string][]byte, len(keys))
+	err := c.c.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte(dbName))
+		if b == nil {
+			return errs.ErrNotFound
+		}
+
+		for _, key := range keys {
+			results[key] = b.Get([]byte(key))
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return results, nil
+}
+
+// BatchSet sets multiple key-value pairs in the database.
+func (c Client) BatchSet(ctx context.Context, kv map[string][]byte) error {
+	return c.c.Update(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte(dbName))
+		if b == nil {
+			return errs.ErrNotFound
+		}
+
+		for key, value := range kv {
+			if err := b.Put([]byte(key), value); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+// BatchDelete deletes multiple keys from the database.
+func (c Client) BatchDelete(ctx context.Context, keys []string) error {
+	return c.c.Update(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte(dbName))
+		if b == nil {
+			return errs.ErrNotFound
+		}
+
+		for _, key := range keys {
+			if err := b.Delete([]byte(key)); err != nil {
+				return err
+			}
 		}
 		return nil
 	})

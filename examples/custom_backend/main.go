@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/azrod/kivigo"
-	"github.com/azrod/kivigo/examples/custom-backend/internal/backend/memory"
+	"github.com/azrod/kivigo/examples/custom_backend/internal/backend/memory"
 	"github.com/azrod/kivigo/pkg/backend"
 )
 

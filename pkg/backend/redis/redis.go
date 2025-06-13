@@ -12,7 +12,11 @@ import (
 	"github.com/azrod/kivigo/pkg/models"
 )
 
-var _ models.KV = (*Client)(nil)
+var (
+	_ models.KV           = (*Client)(nil)
+	_ models.KVWithHealth = (*Client)(nil)
+	_ models.KVWithBatch  = (*Client)(nil)
+)
 
 type (
 	Client struct {
@@ -97,4 +101,60 @@ func (c Client) Health(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+// BatchGet retrieves multiple keys from the database.
+func (c Client) BatchGet(ctx context.Context, keys []string) (map[string][]byte, error) {
+	results := make(map[string][]byte, len(keys))
+	v, err := c.c.MGet(ctx, keys...).Result()
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			return nil, errs.ErrNotFound
+		}
+		return nil, err
+	}
+
+	for i, key := range keys {
+		if v[i] == nil {
+			results[key] = nil
+			continue
+		}
+		results[key] = []byte(v[i].(string))
+	}
+
+	return results, nil
+}
+
+// BatchSet sets multiple key-value pairs in the database.
+func (c Client) BatchSet(ctx context.Context, kv map[string][]byte) error {
+	if len(kv) == 0 {
+		return errs.ErrEmptyBatch
+	}
+
+	pipe := c.c.Pipeline()
+	for key, value := range kv {
+		if err := pipe.Set(ctx, key, string(value), 0).Err(); err != nil {
+			return err
+		}
+	}
+
+	_, err := pipe.Exec(ctx)
+	return err
+}
+
+// BatchDelete deletes multiple keys from the database.
+func (c Client) BatchDelete(ctx context.Context, keys []string) error {
+	if len(keys) == 0 {
+		return errs.ErrEmptyBatch
+	}
+
+	pipe := c.c.Pipeline()
+	for _, key := range keys {
+		if err := pipe.Del(ctx, key).Err(); err != nil {
+			return err
+		}
+	}
+
+	_, err := pipe.Exec(ctx)
+	return err
 }

@@ -15,6 +15,13 @@ KiviGo is a lightweight key-value store library for Go. It provides a simple int
 - List, add, and delete keys
 - Easily extensible for new backends or encoders
 
+### Backend feature matrix
+
+| Backend      | Default (List/Get/Set/Delete) | Batch (Get/Set/Delete) | Health |
+|--------------|:----------------------------:|:----------------------:|:------:|
+| Local (Bolt) | ✅                           | ✅                     | ✅     |
+| Redis        | ✅                           | ✅                     | ✅     |
+
 ## 📦 Installation
 
 ```sh

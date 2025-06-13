@@ -8,4 +8,5 @@ var ErrHealthCheckFailed = func(err error) error {
 
 var (
 	ErrClientNotInitialized = errors.New("client is not initialized")
+	ErrEmptyBatch           = errors.New("empty batch provided")
 )
