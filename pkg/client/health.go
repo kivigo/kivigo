@@ -29,8 +29,44 @@ func (c Client) Health(ctx context.Context, additionalChecks []HealthFunc) error
 	return eg.Wait()
 }
 
-// HealthCheck is a periodic check to see if the client is healthy.
-// It returns a channel that will receive the health status.
+// HealthCheck periodically checks the health of the backend and additional checks if provided.
+// Returns a channel that receives errors if a check fails, or nil if healthy.
+//
+// Example (basic):
+//
+//	healthCh := client.HealthCheck(ctx, client.HealthOptions{Interval: 10 * time.Second})
+//	go func() {
+//	    for err := range healthCh {
+//	        if err != nil {
+//	            fmt.Println("Health issue:", err)
+//	        } else {
+//	            fmt.Println("Backend healthy")
+//	        }
+//	    }
+//	}()
+//
+// Example with AdditionalChecks:
+//
+//	customCheck := func(ctx context.Context, c client.Client) error {
+//	    var value string
+//	    if err := c.Get(ctx, "health:ping", &value); err != nil {
+//	        return fmt.Errorf("custom health check failed: %w", err)
+//	    }
+//	    return nil
+//	}
+//	healthCh := client.HealthCheck(ctx, client.HealthOptions{
+//	    Interval:         10 * time.Second,
+//	    AdditionalChecks: []client.HealthFunc{customCheck},
+//	})
+//	go func() {
+//	    for err := range healthCh {
+//	        if err != nil {
+//	            fmt.Println("Health issue:", err)
+//	        } else {
+//	            fmt.Println("Backend healthy")
+//	        }
+//	    }
+//	}()
 func (c Client) HealthCheck(ctx context.Context, ho HealthOptions) <-chan error {
 	ch := make(chan error, 1)
 	go func() {

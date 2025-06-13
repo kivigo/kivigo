@@ -32,6 +32,21 @@ type (
 	}
 )
 
+// New creates and returns a new KiviGo client instance using the provided backend and options.
+//
+// The kv parameter must implement the models.KV interface and represents the backend storage (e.g. local, Redis).
+// The opts parameter allows you to specify options such as the encoder to use for value serialization.
+//
+// Example usage:
+//
+//	backend := backend.Local(local.Option{Path: "./"})
+//	client, err := client.New(backend, client.Option{Encoder: encoder.JSON})
+//	if err != nil {
+//	    log.Fatal(err)
+//	}
+//	defer client.Close()
+//
+// Returns a Client and an error if initialization fails.
 func New(kv models.KV, opts Option) (Client, error) {
 	return Client{KV: kv, opts: opts}, nil
 }
