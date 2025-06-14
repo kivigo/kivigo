@@ -107,7 +107,7 @@ func (c Client) Health(ctx context.Context) error {
 }
 
 // BatchGet retrieves multiple keys from the database.
-func (c Client) BatchGet(ctx context.Context, keys []string) (map[string][]byte, error) {
+func (c Client) BatchGetRaw(ctx context.Context, keys []string) (map[string][]byte, error) {
 	results := make(map[string][]byte, len(keys))
 
 	v, err := c.c.MGet(ctx, keys...).Result()
@@ -133,7 +133,7 @@ func (c Client) BatchGet(ctx context.Context, keys []string) (map[string][]byte,
 }
 
 // BatchSet sets multiple key-value pairs in the database.
-func (c Client) BatchSet(ctx context.Context, kv map[string][]byte) error {
+func (c Client) BatchSetRaw(ctx context.Context, kv map[string][]byte) error {
 	if len(kv) == 0 {
 		return errs.ErrEmptyBatch
 	}

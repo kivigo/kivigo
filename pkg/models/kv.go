@@ -63,7 +63,7 @@ type (
 		//   for k, v := range raws {
 		//       fmt.Printf("%s: %s\n", k, string(v))
 		//   }
-		BatchGet(ctx context.Context, keys []string) (map[string][]byte, error)
+		BatchGetRaw(ctx context.Context, keys []string) (map[string][]byte, error)
 
 		// BatchSet stores multiple key-value pairs atomically if supported by the backend.
 		// Returns an error if the operation fails or is not supported.
@@ -73,7 +73,7 @@ type (
 		//   if err != nil {
 		//       log.Fatal(err)
 		//   }
-		BatchSet(ctx context.Context, kv map[string][]byte) error
+		BatchSetRaw(ctx context.Context, kv map[string][]byte) error
 
 		// BatchDelete removes multiple keys atomically if supported by the backend.
 		// Returns an error if the operation fails or is not supported.
