@@ -18,7 +18,7 @@ func (m *mockKVWithHealth) Health(_ context.Context) error {
 	return m.healthErr
 }
 
-// Satisfait l'interface models.KV
+// Satisfies the models.KV interface
 func (m *mockKVWithoutHealth) GetRaw(_ context.Context, _ string) ([]byte, error) { return nil, nil }
 func (m *mockKVWithoutHealth) SetRaw(_ context.Context, _ string, _ []byte) error { return nil }
 func (m *mockKVWithoutHealth) Delete(_ context.Context, _ string) error           { return nil }
