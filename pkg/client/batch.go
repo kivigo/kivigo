@@ -29,7 +29,7 @@ func (c Client) BatchGet(ctx context.Context, keys []string, dest any) error {
 	}
 
 	if len(keys) == 0 {
-		return errs.ErrEmptyKey
+		return errs.ErrEmptyBatch
 	}
 
 	for _, key := range keys {
