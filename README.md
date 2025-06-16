@@ -31,20 +31,6 @@ KiviGo is a lightweight key-value store library for Go. It provides a simple int
 go get github.com/azrod/kivigo
 ```
 
-## 🛠️ Supported Go Versions
-
-KiviGo follows the [official Go release policy](https://go.dev/doc/devel/release#policy):
-
-> Each major Go release is supported until there are two newer major releases. For example, Go 1.5 was supported until the Go 1.7 release, and Go 1.6 was supported until the Go 1.8 release. We fix critical problems, including critical security problems, in supported releases as needed by issuing minor revisions (for example, Go 1.6.1, Go 1.6.2, and so on).
-
-**Currently supported Go versions for KiviGo:**
-
-- Go 1.22 (minimum version, see [`go.mod`](go.mod))
-- Go 1.23
-- Go 1.24
-
-CI tests are run against these versions.
-
 ## 🚀 Quickstart Example
 
 This example shows how to use KiviGo with the local backend (BoltDB) and the default JSON encoder:
@@ -333,6 +319,41 @@ client, err := kivigo.New(
 ```
 
 Full example is available in the [`examples/custom_backend/main.go`](examples/custom_backend/main.go) file.
+
+## 🧪 Using the Mock Backend for Testing
+
+KiviGo provides a mock backend (`pkg/mock.MockKV`) to make it easy to write unit tests without relying on a real database.
+
+### Example Usage
+
+```go
+import (
+    "context"
+    "testing"
+
+    "github.com/azrod/kivigo/pkg/client"
+    "github.com/azrod/kivigo/pkg/encoder"
+    "github.com/azrod/kivigo/pkg/mock"
+)
+
+func TestWithMockKV(t *testing.T) {
+    mockKV := &mock.MockKV{Data: map[string][]byte{"foo": []byte("bar")}}
+    c, err := client.New(mockKV, client.Option{Encoder: encoder.JSON})
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    var val string
+    if err := c.Get(context.Background(), "foo", &val); err != nil {
+        t.Fatal(err)
+    }
+    if val != "bar" {
+        t.Errorf("expected bar, got %s", val)
+    }
+}
+```
+
+You can inject `MockKV` into your tests to simulate all key-value backend behaviors, including batch operations and health checks.
 
 ## 📚 Documentation
 

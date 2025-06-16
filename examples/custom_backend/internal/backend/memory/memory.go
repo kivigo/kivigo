@@ -68,8 +68,3 @@ func (b *BMemory) List(_ context.Context, prefix string) (keys []string, err err
 func (b *BMemory) Close() error {
 	return nil
 }
-
-func (b *BMemory) Health(_ context.Context) error {
-	// Memory backend is always healthy as it does not depend on external resources
-	return nil
-}

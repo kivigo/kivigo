@@ -14,7 +14,7 @@ type Encoder struct{}
 // Encode encodes the given value into JSON format.
 func (f *Encoder) Encode(value any) ([]byte, error) {
 	if value == nil {
-		return nil, nil
+		return nil, fmt.Errorf("value cannot be nil")
 	}
 
 	data, err := json.Marshal(value)

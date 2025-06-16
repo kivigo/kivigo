@@ -74,11 +74,11 @@ func (c Client) HealthCheck(ctx context.Context, ho HealthOptions) <-chan error 
 	go func() {
 		defer close(ch)
 
-		ticker := time.NewTicker(ho.Interval)
 		if ho.Interval <= 0 {
-			ticker = time.NewTicker(1 * time.Minute) // Default to 1 minute if no interval is set
+			ho.Interval = 1 * time.Minute // Default to 1 minute if no interval is set
 		}
 
+		ticker := time.NewTicker(ho.Interval)
 		defer ticker.Stop()
 
 		for {
