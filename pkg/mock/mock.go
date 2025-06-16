@@ -28,9 +28,11 @@ func (m *MockKV) GetRaw(_ context.Context, key string) ([]byte, error) {
 	m.mu.RLock()
 	val, ok := m.Data[key]
 	m.mu.RUnlock()
+
 	if !ok {
 		return nil, errs.ErrKeyNotFound
 	}
+
 	return val, nil
 }
 
@@ -42,6 +44,7 @@ func (m *MockKV) SetRaw(_ context.Context, key string, value []byte) error {
 	m.mu.Lock()
 	m.Data[key] = value
 	m.mu.Unlock()
+
 	return nil
 }
 
@@ -53,18 +56,21 @@ func (m *MockKV) Delete(_ context.Context, key string) error {
 	m.mu.Lock()
 	delete(m.Data, key)
 	m.mu.Unlock()
+
 	return nil
 }
 
 func (m *MockKV) List(_ context.Context, prefix string) ([]string, error) {
 	m.mu.RLock()
 	var keys []string
+
 	for k := range m.Data {
 		if strings.HasPrefix(k, prefix) {
 			keys = append(keys, k)
 		}
 	}
 	m.mu.RUnlock()
+
 	return keys, nil
 }
 
@@ -81,12 +87,14 @@ func (m *MockKV) Health(_ context.Context) error {
 func (m *MockKV) BatchGetRaw(_ context.Context, keys []string) (map[string][]byte, error) {
 	m.mu.RLock()
 	result := make(map[string][]byte)
+
 	for _, k := range keys {
 		if v, ok := m.Data[k]; ok {
 			result[k] = v
 		}
 	}
 	m.mu.RUnlock()
+
 	return result, nil
 }
 
@@ -98,6 +106,7 @@ func (m *MockKV) BatchSetRaw(_ context.Context, kv map[string][]byte) error {
 		m.Data[k] = v
 	}
 	m.mu.Unlock()
+
 	return nil
 }
 
@@ -109,5 +118,6 @@ func (m *MockKV) BatchDelete(_ context.Context, keys []string) error {
 		delete(m.Data, k)
 	}
 	m.mu.Unlock()
+
 	return nil
 }

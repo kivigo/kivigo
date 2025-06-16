@@ -31,20 +31,6 @@ KiviGo is a lightweight key-value store library for Go. It provides a simple int
 go get github.com/azrod/kivigo
 ```
 
-## 🛠️ Supported Go Versions
-
-KiviGo follows the [official Go release policy](https://go.dev/doc/devel/release#policy):
-
-> Each major Go release is supported until there are two newer major releases. For example, Go 1.5 was supported until the Go 1.7 release, and Go 1.6 was supported until the Go 1.8 release. We fix critical problems, including critical security problems, in supported releases as needed by issuing minor revisions (for example, Go 1.6.1, Go 1.6.2, and so on).
-
-**Currently supported Go versions for KiviGo:**
-
-- Go 1.22 (minimum version, see [`go.mod`](go.mod))
-- Go 1.23
-- Go 1.24
-
-CI tests are run against these versions.
-
 ## 🚀 Quickstart Example
 
 This example shows how to use KiviGo with the local backend (BoltDB) and the default JSON encoder:

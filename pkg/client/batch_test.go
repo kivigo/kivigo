@@ -1,6 +1,8 @@
+//nolint:funlen
 package client_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/azrod/kivigo/pkg/client"
@@ -73,16 +75,16 @@ func Test_BatchGet(t *testing.T) {
 			if tt.createKeys {
 				for k, v := range tt.want {
 					if v != nil {
-						if err := c.Set(t.Context(), k, v); err != nil {
+						if err := c.Set(context.Background(), k, v); err != nil {
 							t.Fatalf("failed to set key %s: %v", k, err)
 						}
 					}
 				}
 			}
 
-			var values = make(map[string]testStruct)
+			values := make(map[string]testStruct)
 
-			err := c.BatchGet(t.Context(), tt.keys, values)
+			err := c.BatchGet(context.Background(), tt.keys, values)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("BatchGet() error = %v, wantErr %v", err, tt.wantErr)
 
@@ -145,14 +147,14 @@ func Test_BatchSet(t *testing.T) {
 			if tt.createKeys {
 				for k, v := range tt.kv {
 					if v != nil {
-						if err := c.Set(t.Context(), k, v); err != nil {
+						if err := c.Set(context.Background(), k, v); err != nil {
 							t.Fatalf("failed to set key %s: %v", k, err)
 						}
 					}
 				}
 			}
 
-			err := c.BatchSet(t.Context(), tt.kv)
+			err := c.BatchSet(context.Background(), tt.kv)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("BatchSet() error = %v, wantErr %v", err, tt.wantErr)
 

@@ -1,6 +1,7 @@
 package client_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/azrod/kivigo/pkg/client"
@@ -19,12 +20,12 @@ func TestSetAndGet(t *testing.T) {
 	key := "foo"
 	value := "bar"
 
-	if err := c.Set(t.Context(), key, value); err != nil {
+	if err := c.Set(context.Background(), key, value); err != nil {
 		t.Fatal(err)
 	}
 
 	var got string
-	if err := c.Get(t.Context(), key, &got); err != nil {
+	if err := c.Get(context.Background(), key, &got); err != nil {
 		t.Fatal(err)
 	}
 

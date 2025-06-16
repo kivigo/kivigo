@@ -1,6 +1,8 @@
+//nolint:funlen,cyclop
 package client_test
 
 import (
+	"context"
 	"reflect"
 	"testing"
 
@@ -60,14 +62,14 @@ func Test_Get(t *testing.T) {
 				case teststruct:
 					t.Logf("Creating key %s with value %v", tt.key, v)
 
-					err := c.Set(t.Context(), tt.key, v)
+					err := c.Set(context.Background(), tt.key, v)
 					if err != nil {
 						t.Fatalf("Set() error = %v", err)
 					}
 				case string:
 					t.Logf("Creating key %s with value %s", tt.key, v)
 
-					err := c.SetRaw(t.Context(), tt.key, []byte(v))
+					err := c.SetRaw(context.Background(), tt.key, []byte(v))
 					if err != nil {
 						t.Fatalf("SetRaw() error = %v", err)
 					}
@@ -76,7 +78,7 @@ func Test_Get(t *testing.T) {
 
 			var got teststruct
 
-			err = c.Get(t.Context(), tt.key, &got)
+			err = c.Get(context.Background(), tt.key, &got)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Get() error = %v, wantErr %v", err, tt.wantErr)
 
@@ -132,7 +134,7 @@ func Test_Set(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := c.Set(t.Context(), tt.key, tt.value)
+			err := c.Set(context.Background(), tt.key, tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Set() error = %v, wantErr %v", err, tt.wantErr)
 
@@ -142,7 +144,7 @@ func Test_Set(t *testing.T) {
 			if !tt.wantErr {
 				var got teststruct
 
-				err := c.Get(t.Context(), tt.key, &got)
+				err := c.Get(context.Background(), tt.key, &got)
 				if err != nil {
 					t.Errorf("Get() error = %v", err)
 

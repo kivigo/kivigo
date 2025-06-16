@@ -37,7 +37,7 @@ func newMockClient(healthErr error) Client {
 func TestHealth_NoKVWithHealth(t *testing.T) {
 	c := Client{KV: &mockKVWithoutHealth{}}
 
-	err := c.Health(t.Context(), nil)
+	err := c.Health(context.Background(), nil)
 	if err != nil {
 		t.Errorf("expected nil, got %v", err)
 	}
@@ -46,7 +46,7 @@ func TestHealth_NoKVWithHealth(t *testing.T) {
 func TestHealth_KVWithHealthHealthy(t *testing.T) {
 	c := newMockClient(nil)
 
-	err := c.Health(t.Context(), nil)
+	err := c.Health(context.Background(), nil)
 	if err != nil {
 		t.Errorf("expected nil, got %v", err)
 	}
@@ -55,7 +55,7 @@ func TestHealth_KVWithHealthHealthy(t *testing.T) {
 func TestHealth_KVWithHealthUnhealthy(t *testing.T) {
 	c := newMockClient(errors.New("backend down"))
 
-	err := c.Health(t.Context(), nil)
+	err := c.Health(context.Background(), nil)
 	if err == nil {
 		t.Errorf("expected error, got nil")
 	}
@@ -65,7 +65,7 @@ func TestHealth_WithAdditionalChecks_AllHealthy(t *testing.T) {
 	c := newMockClient(nil)
 	check := func(_ context.Context, _ Client) error { return nil }
 
-	err := c.Health(t.Context(), []HealthFunc{check, check})
+	err := c.Health(context.Background(), []HealthFunc{check, check})
 	if err != nil {
 		t.Errorf("expected nil, got %v", err)
 	}
@@ -76,14 +76,14 @@ func TestHealth_WithAdditionalChecks_OneFails(t *testing.T) {
 	okCheck := func(_ context.Context, _ Client) error { return nil }
 	failCheck := func(_ context.Context, _ Client) error { return errors.New("fail") }
 
-	err := c.Health(t.Context(), []HealthFunc{okCheck, failCheck})
+	err := c.Health(context.Background(), []HealthFunc{okCheck, failCheck})
 	if err == nil {
 		t.Errorf("expected error, got nil")
 	}
 }
 
 func TestHealthCheck_Healthy(t *testing.T) {
-	ctx, cancel := context.WithCancel(t.Context())
+	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	c := newMockClient(nil)
@@ -101,7 +101,7 @@ func TestHealthCheck_Healthy(t *testing.T) {
 }
 
 func TestHealthCheck_Unhealthy(t *testing.T) {
-	ctx, cancel := context.WithCancel(t.Context())
+	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	c := newMockClient(errors.New("backend down"))
@@ -119,7 +119,7 @@ func TestHealthCheck_Unhealthy(t *testing.T) {
 }
 
 func TestHealthCheck_ContextCancel(t *testing.T) {
-	ctx, cancel := context.WithCancel(t.Context())
+	ctx, cancel := context.WithCancel(context.Background())
 	c := newMockClient(nil)
 	ho := HealthOptions{Interval: 50 * time.Millisecond}
 	ch := c.HealthCheck(ctx, ho)
@@ -133,7 +133,7 @@ func TestHealthCheck_ContextCancel(t *testing.T) {
 }
 
 // func TestHealthCheck_DefaultInterval(t *testing.T) {
-// 	ctx, cancel := context.WithCancel(t.Context())
+// 	ctx, cancel := context.WithCancel(context.Background())
 // 	defer cancel()
 // 	c := newMockClient(nil)
 // 	ho := HealthOptions{Interval: 0}

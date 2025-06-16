@@ -22,7 +22,7 @@ import (
 //	    log.Fatal(err)
 //	}
 //	fmt.Println("Retrieved values:", values)
-func (c Client) BatchGet(ctx context.Context, keys []string, dest any) error {
+func (c Client) BatchGet(ctx context.Context, keys []string, dest any) error { //nolint:cyclop
 	batch, ok := c.KV.(models.KVWithBatch)
 	if !ok {
 		return fmt.Errorf("BatchGet not supported by backend")
