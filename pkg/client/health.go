@@ -21,11 +21,13 @@ func (c Client) Health(ctx context.Context, additionalChecks []HealthFunc) error
 	eg.Go(func() error {
 		return fn.Health(ctx)
 	})
+
 	for _, check := range additionalChecks {
 		eg.Go(func() error {
 			return check(ctx, c)
 		})
 	}
+
 	return eg.Wait()
 }
 
@@ -71,10 +73,12 @@ func (c Client) HealthCheck(ctx context.Context, ho HealthOptions) <-chan error 
 	ch := make(chan error, 1)
 	go func() {
 		defer close(ch)
+
 		ticker := time.NewTicker(ho.Interval)
 		if ho.Interval <= 0 {
 			ticker = time.NewTicker(1 * time.Minute) // Default to 1 minute if no interval is set
 		}
+
 		defer ticker.Stop()
 
 		for {
@@ -90,5 +94,6 @@ func (c Client) HealthCheck(ctx context.Context, ho HealthOptions) <-chan error 
 			}
 		}
 	}()
+
 	return ch
 }

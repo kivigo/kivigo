@@ -36,6 +36,7 @@ func New(opt Option, _ client.Option) (Client, error) {
 	if opt.Path == "" {
 		opt.Path = "./"
 	}
+
 	if opt.FileName == "" {
 		opt.FileName = "kivigo.db"
 	}
@@ -54,6 +55,7 @@ func New(opt Option, _ client.Option) (Client, error) {
 		if err != nil {
 			return fmt.Errorf("could not create local db: %w", err)
 		}
+
 		return nil
 	}); err != nil {
 		return Client{}, err
@@ -108,6 +110,7 @@ func (c Client) Delete(_ context.Context, key string) error {
 	if key == "" {
 		return errs.ErrEmptyKey
 	}
+
 	return c.c.Update(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte(dbName))
 		if b == nil {
@@ -146,6 +149,7 @@ func (c Client) Health(_ context.Context) error {
 		if b == nil {
 			return errs.ErrHealthCheckFailed(fmt.Errorf("bucket %s not found", dbName))
 		}
+
 		return nil
 	})
 }
@@ -153,6 +157,7 @@ func (c Client) Health(_ context.Context) error {
 // BatchGet retrieves multiple keys from the database.
 func (c Client) BatchGet(ctx context.Context, keys []string) (map[string][]byte, error) {
 	results := make(map[string][]byte, len(keys))
+
 	err := c.c.View(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte(dbName))
 		if b == nil {
@@ -162,11 +167,13 @@ func (c Client) BatchGet(ctx context.Context, keys []string) (map[string][]byte,
 		for _, key := range keys {
 			results[key] = b.Get([]byte(key))
 		}
+
 		return nil
 	})
 	if err != nil {
 		return nil, err
 	}
+
 	return results, nil
 }
 
@@ -183,6 +190,7 @@ func (c Client) BatchSet(ctx context.Context, kv map[string][]byte) error {
 				return err
 			}
 		}
+
 		return nil
 	})
 }
@@ -200,6 +208,7 @@ func (c Client) BatchDelete(ctx context.Context, keys []string) error {
 				return err
 			}
 		}
+
 		return nil
 	})
 }

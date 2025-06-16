@@ -28,5 +28,6 @@ func main() {
 	if err := client.Get(context.Background(), "myKey", &value); err != nil {
 		panic(err)
 	}
+
 	fmt.Println("Retrieved value:", value)
 }

@@ -22,6 +22,7 @@ func (f *Encoder) Encode(value any) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return data, nil
 }
 
@@ -39,5 +40,6 @@ func (f *Encoder) Decode(data []byte, value any) error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }

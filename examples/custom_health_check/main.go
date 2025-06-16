@@ -14,10 +14,12 @@ import (
 func myCustomHealth(ctx context.Context, c client.Client) error {
 	// Example: check if a specific key exists
 	var value string
+
 	err := c.Get(ctx, "health:ping", &value)
 	if err != nil {
 		return errors.New("custom health check failed: " + err.Error())
 	}
+
 	return nil
 }
 

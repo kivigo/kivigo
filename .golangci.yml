@@ -11,7 +11,6 @@ linters:
     - errchkjson # Checks types passed to the json encoding functions. Reports unsupported types and optionally reports occasions, where the check for the returned error can be omitted. [fast: false, auto-fix: false]
     - errname # Checks that sentinel errors are prefixed with the `Err` and error types are suffixed with the `Error`. [fast: false, auto-fix: false]
     - errorlint # Linter for error strings [fast: false, auto-fix: false]
-    - forbidigo # Forbids identifiers [fast: true, auto-fix: false]
     - goconst # Finds repeated strings [fast: true, auto-fix: false]
     - gocritic # Provides diagnostics that check for bugs, performance and style issues. [fast: false, auto-fix: false]
     - gocyclo # Computes and checks the cyclomatic complexity of functions [fast: true, auto-fix: false]
@@ -39,26 +38,26 @@ linters:
     - usetesting # Use the testing package [fast: false, auto-fix: false]
     - wastedassign # Finds assignments to variables that are never used [fast: false, auto-fix: false]
     - whitespace # Checks for trailing whitespace [fast: true, auto-fix: false]
-  disable:
     - containedctx
     - cyclop
-    - depguard
     - dupl
     - exhaustive
     - funlen
-    - gochecknoglobals
     - gochecknoinits
     - gocognit
     - godox
-    - lll
     - maintidx
     - nakedret
     - nestif
     - nlreturn
     - thelper
+    - wsl
+  disable:
+    - gochecknoglobals
+    - lll
     - varnamelen
     - wrapcheck
-    - wsl
+    
   settings:
     staticcheck:
       checks:
@@ -150,23 +149,16 @@ formatters:
       sections:
         - standard # Standard section: captures all standard packages.
         - default # Default section: contains all imports that could not be matched to another section type.
-        - prefix(github.com/vmware)
-        - prefix(github.com/hashicorp/terraform-plugin-framework/)
-        - prefix(github.com/hashicorp/terraform-plugin-framework/resource,github.com/hashicorp/terraform-plugin-framework/datasource)
-        - prefix(github.com/hashicorp/terraform-plugin-framework/resource/schema/,github.com/hashicorp/terraform-plugin-framework/datasource/schema/)
-        - prefix(github.com/hashicorp/terraform-plugin-framework-validators/)
-        - prefix(github.com/hashicorp)
-        - prefix(github.com/FrangipaneTeam)
-        - prefix(github.com/orange-cloudavenue/cloudavenue-sdk-go,github.com/orange-cloudavenue/cloudavenue-sdk-go,github.com/orange-cloudavenue/infrapi-sdk-go)
+        - prefix(github.com/azrod)
         - blank # Blank section: captures all blank lines.
         - dot # Dot section: captures all dot imports.
       custom-order: true
     gofumpt:
-      module-path: github.com/orange-cloudavenue/cloudavenue-sdk-go
+      module-path: github.com/azrod/kivigo
       extra-rules: true
     goimports:
       local-prefixes:
-        - github.com/orange-cloudavenue/cloudavenue-sdk-go
+        - github.com/azrod/kivigo
   exclusions:
     generated: lax
     paths:
