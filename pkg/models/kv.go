@@ -52,28 +52,28 @@ type (
 	}
 
 	KVWithBatch interface {
-		// BatchGet retrieves multiple raw values for the given keys.
+		// BatchGetRaw retrieves multiple raw values for the given keys.
 		// Returns a map of key to raw value, or an error if the operation fails or is not supported.
 		//
 		// Example:
-		//   raws, err := backend.BatchGet(ctx, []string{"foo", "bar"})
+		//   raws, err := backend.BatchGetRaw(ctx, []string{"foo", "bar"})
 		//   if err != nil {
 		//       log.Fatal(err)
 		//   }
 		//   for k, v := range raws {
 		//       fmt.Printf("%s: %s\n", k, string(v))
 		//   }
-		BatchGet(ctx context.Context, keys []string) (map[string][]byte, error)
+		BatchGetRaw(ctx context.Context, keys []string) (map[string][]byte, error)
 
-		// BatchSet stores multiple key-value pairs atomically if supported by the backend.
+		// BatchSetRaw stores multiple key-value pairs atomically if supported by the backend.
 		// Returns an error if the operation fails or is not supported.
 		//
 		// Example:
-		//   err := backend.BatchSet(ctx, map[string][]byte{"foo": []byte("1"), "bar": []byte("2")})
+		//   err := backend.BatchSetRaw(ctx, map[string][]byte{"foo": []byte("1"), "bar": []byte("2")})
 		//   if err != nil {
 		//       log.Fatal(err)
 		//   }
-		BatchSet(ctx context.Context, kv map[string][]byte) error
+		BatchSetRaw(ctx context.Context, kv map[string][]byte) error
 
 		// BatchDelete removes multiple keys atomically if supported by the backend.
 		// Returns an error if the operation fails or is not supported.

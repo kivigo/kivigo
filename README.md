@@ -320,6 +320,41 @@ client, err := kivigo.New(
 
 Full example is available in the [`examples/custom_backend/main.go`](examples/custom_backend/main.go) file.
 
+## 🧪 Using the Mock Backend for Testing
+
+KiviGo provides a mock backend (`pkg/mock.MockKV`) to make it easy to write unit tests without relying on a real database.
+
+### Example Usage
+
+```go
+import (
+    "context"
+    "testing"
+
+    "github.com/azrod/kivigo/pkg/client"
+    "github.com/azrod/kivigo/pkg/encoder"
+    "github.com/azrod/kivigo/pkg/mock"
+)
+
+func TestWithMockKV(t *testing.T) {
+    mockKV := &mock.MockKV{Data: map[string][]byte{"foo": []byte("bar")}}
+    c, err := client.New(mockKV, client.Option{Encoder: encoder.JSON})
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    var val string
+    if err := c.Get(context.Background(), "foo", &val); err != nil {
+        t.Fatal(err)
+    }
+    if val != "bar" {
+        t.Errorf("expected bar, got %s", val)
+    }
+}
+```
+
+You can inject `MockKV` into your tests to simulate all key-value backend behaviors, including batch operations and health checks.
+
 ## 📚 Documentation
 
 See [pkg.go.dev/github.com/azrod/kivigo](https://pkg.go.dev/github.com/azrod/kivigo) for full documentation, and explore the [`pkg/backend`](pkg/backend/) and [`pkg/encoder`](pkg/encoder/) folders for more details on implementations.

@@ -17,6 +17,7 @@ func Redis(opt redis.Option) Backend {
 		if err != nil {
 			return client.Client{}, err
 		}
+
 		return client.New(c, opts)
 	}
 }
@@ -27,6 +28,7 @@ func Local(opt local.Option) Backend {
 		if err != nil {
 			return client.Client{}, err
 		}
+
 		return client.New(c, opts)
 	}
 }
@@ -36,6 +38,7 @@ func CustomBackend(kv models.KV) Backend {
 		if kv == nil {
 			return client.Client{}, fmt.Errorf("kv cannot be nil")
 		}
+
 		return client.New(kv, opts)
 	}
 }
