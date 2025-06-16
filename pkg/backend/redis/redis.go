@@ -28,6 +28,7 @@ type (
 
 func New(opt Option, _ client.Option) (Client, error) {
 	client := redis.NewClient((*redis.Options)(&opt))
+
 	return Client{c: client}, nil
 }
 
@@ -51,6 +52,7 @@ func (c Client) GetRaw(ctx context.Context, key string) ([]byte, error) {
 		if errors.Is(err, redis.Nil) {
 			return nil, errs.ErrNotFound
 		}
+
 		return nil, err
 	}
 
@@ -68,6 +70,7 @@ func (c Client) List(ctx context.Context, prefix string) (keys []string, err err
 		if strings.HasSuffix(prefix, ":") {
 			return prefix + "*"
 		}
+
 		return prefix + ":*"
 	}()
 
@@ -106,19 +109,23 @@ func (c Client) Health(ctx context.Context) error {
 // BatchGet retrieves multiple keys from the database.
 func (c Client) BatchGet(ctx context.Context, keys []string) (map[string][]byte, error) {
 	results := make(map[string][]byte, len(keys))
+
 	v, err := c.c.MGet(ctx, keys...).Result()
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
 			return nil, errs.ErrNotFound
 		}
+
 		return nil, err
 	}
 
 	for i, key := range keys {
 		if v[i] == nil {
 			results[key] = nil
+
 			continue
 		}
+
 		results[key] = []byte(v[i].(string))
 	}
 
@@ -139,6 +146,7 @@ func (c Client) BatchSet(ctx context.Context, kv map[string][]byte) error {
 	}
 
 	_, err := pipe.Exec(ctx)
+
 	return err
 }
 
@@ -156,5 +164,6 @@ func (c Client) BatchDelete(ctx context.Context, keys []string) error {
 	}
 
 	_, err := pipe.Exec(ctx)
+
 	return err
 }

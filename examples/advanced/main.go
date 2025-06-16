@@ -20,6 +20,7 @@ func main() {
 		}),
 		func(opt client.Option) client.Option {
 			opt.Encoder = encoder.YAML
+
 			return opt
 		},
 	)
@@ -44,6 +45,7 @@ func main() {
 	if err := c.Get(context.Background(), "user:1", &u); err != nil {
 		panic(err)
 	}
+
 	fmt.Printf("Retrieved user: %+v\n", u)
 
 	// Periodic health check

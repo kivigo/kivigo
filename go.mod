@@ -1,6 +1,8 @@
 module github.com/azrod/kivigo
 
-go 1.22
+go 1.23
+
+toolchain go1.24.2
 
 require (
 	github.com/pkg/errors v0.9.1

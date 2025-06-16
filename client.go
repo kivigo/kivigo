@@ -58,6 +58,7 @@ func New(backend backend.Backend, opts ...client.Options) (client.Client, error)
 	for _, o := range opts {
 		opt = o(opt)
 	}
+
 	if opt.Encoder == nil {
 		opt.Encoder = encoder.JSON
 	}
