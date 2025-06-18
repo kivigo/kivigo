@@ -31,8 +31,14 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
+      - name: 📦 Install Magefile
+        run: go install github.com/magefile/mage@latest
+
       - name: 📦 Install dependencies
         run: go mod download
+
+      - name: 📜 Start all backends
+        run: mage startAllBackends
 
       - name: 🧪 Run unit tests with coverage
         run: go test -coverprofile=coverage.out ./...
