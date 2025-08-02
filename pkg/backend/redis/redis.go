@@ -108,6 +108,11 @@ func (c Client) Health(ctx context.Context) error {
 
 // BatchGet retrieves multiple keys from the database.
 func (c Client) BatchGetRaw(ctx context.Context, keys []string) (map[string][]byte, error) {
+	// Check if keys slice is not empty
+	if len(keys) == 0 {
+		return nil, errs.ErrEmptyBatch
+	}
+
 	results := make(map[string][]byte, len(keys))
 
 	v, err := c.c.MGet(ctx, keys...).Result()
