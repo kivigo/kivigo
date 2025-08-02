@@ -3,12 +3,12 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/azrod/kivigo.svg)](https://pkg.go.dev/github.com/azrod/kivigo)
 [![Go Report Card](https://goreportcard.com/badge/github.com/azrod/kivigo)](https://goreportcard.com/report/github.com/azrod/kivigo)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Go Version](https://img.shields.io/badge/go-1.24+-blue.svg)](https://golang.org/dl/)
+[![Go Version](https://img.shields.io/badge/go-1.23+-blue.svg)](https://golang.org/dl/)
 
 KiviGo is a lightweight key-value store library for Go. It provides a simple interface for storing and retrieving key-value pairs, supporting multiple backends (such as Redis and BoltDB) and encoders (JSON, YAML, etc.). KiviGo is designed to be easy to use, performant, and flexible.
 
 > **Why "KiviGo"?**  
-> The name is a play on words: "Kivi" sounds like "key-value" (the core concept of the library) and "Go" refers to the Go programming language. It also playfully evokes the fruit "kiwi"!
+> The name is a play on words: "Kivi" sounds like "key-value" (the core concept of the library) and "Go" refers to the Go programming language. It also playfully evokes the fruit "kiwi" 🥝 !
 
 ## ✨ Features
 
@@ -17,6 +17,52 @@ KiviGo is a lightweight key-value store library for Go. It provides a simple int
 - Health check support (with custom checks)
 - List, add, and delete keys
 - Easily extensible for new backends or encoders
+
+## 🥝 Motivation
+
+KiviGo was created to simplify and unify key-value storage in Go applications. In many projects, developers face the challenge of switching between different storage backends (like Redis, BoltDB, or in-memory stores) or need to support multiple serialization formats (such as JSON or YAML). Each backend often comes with its own API, error handling, and setup, making code harder to maintain and test.
+
+**What problem does KiviGo solve?**
+
+- Provides a single, consistent API for key-value operations, regardless of the underlying backend.
+- Makes it easy to swap storage engines (e.g., from local development with BoltDB to production with Redis) without changing your application logic.
+- Supports pluggable encoders, so you can choose or implement the serialization format that fits your needs.
+- Simplifies testing by providing a mock backend.
+- Enables health checks and batch operations in a backend-agnostic way.
+
+**Use cases:**
+
+- Building microservices that need simple, fast key-value storage with the flexibility to change backends.
+- Prototyping applications locally with BoltDB, then moving to Redis for production.
+- Writing unit tests for storage logic without requiring a real database.
+- Implementing custom backends (e.g., in-memory, cloud-based) while keeping the same client code.
+- Supporting advanced features like batch operations, health checks, and custom serialization with minimal effort.
+
+KiviGo helps you focus on your application logic, not on backend-specific details.
+
+## 📊 Comparison: KiviGo vs Other Go Key-Value Libraries
+
+> ⚠️ **Note:** The following comparison is provided for convenience and is based on the state of these libraries at the time of writing. Features and APIs may evolve over time—please refer to each project's documentation for the most up-to-date information.
+
+There are several Go libraries for key-value storage, each with different goals and trade-offs. Here’s how KiviGo compares to some popular alternatives:
+
+| Library         | Unified API | Pluggable Backends | Pluggable Encoders | Health Checks | Batch Ops | Mock/Test Support | Extensible |
+|-----------------|:----------:|:------------------:|:------------------:|:-------------:|:--------:|:-----------------:|:----------:|
+| **KiviGo**      | ✅         | ✅                 | ✅                 | ✅            | ✅       | ✅                | ✅         |
+| [go-redis](https://github.com/redis/go-redis) | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| [bbolt](https://github.com/etcd-io/bbolt)     | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
+| [badger](https://github.com/dgraph-io/badger) | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
+| [gokv](https://github.com/philippgille/gokv)  | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ➖ |
+| [cache2go](https://github.com/muesli/cache2go) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+
+**Key differences:**
+
+- **KiviGo** provides a unified API, supports multiple backends (local, Redis, custom), pluggable encoders (JSON, YAML, custom), health checks, batch operations, and a mock backend for testing.
+- **go-redis**, **bbolt**, and **badger** are excellent for their specific storage engines but do not abstract over multiple backends or provide pluggable encoding.
+- **gokv** offers a unified API for multiple backends but lacks pluggable encoders, health checks, and mock/test support.
+- **cache2go** is focused on in-memory caching and does not provide backend abstraction or encoding options.
+
+KiviGo is designed for projects that need flexibility, testability, and the ability to swap storage or serialization strategies with minimal code changes.
 
 ### Backend feature matrix
 
