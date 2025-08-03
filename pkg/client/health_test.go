@@ -132,16 +132,17 @@ func TestHealthCheck_ContextCancel(t *testing.T) {
 	}
 }
 
-// func TestHealthCheck_DefaultInterval(t *testing.T) {
-// 	ctx, cancel := context.WithCancel(context.Background())
-// 	defer cancel()
-// 	c := newMockClient(nil)
-// 	ho := HealthOptions{Interval: 0}
-// 	ch := c.HealthCheck(ctx, ho)
+func TestHealthCheck_DefaultInterval(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-// 	select {
-// 	case <-ch:
-// 		// ok, should emit at least one value
-// 	case <-time.After(100 * time.Millisecond):
-// 	}
-// }
+	c := newMockClient(nil)
+	ho := HealthOptions{Interval: 0}
+	ch := c.HealthCheck(ctx, ho)
+
+	select {
+	case <-ch:
+		// ok, should emit at least one value
+	case <-time.After(100 * time.Millisecond):
+	}
+}

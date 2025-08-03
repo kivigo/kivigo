@@ -6,18 +6,21 @@ import (
 	"time"
 
 	"github.com/azrod/kivigo"
-	"github.com/azrod/kivigo/pkg/backend"
-	"github.com/azrod/kivigo/pkg/backend/redis"
+	"github.com/azrod/kivigo/backend/redis"
 	"github.com/azrod/kivigo/pkg/client"
 	"github.com/azrod/kivigo/pkg/encoder"
 )
 
 func main() {
+	kvStore, err := redis.New(redis.Option{
+		Addr: "localhost:6379",
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	// Configure client with Redis backend and YAML encoder
-	c, err := kivigo.New(
-		backend.Redis(redis.Option{
-			Addr: "localhost:6379",
-		}),
+	c, err := kivigo.New(kvStore,
 		func(opt client.Option) client.Option {
 			opt.Encoder = encoder.YAML
 
@@ -28,6 +31,20 @@ func main() {
 		panic(err)
 	}
 	defer c.Close()
+
+	// Periodic health check
+	healthCh := c.HealthCheck(context.Background(), client.HealthOptions{
+		Interval: 500 * time.Millisecond,
+	})
+	go func() {
+		for err := range healthCh {
+			if err != nil {
+				fmt.Println("Health issue:", err)
+			} else {
+				fmt.Println("Backend healthy")
+			}
+		}
+	}()
 
 	type User struct {
 		Name string
@@ -48,19 +65,5 @@ func main() {
 
 	fmt.Printf("Retrieved user: %+v\n", u)
 
-	// Periodic health check
-	healthCh := c.HealthCheck(context.Background(), client.HealthOptions{
-		Interval: 10 * time.Second,
-	})
-	go func() {
-		for err := range healthCh {
-			if err != nil {
-				fmt.Println("Health issue:", err)
-			} else {
-				fmt.Println("Backend healthy")
-			}
-		}
-	}()
-
-	time.Sleep(12 * time.Second) // Let the health check run at least once
+	time.Sleep(1 * time.Second) // Let the health check run at least once
 }

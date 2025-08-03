@@ -7,7 +7,6 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
-	"github.com/azrod/kivigo/pkg/client"
 	"github.com/azrod/kivigo/pkg/errs"
 	"github.com/azrod/kivigo/pkg/models"
 )
@@ -26,7 +25,7 @@ type (
 	Option redis.Options
 )
 
-func New(opt Option, _ client.Option) (Client, error) {
+func New(opt Option) (Client, error) {
 	client := redis.NewClient((*redis.Options)(&opt))
 
 	return Client{c: client}, nil
@@ -108,6 +107,11 @@ func (c Client) Health(ctx context.Context) error {
 
 // BatchGet retrieves multiple keys from the database.
 func (c Client) BatchGetRaw(ctx context.Context, keys []string) (map[string][]byte, error) {
+	// Check if keys slice is not empty
+	if len(keys) == 0 {
+		return nil, errs.ErrEmptyBatch
+	}
+
 	results := make(map[string][]byte, len(keys))
 
 	v, err := c.c.MGet(ctx, keys...).Result()

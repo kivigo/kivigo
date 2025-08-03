@@ -33,3 +33,16 @@ func TestSetAndGet(t *testing.T) {
 		t.Errorf("expected %s, got %s", value, got)
 	}
 }
+
+func TestClientClose(t *testing.T) {
+	mockKV := &mock.MockKV{Data: map[string][]byte{}}
+
+	c, err := client.New(mockKV, client.Option{Encoder: encoder.JSON})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := c.Close(); err != nil {
+		t.Errorf("expected nil error on Close, got %v", err)
+	}
+}

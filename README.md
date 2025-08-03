@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Go Version](https://img.shields.io/badge/go-1.23+-blue.svg)](https://golang.org/dl/)
 
-KiviGo is a lightweight key-value store library for Go. It provides a simple interface for storing and retrieving key-value pairs, supporting multiple backends (such as Redis and BoltDB) and encoders (JSON, YAML, etc.). KiviGo is designed to be easy to use, performant, and flexible.
+KiviGo is a lightweight key-value store library for Go. It provides a simple interface for storing and retrieving key-value pairs, supporting multiple backends (E.g. Redis,  BoltDB) and encoders (JSON, YAML, etc.). KiviGo is designed to be easy to use, performant, and flexible.
 
 > **Why "KiviGo"?**  
 > The name is a play on words: "Kivi" sounds like "key-value" (the core concept of the library) and "Go" refers to the Go programming language. It also playfully evokes the fruit "kiwi" 🥝 !
@@ -85,37 +85,39 @@ This example shows how to use KiviGo with the local backend (BoltDB) and the def
 package main
 
 import (
-    "context"
-    "fmt"
+ "context"
+ "fmt"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/pkg/backend"
-    "github.com/azrod/kivigo/pkg/backend/local"
+ "github.com/azrod/kivigo"
+ "github.com/azrod/kivigo/backend/local"
 )
 
 func main() {
-    client, err := kivigo.New(
-        backend.Local(local.Option{
-            Path: "./",
-        }),
-    )
-    if err != nil {
-        panic(err)
-    }
-    defer client.Close()
+ kvStore, err := local.New(local.Option{Path: "./"})
+ if err != nil {
+  panic(err)
+ }
 
-    // Store a value
-    if err := client.Set(context.Background(), "myKey", "myValue"); err != nil {
-        panic(err)
-    }
+ client, err := kivigo.New(kvStore)
+ if err != nil {
+  panic(err)
+ }
+ defer client.Close()
 
-    // Retrieve the value
-    var value string
-    if err := client.Get(context.Background(), "myKey", &value); err != nil {
-        panic(err)
-    }
-    fmt.Println("Retrieved value:", value)
+ // Store a value
+ if err := client.Set(context.Background(), "myKey", "myValue"); err != nil {
+  panic(err)
+ }
+
+ // Retrieve the value
+ var value string
+ if err := client.Get(context.Background(), "myKey", &value); err != nil {
+  panic(err)
+ }
+
+ fmt.Println("Retrieved value:", value)
 }
+
 ```
 
 ## 🧑‍💻 Advanced Example
@@ -126,26 +128,29 @@ Using Redis as a backend, YAML as encoder, and periodic health checks:
 package main
 
 import (
-    "context"
-    "fmt"
-    "time"
+ "context"
+ "fmt"
+ "time"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/pkg/backend"
-    "github.com/azrod/kivigo/pkg/backend/redis"
-    "github.com/azrod/kivigo/pkg/client"
-    "github.com/azrod/kivigo/pkg/encoder"
+ "github.com/azrod/kivigo"
+ "github.com/azrod/kivigo/backend/redis"
+ "github.com/azrod/kivigo/pkg/client"
+ "github.com/azrod/kivigo/pkg/encoder"
 )
 
-
 func main() {
+ kvStore, err := redis.New(redis.Option{
+  Addr: "localhost:6379",
+ })
+ if err != nil {
+  panic(err)
+ }
+
  // Configure client with Redis backend and YAML encoder
- c, err := kivigo.New(
-  backend.Redis(redis.Option{
-   Addr: "localhost:6379",
-  }),
+ c, err := kivigo.New(kvStore,
   func(opt client.Option) client.Option {
    opt.Encoder = encoder.YAML
+
    return opt
   },
  )
@@ -153,6 +158,20 @@ func main() {
   panic(err)
  }
  defer c.Close()
+
+ // Periodic health check
+ healthCh := c.HealthCheck(context.Background(), client.HealthOptions{
+  Interval: 500 * time.Millisecond,
+ })
+ go func() {
+  for err := range healthCh {
+   if err != nil {
+    fmt.Println("Health issue:", err)
+   } else {
+    fmt.Println("Backend healthy")
+   }
+  }
+ }()
 
  type User struct {
   Name string
@@ -170,24 +189,12 @@ func main() {
  if err := c.Get(context.Background(), "user:1", &u); err != nil {
   panic(err)
  }
+
  fmt.Printf("Retrieved user: %+v\n", u)
 
- // Periodic health check
- healthCh := c.HealthCheck(context.Background(), client.HealthOptions{
-  Interval: 10 * time.Second,
- })
- go func() {
-  for err := range healthCh {
-   if err != nil {
-    fmt.Println("Health issue:", err)
-   } else {
-    fmt.Println("Backend healthy")
-   }
-  }
- }()
-
- time.Sleep(12 * time.Second) // Let the health check run at least once
+ time.Sleep(1 * time.Second) // Let the health check run at least once
 }
+
 ```
 
 Full example is available in the [`examples/advanced/main.go`](examples/advanced/main.go) file.
@@ -201,61 +208,69 @@ This field accepts a slice of `client.HealthFunc`, and each function will be cal
 package main
 
 import (
-    "context"
-    "errors"
-    "time"
+ "context"
+ "errors"
+ "time"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/pkg/backend"
-    "github.com/azrod/kivigo/pkg/backend/local"
-    "github.com/azrod/kivigo/pkg/client"
+ "github.com/azrod/kivigo"
+ "github.com/azrod/kivigo/backend/local"
+ "github.com/azrod/kivigo/pkg/client"
 )
 
 func myCustomHealth(ctx context.Context, c client.Client) error {
-    // Example: check if a specific key exists
-    var value string
-    err := c.Get(ctx, "health:ping", &value)
-    if err != nil {
-        return errors.New("custom health check failed: " + err.Error())
-    }
-    return nil
+ // Example: check if a specific key exists
+ var value string
+
+ err := c.Get(ctx, "health:ping", &value)
+ if err != nil || value != "pong" {
+  return errors.New("custom health check failed: " + err.Error())
+ }
+
+ return nil
 }
 
 func main() {
-    client, err := kivigo.New(
-        backend.Local(local.Option{
-            Path: "./",
-        }),
-    )
-    if err != nil {
-        panic(err)
-    }
-    defer client.Close()
+ kvStore, err := local.New(local.Option{Path: "./"})
+ if err != nil {
+  panic(err)
+ }
 
-    // Use HealthCheck with your custom logic
-    healthCh := client.HealthCheck(context.Background(), client.HealthOptions{
-        Interval:         5 * time.Second,
-        AdditionalChecks: []client.HealthFunc{myCustomHealth},
-    })
+ c, err := kivigo.New(kvStore)
+ if err != nil {
+  panic(err)
+ }
+ defer c.Close()
 
-    go func() {
-        for err := range healthCh {
-            if err != nil {
-                println(time.Now().Format(time.RFC3339), "Custom health issue:", err.Error())
-            } else {
-                println(time.Now().Format(time.RFC3339), "Custom health OK")
-            }
-        }
-    }()
+ // Use HealthCheck with your custom logic
+ healthCh := c.HealthCheck(context.Background(), client.HealthOptions{
+  Interval:         500 * time.Millisecond,
+  AdditionalChecks: []client.HealthFunc{myCustomHealth},
+ })
 
-    time.Sleep(7 * time.Second)
+ defer func() {
+  if err := c.Delete(context.Background(), "health:ping"); err != nil {
+   panic(err)
+  }
+ }()
 
-    // Simulate setting a health key
-    if err := client.Set(context.Background(), "health:ping", "pong"); err != nil {
-        panic(err)
-    }
+ go func() {
+  for err := range healthCh {
+   if err != nil {
+    println(time.Now().Format(time.RFC3339), "Custom health issue:", err.Error())
+   } else {
+    println(time.Now().Format(time.RFC3339), "Custom health OK")
+   }
+  }
+ }()
 
-    time.Sleep(10 * time.Second)
+ time.Sleep(1500 * time.Millisecond)
+
+ // Simulate setting a health key
+ if err := c.Set(context.Background(), "health:ping", "pong"); err != nil {
+  panic(err)
+ }
+
+ time.Sleep(3 * time.Second)
 }
 ```
 
@@ -340,7 +355,7 @@ func (b *BMemory) Close() error {
 }
 
 func (b *BMemory) Health(_ context.Context) error {
- // Memory backend is always healthy as it does not depend on external resources
+ // Memory backend is always healthy as it does not depend on external resources but you can implement custom logic here if needed
  return nil
 }
 
@@ -357,9 +372,7 @@ import (
 
 [...]
 
-client, err := kivigo.New(
-    backend.CustomBackend(memory.New()),
-)
+client, err := kivigo.New(memory.New())
 
 [...]
 ```
@@ -404,6 +417,14 @@ You can inject `MockKV` into your tests to simulate all key-value backend behavi
 ## 📚 Documentation
 
 See [pkg.go.dev/github.com/azrod/kivigo](https://pkg.go.dev/github.com/azrod/kivigo) for full documentation, and explore the [`pkg/backend`](pkg/backend/) and [`pkg/encoder`](pkg/encoder/) folders for more details on implementations.
+
+## 🛠️ Design Decisions
+
+1. **Zero-boilerplate usage:**  
+   The package should be usable without having to write additional code. Structs are automatically marshalled and unmarshalled using the selected encoder (e.g., JSON, YAML), so you do not need to implement custom (un)marshal interfaces or methods for your types.
+
+2. **Modular Go packages:**  
+   Each KiviGo backend or encoder implementation is provided as a separate Go module. Unlike repositories that use a single Go module with many subpackages, this approach allows you to fetch and use only the dependencies you need. For example, if you only require the Redis backend, `go get` will only download the Redis-related dependencies, not all dependencies used throughout the entire repository. This keeps your project lightweight and minimizes unnecessary dependencies.
 
 ---
 

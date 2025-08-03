@@ -7,7 +7,6 @@ import (
 
 	"go.etcd.io/bbolt"
 
-	"github.com/azrod/kivigo/pkg/client"
 	"github.com/azrod/kivigo/pkg/errs"
 	"github.com/azrod/kivigo/pkg/models"
 )
@@ -32,7 +31,7 @@ type (
 	}
 )
 
-func New(opt Option, _ client.Option) (Client, error) {
+func New(opt Option) (Client, error) {
 	if opt.Path == "" {
 		opt.Path = "./"
 	}
@@ -155,7 +154,7 @@ func (c Client) Health(_ context.Context) error {
 }
 
 // BatchGet retrieves multiple keys from the database.
-func (c Client) BatchGetRaw(ctx context.Context, keys []string) (map[string][]byte, error) {
+func (c Client) BatchGetRaw(_ context.Context, keys []string) (map[string][]byte, error) {
 	results := make(map[string][]byte, len(keys))
 
 	err := c.c.View(func(tx *bbolt.Tx) error {
@@ -178,7 +177,7 @@ func (c Client) BatchGetRaw(ctx context.Context, keys []string) (map[string][]by
 }
 
 // BatchSet sets multiple key-value pairs in the database.
-func (c Client) BatchSetRaw(ctx context.Context, kv map[string][]byte) error {
+func (c Client) BatchSetRaw(_ context.Context, kv map[string][]byte) error {
 	return c.c.Update(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte(dbName))
 		if b == nil {
@@ -196,7 +195,7 @@ func (c Client) BatchSetRaw(ctx context.Context, kv map[string][]byte) error {
 }
 
 // BatchDelete deletes multiple keys from the database.
-func (c Client) BatchDelete(ctx context.Context, keys []string) error {
+func (c Client) BatchDelete(_ context.Context, keys []string) error {
 	return c.c.Update(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte(dbName))
 		if b == nil {
