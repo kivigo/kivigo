@@ -6,8 +6,7 @@ import (
 	"time"
 
 	"github.com/azrod/kivigo"
-	"github.com/azrod/kivigo/pkg/backend"
-	"github.com/azrod/kivigo/pkg/backend/local"
+	"github.com/azrod/kivigo/backend/local"
 	"github.com/azrod/kivigo/pkg/client"
 )
 
@@ -16,7 +15,7 @@ func myCustomHealth(ctx context.Context, c client.Client) error {
 	var value string
 
 	err := c.Get(ctx, "health:ping", &value)
-	if err != nil {
+	if err != nil || value != "pong" {
 		return errors.New("custom health check failed: " + err.Error())
 	}
 
@@ -24,11 +23,12 @@ func myCustomHealth(ctx context.Context, c client.Client) error {
 }
 
 func main() {
-	c, err := kivigo.New(
-		backend.Local(local.Option{
-			Path: "./",
-		}),
-	)
+	kvStore, err := local.New(local.Option{Path: "./"})
+	if err != nil {
+		panic(err)
+	}
+
+	c, err := kivigo.New(kvStore)
 	if err != nil {
 		panic(err)
 	}
@@ -36,9 +36,15 @@ func main() {
 
 	// Use HealthCheck with your custom logic
 	healthCh := c.HealthCheck(context.Background(), client.HealthOptions{
-		Interval:         5 * time.Second,
+		Interval:         500 * time.Millisecond,
 		AdditionalChecks: []client.HealthFunc{myCustomHealth},
 	})
+
+	defer func() {
+		if err := c.Delete(context.Background(), "health:ping"); err != nil {
+			panic(err)
+		}
+	}()
 
 	go func() {
 		for err := range healthCh {
@@ -50,12 +56,12 @@ func main() {
 		}
 	}()
 
-	time.Sleep(7 * time.Second)
+	time.Sleep(1500 * time.Millisecond)
 
 	// Simulate setting a health key
 	if err := c.Set(context.Background(), "health:ping", "pong"); err != nil {
 		panic(err)
 	}
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(3 * time.Second)
 }

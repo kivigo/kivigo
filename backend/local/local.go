@@ -7,7 +7,6 @@ import (
 
 	"go.etcd.io/bbolt"
 
-	"github.com/azrod/kivigo/pkg/client"
 	"github.com/azrod/kivigo/pkg/errs"
 	"github.com/azrod/kivigo/pkg/models"
 )
@@ -32,7 +31,7 @@ type (
 	}
 )
 
-func New(opt Option, _ client.Option) (Client, error) {
+func New(opt Option) (Client, error) {
 	if opt.Path == "" {
 		opt.Path = "./"
 	}

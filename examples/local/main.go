@@ -5,16 +5,16 @@ import (
 	"fmt"
 
 	"github.com/azrod/kivigo"
-	"github.com/azrod/kivigo/pkg/backend"
-	"github.com/azrod/kivigo/pkg/backend/local"
+	"github.com/azrod/kivigo/backend/local"
 )
 
 func main() {
-	client, err := kivigo.New(
-		backend.Local(local.Option{
-			Path: "./",
-		}),
-	)
+	kvStore, err := local.New(local.Option{Path: "./"})
+	if err != nil {
+		panic(err)
+	}
+
+	client, err := kivigo.New(kvStore)
 	if err != nil {
 		panic(err)
 	}

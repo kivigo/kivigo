@@ -6,12 +6,11 @@ import (
 
 	"github.com/azrod/kivigo"
 	"github.com/azrod/kivigo/examples/custom_backend/internal/backend/memory"
-	"github.com/azrod/kivigo/pkg/backend"
 )
 
 func main() {
 	client, err := kivigo.New(
-		backend.CustomBackend(memory.New()),
+		memory.New(),
 	)
 	if err != nil {
 		panic(err)

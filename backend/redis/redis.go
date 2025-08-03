@@ -7,7 +7,6 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
-	"github.com/azrod/kivigo/pkg/client"
 	"github.com/azrod/kivigo/pkg/errs"
 	"github.com/azrod/kivigo/pkg/models"
 )
@@ -26,7 +25,7 @@ type (
 	Option redis.Options
 )
 
-func New(opt Option, _ client.Option) (Client, error) {
+func New(opt Option) (Client, error) {
 	client := redis.NewClient((*redis.Options)(&opt))
 
 	return Client{c: client}, nil

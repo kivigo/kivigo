@@ -8,7 +8,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/azrod/kivigo/pkg/client"
 	"github.com/azrod/kivigo/pkg/errs"
 )
 
@@ -21,7 +20,7 @@ func redisAvailable(t *testing.T) bool {
 		DB:       0,
 	}
 
-	c, err := New(opt, client.Option{})
+	c, err := New(opt)
 	if err != nil {
 		return false
 	}
@@ -39,7 +38,7 @@ func newTestClient(t *testing.T) Client {
 		Password: "",
 		DB:       0,
 	}
-	c, err := New(opt, client.Option{})
+	c, err := New(opt)
 	require.NoError(t, err)
 
 	return c
@@ -53,7 +52,7 @@ func TestRedis_BasicOps(t *testing.T) {
 	c := newTestClient(t)
 	defer c.Close()
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	key := "kivigo:test:key"
 	val := []byte("value")
@@ -85,7 +84,7 @@ func TestRedis_BatchOps(t *testing.T) {
 	c := newTestClient(t)
 	defer c.Close()
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	kvs := map[string][]byte{
 		"kivigo:batch:key1": []byte("v1"),
@@ -119,7 +118,7 @@ func TestRedis_SetRaw_EmptyKey(t *testing.T) {
 	c := newTestClient(t)
 	defer c.Close()
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	err := c.SetRaw(ctx, "", []byte("value"))
 	require.ErrorIs(t, err, errs.ErrEmptyKey)
@@ -130,7 +129,7 @@ func TestRedis_Set_EmptyKey(t *testing.T) {
 	c := newTestClient(t)
 	defer c.Close()
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	err := c.SetRaw(ctx, "", []byte("value"))
 	require.ErrorIs(t, err, errs.ErrEmptyKey)
@@ -141,7 +140,7 @@ func TestRedis_GetRaw_EmptyKey(t *testing.T) {
 	c := newTestClient(t)
 	defer c.Close()
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	_, err := c.GetRaw(ctx, "")
 	require.ErrorIs(t, err, errs.ErrEmptyKey)
@@ -151,7 +150,7 @@ func TestRedis_GetRaw_NotFound(t *testing.T) {
 	c := newTestClient(t)
 	defer c.Close()
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	_, err := c.GetRaw(ctx, "kivigo:test:notfound")
 	require.ErrorIs(t, err, errs.ErrNotFound)
@@ -161,7 +160,7 @@ func TestRedis_GetRaw_WithValue(t *testing.T) {
 	c := newTestClient(t)
 	defer c.Close()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	key := "kivigo:test:getraw"
 	val := []byte("getraw-value")
 
@@ -180,7 +179,7 @@ func TestRedis_List_EmptyPrefix(t *testing.T) {
 	c := newTestClient(t)
 	defer c.Close()
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	_, err := c.List(ctx, "")
 	require.ErrorIs(t, err, errs.ErrEmptyPrefix)
@@ -190,7 +189,7 @@ func TestRedis_List_WithValues(t *testing.T) {
 	c := newTestClient(t)
 	defer c.Close()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	prefix := "kivigo:list"
 	keys := []string{prefix + ":a", prefix + ":b", prefix + ":c"}
 	val := []byte("v")
@@ -215,7 +214,7 @@ func TestRedis_Delete_EmptyKey(t *testing.T) {
 	c := newTestClient(t)
 	defer c.Close()
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	err := c.Delete(ctx, "")
 	require.ErrorIs(t, err, errs.ErrEmptyKey)
@@ -225,7 +224,7 @@ func TestRedis_Delete_WithValue(t *testing.T) {
 	c := newTestClient(t)
 	defer c.Close()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	key := "kivigo:test:delete"
 	val := []byte("todelete")
 
@@ -247,7 +246,7 @@ func TestRedis_BatchSetRaw_EmptyBatch(t *testing.T) {
 	c := newTestClient(t)
 	defer c.Close()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	err := c.BatchSetRaw(ctx, map[string][]byte{})
 	require.ErrorIs(t, err, errs.ErrEmptyBatch)
 }
@@ -257,7 +256,7 @@ func TestRedis_BatchGetRaw_EmptyKeys(t *testing.T) {
 	c := newTestClient(t)
 	defer c.Close()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	_, err := c.BatchGetRaw(ctx, []string{})
 	require.ErrorIs(t, err, errs.ErrEmptyBatch)
 }
@@ -266,7 +265,7 @@ func TestRedis_BatchGetRaw_WithValues(t *testing.T) {
 	c := newTestClient(t)
 	defer c.Close()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	kvs := map[string][]byte{
 		"kivigo:batchget:key1": []byte("v1"),
 		"kivigo:batchget:key2": []byte("v2"),
@@ -296,7 +295,7 @@ func TestRedis_BatchDelete_EmptyBatch(t *testing.T) {
 	c := newTestClient(t)
 	defer c.Close()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	err := c.BatchDelete(ctx, []string{})
 	require.ErrorIs(t, err, errs.ErrEmptyBatch)
 }
@@ -305,7 +304,7 @@ func TestRedis_BatchDelete_WithValues(t *testing.T) {
 	c := newTestClient(t)
 	defer c.Close()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	kvs := map[string][]byte{
 		"kivigo:batchdel:key1": []byte("v1"),
 		"kivigo:batchdel:key2": []byte("v2"),
@@ -336,7 +335,7 @@ func TestRedis_Health(t *testing.T) {
 	c := newTestClient(t)
 	defer c.Close()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 2*time.Second)
 	defer cancel()
 
 	require.NoError(t, c.Health(ctx))
@@ -345,7 +344,7 @@ func TestRedis_Health(t *testing.T) {
 func TestRedis_Health_ClientNotInitialized(t *testing.T) {
 	// Simulate an uninitialized client
 	c := Client{c: nil}
-	ctx := context.Background()
+	ctx := t.Context()
 
 	err := c.Health(ctx)
 	require.ErrorIs(t, err, errs.ErrClientNotInitialized)
@@ -358,10 +357,10 @@ func TestRedis_Health_CheckFailed(t *testing.T) {
 		Password: "",
 		DB:       0,
 	}
-	c, err := New(opt, client.Option{})
+	c, err := New(opt)
 	require.NoError(t, err)
 
-	ctx := context.Background()
+	ctx := t.Context()
 	healthErr := c.Health(ctx)
 	require.Error(t, healthErr)
 	require.ErrorContains(t, healthErr, "health check failed")
