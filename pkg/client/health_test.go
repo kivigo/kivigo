@@ -132,7 +132,7 @@ func TestHealthCheck_ContextCancel(t *testing.T) {
 	}
 }
 
-func TestHealthCheck_DefaultInterval(t *testing.T) {
+func TestHealthCheck_DefaultInterval(_ *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 

@@ -49,27 +49,26 @@ There are several Go libraries for key-value storage, each with different goals 
 | Library         | Unified API | Pluggable Backends | Pluggable Encoders | Health Checks | Batch Ops | Mock/Test Support | Extensible |
 |-----------------|:----------:|:------------------:|:------------------:|:-------------:|:--------:|:-----------------:|:----------:|
 | **KiviGo**      | ✅         | ✅                 | ✅                 | ✅            | ✅       | ✅                | ✅         |
-| [go-redis](https://github.com/redis/go-redis) | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
-| [bbolt](https://github.com/etcd-io/bbolt)     | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
-| [badger](https://github.com/dgraph-io/badger) | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
 | [gokv](https://github.com/philippgille/gokv)  | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ➖ |
-| [cache2go](https://github.com/muesli/cache2go) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-
-**Key differences:**
-
-- **KiviGo** provides a unified API, supports multiple backends (local, Redis, custom), pluggable encoders (JSON, YAML, custom), health checks, batch operations, and a mock backend for testing.
-- **go-redis**, **bbolt**, and **badger** are excellent for their specific storage engines but do not abstract over multiple backends or provide pluggable encoding.
-- **gokv** offers a unified API for multiple backends but lacks pluggable encoders, health checks, and mock/test support.
-- **cache2go** is focused on in-memory caching and does not provide backend abstraction or encoding options.
+| [libkv](https://github.com/docker/libkv) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ➖ |
+| [gokvstores](https://github.com/ulule/gokvstores) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ➖ |
 
 KiviGo is designed for projects that need flexibility, testability, and the ability to swap storage or serialization strategies with minimal code changes.
 
-### Backend feature matrix
+### 🗄️ Backend feature matrix
 
-| Backend      | Default (List/Get/Set/Delete) | Batch (Get/Set/Delete) | Health |
-|--------------|:----------------------------:|:----------------------:|:------:|
-| Local (Bolt) | ✅                           | ✅                     | ✅     |
-| Redis        | ✅                           | ✅                     | ✅     |
+#### Embedded Stores
+
+| Backend                                   | Default (List/Get/Set/Delete) | Batch (Get/Set/Delete) | Health |
+|--------------------------------------------|:----------------------------:|:----------------------:|:------:|
+| [BBoltDB](https://github.com/etcd-io/bbolt) | ✅                           | ✅                     | ✅     |
+| [BadgerDB](https://github.com/hypermodeinc/badger) | ✅                    | ✅                     | ✅     |
+
+#### Distributed Stores
+
+| Backend                        | Default (List/Get/Set/Delete) | Batch (Get/Set/Delete) | Health |
+|---------------------------------|:----------------------------:|:----------------------:|:------:|
+| [Redis](https://redis.io/)      | ✅                           | ✅                     | ✅     |
 
 ## 📦 Installation
 
@@ -276,7 +275,7 @@ func main() {
 
 **Output:**
 
-```
+```txt
 $> 2025-06-13T17:04:56+02:00 Custom health issue: custom health check failed: key not found
 $> 2025-06-13T17:05:01+02:00 Custom health OK
 ```
