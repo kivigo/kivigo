@@ -19,12 +19,17 @@ var (
 
 type (
 	Client struct {
-		_  models.Backend
 		db *bd.DB
 	}
 )
 
-var DefaultOptions = bd.DefaultOptions
+func NewOptions() bd.Options {
+	return bd.Options{}
+}
+
+func DefaultOptions(path string) bd.Options {
+	return bd.DefaultOptions(path)
+}
 
 func New(opt bd.Options) (Client, error) {
 	db, err := bd.Open(opt)

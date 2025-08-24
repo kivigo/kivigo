@@ -8,7 +8,7 @@ replace (
 )
 
 require (
-	github.com/azrod/kivigo v1.1.0
+	github.com/azrod/kivigo v1.2.0
 	github.com/azrod/kivigo/backend/redis v0.0.0-00010101000000-000000000000
 )
 

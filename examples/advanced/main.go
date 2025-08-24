@@ -12,9 +12,7 @@ import (
 )
 
 func main() {
-	kvStore, err := redis.New(redis.Option{
-		Addr: "localhost:6379",
-	})
+	kvStore, err := redis.New(redis.DefaultOptions())
 	if err != nil {
 		panic(err)
 	}
