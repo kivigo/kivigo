@@ -69,6 +69,7 @@ KiviGo is designed for projects that need flexibility, testability, and the abil
 | Backend                        | Default (List/Get/Set/Delete) | Batch (Get/Set/Delete) | Health |
 |---------------------------------|:----------------------------:|:----------------------:|:------:|
 | [Redis](https://redis.io/)      | ✅                           | ✅                     | ✅     |
+| [Consul](https://github.com/hashicorp/consul) | ✅                    | ✅                     | ✅     |
 
 ### 🛠️ Backend Options Initialization
 
@@ -388,7 +389,6 @@ You can then use your backend with KiviGo:
 ```go
 import (
     "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/pkg/backend"
     "yourmodule/memory"
 )
 
