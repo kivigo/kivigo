@@ -70,6 +70,29 @@ KiviGo is designed for projects that need flexibility, testability, and the abil
 |---------------------------------|:----------------------------:|:----------------------:|:------:|
 | [Redis](https://redis.io/)      | ✅                           | ✅                     | ✅     |
 
+### 🛠️ Backend Options Initialization
+
+All KiviGo backends provide two helper functions for option management:
+
+- **NewOptions()**  
+  Returns an empty options struct for the backend.  
+  Example:  
+
+  ```go
+  opts := backend.NewOptions() // All fields are zero values
+  ```
+
+- **DefaultOptions(...)**  
+  Returns a recommended or minimal set of options for the backend.  
+  This function can accept parameters to customize the defaults.  
+  Example:  
+
+  ```go
+  opts := backend.DefaultOptions(path, otherParams...)
+  ```
+
+This design makes it easy to discover, configure, and override backend options in a consistent way across all supported backends.
+
 ## 📦 Installation
 
 ```sh

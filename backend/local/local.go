@@ -31,15 +31,18 @@ type (
 	}
 )
 
+func NewOptions() Option {
+	return Option{}
+}
+
+func DefaultOptions() Option {
+	return Option{
+		Path:     "./",
+		FileName: "kivigo.db",
+	}
+}
+
 func New(opt Option) (Client, error) {
-	if opt.Path == "" {
-		opt.Path = "./"
-	}
-
-	if opt.FileName == "" {
-		opt.FileName = "kivigo.db"
-	}
-
 	if opt.Path[len(opt.Path)-1] != '/' {
 		opt.Path += "/"
 	}

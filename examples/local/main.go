@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	kvStore, err := local.New(local.Option{Path: "./"})
+	kvStore, err := local.New(local.DefaultOptions())
 	if err != nil {
 		panic(err)
 	}

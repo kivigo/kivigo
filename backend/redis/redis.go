@@ -19,14 +19,30 @@ var (
 
 type (
 	Client struct {
-		_ models.Backend
 		c *redis.Client
 	}
-	Option redis.Options
 )
 
-func New(opt Option) (Client, error) {
-	client := redis.NewClient((*redis.Options)(&opt))
+// NewOptions returns a new set of options for the Redis client.
+func NewOptions() redis.Options {
+	return redis.Options{}
+}
+
+// DefaultOptions returns the default options for the Redis client.
+// Address : localhost:6379
+// DB : 0
+// Password : ""
+func DefaultOptions() redis.Options {
+	return redis.Options{
+		Addr:     "localhost:6379",
+		DB:       0,
+		Password: "",
+	}
+}
+
+// New returns a new Redis client.
+func New(opt redis.Options) (Client, error) {
+	client := redis.NewClient(&opt)
 
 	return Client{c: client}, nil
 }

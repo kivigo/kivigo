@@ -23,7 +23,7 @@ func myCustomHealth(ctx context.Context, c client.Client) error {
 }
 
 func main() {
-	kvStore, err := local.New(local.Option{Path: "./"})
+	kvStore, err := local.New(local.DefaultOptions())
 	if err != nil {
 		panic(err)
 	}
