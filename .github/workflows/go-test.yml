@@ -5,10 +5,25 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  test:
+  discover-backends:
+    runs-on: ubuntu-latest
+    outputs:
+      backends: ${{ steps.set-matrix.outputs.backends }}
+    steps:
+      - name: 🛎️ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔍 Find backend directories
+        id: set-matrix
+        run: |
+          echo "backends=$(ls -d backend/* | grep -v '^backend/[^/]*/go.mod$' | grep -v '^backend/[^/]*/go.sum$' | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+
+  test-backends:
+    needs: discover-backends
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        backend: ${{fromJson(needs.discover-backends.outputs.backends)}}
         go-version: [1.23, 1.24]
     steps:
       - name: 🛎️ Checkout code
@@ -19,7 +34,6 @@ jobs:
         with:
           path: |
             ~/.cache/go-build
-            # Cache mod directory for Go modules
             ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
           restore-keys: |
@@ -31,29 +45,28 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
-      - name: 📦 Install Magefile
-        run: go install github.com/magefile/mage@latest
-
       - name: 📦 Install dependencies
-        run: go mod download
+        run: |
+          cd ${{ matrix.backend }}
+          go mod download
 
-      - name: 📜 Start all backends
-        run: mage startAllBackends
-
-      - name: 🧪 Run unit tests with coverage
-        run: go test -coverprofile=coverage.out ./...
+      - name: 🧪 Run backend tests with coverage
+        run: |
+          backend_name=$(basename ${{ matrix.backend }})
+          cd ${{ matrix.backend }}
+          go test -coverprofile=../coverage-${backend_name}.out ./...
 
       - name: 📤 Send coverage to Coveralls (parallel)
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: coverage.out
+          path-to-lcov: backend/coverage-$(basename ${{ matrix.backend }}).out
           coveralls-endpoint: https://coveralls.io
           parallel: true
-          flag-name: go-${{ matrix.go-version }}
+          flag-name: $(basename ${{ matrix.backend }})-${{ matrix.go-version }}
 
   finish:
-    needs: test
+    needs: [test-backends]
     runs-on: ubuntu-latest
     steps:
       - name: 🏁 Notify Coveralls of parallel build completion
