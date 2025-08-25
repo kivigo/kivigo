@@ -1,0 +1,319 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>local: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/azrod/kivigo/backend/local/local.go (82.5%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package local
+
+import (
+        "context"
+        "fmt"
+        "strings"
+
+        "go.etcd.io/bbolt"
+
+        "github.com/azrod/kivigo/pkg/errs"
+        "github.com/azrod/kivigo/pkg/models"
+)
+
+var (
+        _ models.KV           = (*Client)(nil)
+        _ models.KVWithHealth = (*Client)(nil)
+        _ models.KVWithBatch  = (*Client)(nil)
+)
+
+const dbName = "kivigo"
+
+type (
+        Client struct {
+                _ models.Backend
+                c *bbolt.DB
+        }
+
+        Option struct {
+                Path     string `default:"./"`
+                FileName string `default:"kivigo.db"`
+        }
+)
+
+func NewOptions() Option <span class="cov8" title="1">{
+        return Option{}
+}</span>
+
+func DefaultOptions() Option <span class="cov8" title="1">{
+        return Option{
+                Path:     "./",
+                FileName: "kivigo.db",
+        }
+}</span>
+
+func New(opt Option) (Client, error) <span class="cov8" title="1">{
+        if opt.Path[len(opt.Path)-1] != '/' </span><span class="cov8" title="1">{
+                opt.Path += "/"
+        }</span>
+
+        <span class="cov8" title="1">db, err := bbolt.Open(fmt.Sprintf("%s%s", opt.Path, opt.FileName), 0o600, nil)
+        if err != nil </span><span class="cov0" title="0">{
+                return Client{}, fmt.Errorf("could not open local db: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">if err := db.Update(func(tx *bbolt.Tx) error </span><span class="cov8" title="1">{
+                _, err := tx.CreateBucketIfNotExists([]byte(dbName))
+                if err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("could not create local db: %w", err)
+                }</span>
+
+                <span class="cov8" title="1">return nil</span>
+        }); err != nil <span class="cov0" title="0">{
+                return Client{}, err
+        }</span>
+
+        <span class="cov8" title="1">return Client{c: db}, nil</span>
+}
+
+func (c Client) Close() error <span class="cov8" title="1">{
+        return c.c.Close()
+}</span>
+
+// Get gets a value from the database.
+func (c Client) GetRaw(_ context.Context, key string) ([]byte, error) <span class="cov8" title="1">{
+        value := make([]byte, 0)
+
+        return value, c.c.View(func(tx *bbolt.Tx) error </span><span class="cov8" title="1">{
+                b := tx.Bucket([]byte(dbName))
+                if b == nil </span><span class="cov0" title="0">{
+                        return errs.ErrNotFound
+                }</span>
+
+                <span class="cov8" title="1">value = b.Get([]byte(key))
+                if value == nil </span><span class="cov8" title="1">{
+                        return errs.ErrNotFound
+                }</span>
+
+                <span class="cov8" title="1">return nil</span>
+        })
+}
+
+// Set sets a value in the database.
+func (c Client) SetRaw(_ context.Context, key string, value []byte) error <span class="cov8" title="1">{
+        return c.c.Update(func(tx *bbolt.Tx) error </span><span class="cov8" title="1">{
+                // Check if key is not empty
+                if key == "" </span><span class="cov8" title="1">{
+                        return errs.ErrEmptyKey
+                }</span>
+
+                <span class="cov8" title="1">b := tx.Bucket([]byte(dbName))
+                if b == nil </span><span class="cov0" title="0">{
+                        return errs.ErrNotFound
+                }</span>
+
+                <span class="cov8" title="1">return b.Put([]byte(key), value)</span>
+        })
+}
+
+// Delete deletes a value from the database.
+func (c Client) Delete(_ context.Context, key string) error <span class="cov8" title="1">{
+        // Check if key is not empty
+        if key == "" </span><span class="cov8" title="1">{
+                return errs.ErrEmptyKey
+        }</span>
+
+        <span class="cov8" title="1">return c.c.Update(func(tx *bbolt.Tx) error </span><span class="cov8" title="1">{
+                b := tx.Bucket([]byte(dbName))
+                if b == nil </span><span class="cov0" title="0">{
+                        return errs.ErrNotFound
+                }</span>
+
+                <span class="cov8" title="1">return b.Delete([]byte(key))</span>
+        })
+}
+
+// List lists all the keys from the database.
+func (c Client) List(_ context.Context, prefix string) (keys []string, err error) <span class="cov8" title="1">{
+        return keys, c.c.View(func(tx *bbolt.Tx) error </span><span class="cov8" title="1">{
+                b := tx.Bucket([]byte(dbName))
+                if b == nil </span><span class="cov0" title="0">{
+                        return errs.ErrNotFound
+                }</span>
+
+                <span class="cov8" title="1">c := b.Cursor()
+
+                for k, _ := c.Seek([]byte(prefix)); k != nil &amp;&amp; strings.HasPrefix(string(k), prefix); k, _ = c.Next() </span><span class="cov8" title="1">{
+                        keys = append(keys, string(k))
+                }</span>
+
+                <span class="cov8" title="1">return nil</span>
+        })
+}
+
+func (c Client) Health(_ context.Context) error <span class="cov8" title="1">{
+        if c.c == nil </span><span class="cov8" title="1">{
+                return errs.ErrClientNotInitialized
+        }</span>
+
+        <span class="cov8" title="1">return c.c.View(func(tx *bbolt.Tx) error </span><span class="cov8" title="1">{
+                b := tx.Bucket([]byte(dbName))
+                if b == nil </span><span class="cov0" title="0">{
+                        return errs.ErrHealthCheckFailed(fmt.Errorf("bucket %s not found", dbName))
+                }</span>
+
+                <span class="cov8" title="1">return nil</span>
+        })
+}
+
+// BatchGet retrieves multiple keys from the database.
+func (c Client) BatchGetRaw(_ context.Context, keys []string) (map[string][]byte, error) <span class="cov8" title="1">{
+        results := make(map[string][]byte, len(keys))
+
+        err := c.c.View(func(tx *bbolt.Tx) error </span><span class="cov8" title="1">{
+                b := tx.Bucket([]byte(dbName))
+                if b == nil </span><span class="cov0" title="0">{
+                        return errs.ErrNotFound
+                }</span>
+
+                <span class="cov8" title="1">for _, key := range keys </span><span class="cov8" title="1">{
+                        results[key] = b.Get([]byte(key))
+                }</span>
+
+                <span class="cov8" title="1">return nil</span>
+        })
+        <span class="cov8" title="1">if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">return results, nil</span>
+}
+
+// BatchSet sets multiple key-value pairs in the database.
+func (c Client) BatchSetRaw(_ context.Context, kv map[string][]byte) error <span class="cov8" title="1">{
+        return c.c.Update(func(tx *bbolt.Tx) error </span><span class="cov8" title="1">{
+                b := tx.Bucket([]byte(dbName))
+                if b == nil </span><span class="cov0" title="0">{
+                        return errs.ErrNotFound
+                }</span>
+
+                <span class="cov8" title="1">for key, value := range kv </span><span class="cov8" title="1">{
+                        if err := b.Put([]byte(key), value); err != nil </span><span class="cov0" title="0">{
+                                return err
+                        }</span>
+                }
+
+                <span class="cov8" title="1">return nil</span>
+        })
+}
+
+// BatchDelete deletes multiple keys from the database.
+func (c Client) BatchDelete(_ context.Context, keys []string) error <span class="cov8" title="1">{
+        return c.c.Update(func(tx *bbolt.Tx) error </span><span class="cov8" title="1">{
+                b := tx.Bucket([]byte(dbName))
+                if b == nil </span><span class="cov0" title="0">{
+                        return errs.ErrNotFound
+                }</span>
+
+                <span class="cov8" title="1">for _, key := range keys </span><span class="cov8" title="1">{
+                        if err := b.Delete([]byte(key)); err != nil </span><span class="cov0" title="0">{
+                                return err
+                        }</span>
+                }
+
+                <span class="cov8" title="1">return nil</span>
+        })
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
