@@ -1,1 +1,3 @@
-examples/*/*.db
+examples/*/*.db*.html
+*.out
+*.db
