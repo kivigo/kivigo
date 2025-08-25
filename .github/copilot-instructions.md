@@ -22,7 +22,66 @@ export PATH=$PATH:$(go env GOPATH)/bin
 ```
 
 ### Testing Strategy
-The project uses a modular testing approach:
+The project uses a modular testing approach with different patterns for each backend type:
+
+#### Backend Test Patterns
+
+**Docker-based backends** (Redis, Consul, etcd):
+- Use testcontainers to spin up real service instances
+- TestMain setup/teardown pattern for container lifecycle
+- Comprehensive test coverage with helper functions
+
+Example from Redis backend:
+```go
+// backend/redis/redis_test.go
+func TestMain(m *testing.M) {
+    testRedis, err = start(&testing.T{})  // Start Redis container
+    code := m.Run()                       // Run all tests
+    _ = testRedis.Stop(context.Background()) // Cleanup
+    os.Exit(code)
+}
+
+func newTestClient(t *testing.T) Client {
+    opt := DefaultOptions()
+    opt.Addr = testRedis.addr
+    c, err := New(opt)
+    require.NoError(t, err)
+    return c
+}
+
+func TestRedis_BasicOps(t *testing.T) {
+    c := newTestClient(t)
+    defer c.Close()
+    // Test SetRaw, GetRaw, List, Delete operations
+}
+```
+
+**Local filesystem backends** (Badger):
+- Use temporary directories with `t.TempDir()`
+- Table-driven tests with comprehensive test cases
+- No external dependencies
+
+Example from Badger backend:
+```go
+// backend/badger/badger_test.go
+func newTestClient(t *testing.T) Client {
+    client, err := New(DefaultOptions("badger").
+        WithDir(t.TempDir() + "/key").
+        WithValueDir(t.TempDir() + "/value/"))
+    t.Cleanup(func() { client.Close() })
+    return client
+}
+
+func TestSetRaw(t *testing.T) {
+    tests := []testCase{
+        {"Valid", "foo", []byte("bar"), false},
+        {"EmptyKey", "", []byte("bar"), true},
+    }
+    // Table-driven test execution
+}
+```
+
+#### Running Tests
 
 ```bash
 # Test main package (takes ~3 seconds)
@@ -35,7 +94,21 @@ for backend in backend/*/; do
         cd "$backend" && go test ./... && cd ..
     fi
 done
+
+# Test specific backend
+cd backend/redis && go test ./...    # Requires Docker
+cd backend/badger && go test ./...   # No dependencies
+cd backend/consul && go test ./...   # Requires Docker
+cd backend/etcd && go test ./...     # Requires Docker
 ```
+
+#### Test Coverage Areas
+All backends test these operations:
+- **Basic ops**: `SetRaw`, `GetRaw`, `List`, `Delete`
+- **Batch ops**: `BatchSetRaw`, `BatchGetRaw`, `BatchDelete`  
+- **Health checks**: `Health()`
+- **Error cases**: Empty keys, not found, invalid input
+- **Edge cases**: Empty batches, partial failures
 
 **CRITICAL TIMING**: Backend tests may take up to 6 seconds each due to external dependencies (Redis, etcd, Consul require Docker containers). First run includes module downloads. Set timeout to 300+ seconds. NEVER CANCEL during backend testing.
 
@@ -87,7 +160,22 @@ func main() {
 }
 ```
 
-2. **Complete Validation Script** - Run this to validate all functionality:
+2. **Backend-Specific Test Examples** - Run individual backend tests:
+```bash
+# Test Redis backend (requires Docker)
+cd backend/redis && go test -v -run TestRedis_BasicOps
+
+# Test Badger backend (no dependencies)  
+cd backend/badger && go test -v -run TestSetRaw
+
+# Test all operations in a backend
+cd backend/consul && go test -v ./...
+
+# Test with timeout for slow operations
+cd backend/etcd && go test -timeout=300s ./...
+```
+
+3. **Complete Validation Script** - Run this to validate all functionality:
 ```bash
 #!/bin/bash
 set -e
@@ -103,7 +191,7 @@ time go test ./pkg/...
 for backend in backend/*/; do
     if [[ -f "$backend/go.mod" ]]; then
         echo "Testing $(basename "$backend")..."
-        (cd "$backend" && go test ./...)
+        (cd "$backend" && go test -timeout=300s ./...)
     fi
 done
 
@@ -176,9 +264,27 @@ ls pkg/
 - Run `go mod tidy` in the root directory if dependencies are missing
 
 ### Backend Test Issues  
-- etcd/consul tests need Docker - may fail in environments without Docker
-- badger/redis/local backends work without external dependencies
-- Use mock backend for reliable testing scenarios
+- **etcd/consul/redis tests need Docker** - may fail in environments without Docker access
+- **badger backend works without external dependencies** - safe for all environments  
+- **local backend** - currently has no test file (missing test coverage)
+- Use mock backend for reliable testing scenarios when backend-specific features aren't needed
+
+**Docker Issues**:
+```bash
+# If testcontainers fail, check Docker availability
+docker ps
+
+# Run only tests that don't require Docker
+cd backend/badger && go test ./...
+
+# Skip Docker tests in CI environments
+go test -short ./...  # If backends implement short test flags
+```
+
+**Test Patterns**:
+- **Container-based**: Redis, Consul, etcd use `TestMain()` with testcontainers
+- **Filesystem-based**: Badger uses `t.TempDir()` and table-driven tests  
+- **Missing**: Local backend has no test coverage
 
 ### Example Issues
 - **Examples in `examples/` have module dependency issues** - these reference published versions, not local development code
