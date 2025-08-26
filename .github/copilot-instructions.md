@@ -349,7 +349,7 @@ go run test_kivigo.go && rm test_kivigo.go
 
 ## Backend Creation Checklist
 
-**When you add a new backend:**
+When you add a new backend:
 
 1. **Create the backend in `backend/<name>/` as a separate Go module.**
 2. **Add tests and helper files as described above.**
@@ -361,5 +361,11 @@ go run test_kivigo.go && rm test_kivigo.go
        directory: "/backend/<name>"
      ```
    - This ensures Dependabot will track and update dependencies for the new backend.
+5. **Final step: Review your own PR before merging.**
+   - Check that all tests pass (main package and all backends)
+   - Check coverage and lint
+   - Review code and documentation changes
+   - Ensure CI and Dependabot config are up to date
+   - Add a validation comment to your PR
 
-**Always follow these steps to keep dependency management and CI up to date.**
+Always follow these steps to keep dependency management, CI, and code quality up to date.
