@@ -71,6 +71,11 @@ KiviGo is designed for projects that need flexibility, testability, and the abil
 | [Redis](https://redis.io/)      | ✅                           | ✅                     | ✅     |
 | [Consul](https://github.com/hashicorp/consul) | ✅                    | ✅                     | ✅     |
 | [etcd](https://github.com/etcd-io/etcd)      | ✅                    | ✅                     | ✅     |
+
+#### Distributed Caches
+
+| Backend                        | Default (List/Get/Set/Delete) | Batch (Get/Set/Delete) | Health |
+|---------------------------------|:----------------------------:|:----------------------:|:------:|
 | [Memcached](https://github.com/memcached/memcached) | ⚠️ (No List)           | ✅                     | ✅     |
 
 #### Cloud
