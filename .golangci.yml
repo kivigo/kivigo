@@ -51,8 +51,8 @@ linters:
     - nestif
     - nlreturn
     - thelper
-    - wsl_v5
   disable:
+    - wsl_v5
     - gochecknoglobals
     - lll
     - varnamelen
