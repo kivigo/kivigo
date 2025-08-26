@@ -32,6 +32,9 @@ Workflow that triggers when go.mod files are modified, providing:
 - **Selective testing**: Runs tests only for affected modules
 - **Coverage reporting**: Maintains test coverage visibility
 - **Multi-Go version testing**: Tests against Go 1.23 and 1.24
+- **Robust error handling**: Provides clear feedback on test failures
+- **Timeout protection**: Tests have 300s timeout to prevent hanging
+- **Empty matrix handling**: Gracefully handles cases with no changes
 
 ## How It Works
 
@@ -148,12 +151,21 @@ When adding a new backend module:
 
 **Tests failing on dependency updates**
 - Review test logs to identify breaking changes
+- Backend tests have 300s timeout to handle slow operations
 - Consider pinning problematic dependencies temporarily
 - Update test expectations if API changes are expected
+
+**Workflow failures with empty matrices**
+- The workflow automatically handles cases where no backends change
+- Empty JSON arrays are properly handled to prevent matrix failures
 
 **Too many open PRs**
 - Increase `open-pull-requests-limit` in dependabot.yml
 - Merge or close existing PRs to allow new ones
+
+**Coverage upload issues**
+- Coverage files are created in the correct backend directories
+- Only Go 1.24 uploads coverage to avoid duplicates
 
 ### Monitoring
 
