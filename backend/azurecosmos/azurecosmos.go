@@ -261,10 +261,12 @@ func (c Client) Delete(ctx context.Context, key string) error {
 // List returns all keys with an optional prefix filter
 func (c Client) List(ctx context.Context, prefix string) ([]string, error) {
 	var query string
+
 	var opts *azcosmos.QueryOptions
 
 	if prefix == "" {
 		query = "SELECT c.id FROM c"
+		opts = &azcosmos.QueryOptions{}
 	} else {
 		query = "SELECT c.id FROM c WHERE STARTSWITH(c.id, @prefix)"
 		opts = &azcosmos.QueryOptions{
@@ -274,9 +276,11 @@ func (c Client) List(ctx context.Context, prefix string) ([]string, error) {
 		}
 	}
 
-	queryPager := c.container.NewQueryItemsPager(query, azcosmos.NewPartitionKeyString(""), opts)
+	// Use NullPartitionKey for cross-partition queries
+	queryPager := c.container.NewQueryItemsPager(query, azcosmos.NullPartitionKey, opts)
 
 	var keys []string
+
 	for queryPager.More() {
 		response, err := queryPager.NextPage(ctx)
 		if err != nil {
@@ -288,6 +292,7 @@ func (c Client) List(ctx context.Context, prefix string) ([]string, error) {
 			if err := json.Unmarshal(item, &result); err != nil {
 				continue
 			}
+
 			if id, ok := result["id"].(string); ok {
 				keys = append(keys, id)
 			}
