@@ -367,5 +367,6 @@ When you add a new backend:
    - Review code and documentation changes
    - Ensure CI and Dependabot config are up to date
    - Add a validation comment to your PR
+   - **There must be zero lint errors in the output of `golangci-lint run --timeout=5m`.**
 
 Always follow these steps to keep dependency management, CI, and code quality up to date.
