@@ -121,13 +121,34 @@ updates:
         patterns:
           - "*"
 
+  # Memcached backend dependencies
+  - package-ecosystem: "gomod"
+    directory: "/backend/memcached"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "12:00"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps(memcached)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "go"
+      - "backend"
+      - "memcached"
+    groups:
+      memcached-dependencies:
+        patterns:
+          - "*"
+
   # Redis backend dependencies
   - package-ecosystem: "gomod"
     directory: "/backend/redis"
     schedule:
       interval: "weekly"
       day: "monday"
-      time: "12:00"
+      time: "12:30"
     open-pull-requests-limit: 3
     commit-message:
       prefix: "deps(redis)"
