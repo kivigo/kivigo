@@ -346,3 +346,20 @@ func main() {
 EOF
 go run test_kivigo.go && rm test_kivigo.go
 ```
+
+## Backend Creation Checklist
+
+**When you add a new backend:**
+
+1. **Create the backend in `backend/<name>/` as a separate Go module.**
+2. **Add tests and helper files as described above.**
+3. **Update documentation and README with the new backend.**
+4. **MANDATORY: Update `.github/dependabot.yml` to include the new backend module.**
+   - Add a new entry under `updates:` for the backend, e.g.:
+     ```yaml
+     - package-ecosystem: "gomod"
+       directory: "/backend/<name>"
+     ```
+   - This ensures Dependabot will track and update dependencies for the new backend.
+
+**Always follow these steps to keep dependency management and CI up to date.**
