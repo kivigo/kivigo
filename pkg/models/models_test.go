@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/azrod/kivigo/pkg/errs"
 )
 
 // TestInterfaces ensures the interfaces are properly defined and can be implemented
@@ -171,7 +173,7 @@ func (m *mockKV) GetRaw(_ context.Context, key string) ([]byte, error) {
 		return val, nil
 	}
 
-	return []byte("value"), nil
+	return nil, errs.ErrKeyNotFound
 }
 
 func (m *mockKV) SetRaw(_ context.Context, key string, value []byte) error {

@@ -9,6 +9,23 @@ import (
 	"github.com/azrod/kivigo/pkg/errs"
 )
 
+// Test case types for better readability
+type getRawTestCase struct {
+	name      string
+	key       string
+	setup     func(m *MockKV)
+	want      []byte
+	expectErr bool
+}
+
+type batchGetRawTestCase struct {
+	name      string
+	keys      []string
+	setup     func(m *MockKV)
+	want      map[string][]byte
+	expectErr bool
+}
+
 func newTestMockKV() *MockKV {
 	return &MockKV{
 		Data: make(map[string][]byte),
@@ -65,20 +82,8 @@ func TestMockKV_SetRaw(t *testing.T) {
 	}
 }
 
-func getGetRawTestCases() []struct {
-	name      string
-	key       string
-	setup     func(m *MockKV)
-	want      []byte
-	expectErr bool
-} {
-	return []struct {
-		name      string
-		key       string
-		setup     func(m *MockKV)
-		want      []byte
-		expectErr bool
-	}{
+func getGetRawTestCases() []getRawTestCase {
+	return []getRawTestCase{
 		{
 			name: "Valid",
 			key:  "test-key",
@@ -123,14 +128,7 @@ func getGetRawTestCases() []struct {
 	}
 }
 
-func runGetRawSubtest(t *testing.T, tt struct {
-	name      string
-	key       string
-	setup     func(m *MockKV)
-	want      []byte
-	expectErr bool
-},
-) {
+func runGetRawSubtest(t *testing.T, tt getRawTestCase) {
 	t.Helper()
 
 	m := newTestMockKV()
@@ -330,20 +328,8 @@ func TestMockKV_BatchSetRaw(t *testing.T) {
 	}
 }
 
-func getBatchGetRawBasicTestCases() []struct {
-	name      string
-	keys      []string
-	setup     func(m *MockKV)
-	want      map[string][]byte
-	expectErr bool
-} {
-	return []struct {
-		name      string
-		keys      []string
-		setup     func(m *MockKV)
-		want      map[string][]byte
-		expectErr bool
-	}{
+func getBatchGetRawBasicTestCases() []batchGetRawTestCase {
+	return []batchGetRawTestCase{
 		{
 			name: "Valid",
 			keys: []string{"key1", "key2"},
@@ -371,20 +357,8 @@ func getBatchGetRawBasicTestCases() []struct {
 	}
 }
 
-func getBatchGetRawEdgeTestCases() []struct {
-	name      string
-	keys      []string
-	setup     func(m *MockKV)
-	want      map[string][]byte
-	expectErr bool
-} {
-	return []struct {
-		name      string
-		keys      []string
-		setup     func(m *MockKV)
-		want      map[string][]byte
-		expectErr bool
-	}{
+func getBatchGetRawEdgeTestCases() []batchGetRawTestCase {
+	return []batchGetRawTestCase{
 		{
 			name:      "EmptyKeys",
 			keys:      []string{},
@@ -411,27 +385,14 @@ func getBatchGetRawEdgeTestCases() []struct {
 	}
 }
 
-func getBatchGetRawTestCases() []struct {
-	name      string
-	keys      []string
-	setup     func(m *MockKV)
-	want      map[string][]byte
-	expectErr bool
-} {
+func getBatchGetRawTestCases() []batchGetRawTestCase {
 	basic := getBatchGetRawBasicTestCases()
 	edge := getBatchGetRawEdgeTestCases()
 
 	return append(basic, edge...)
 }
 
-func runBatchGetRawSubtest(t *testing.T, tt struct {
-	name      string
-	keys      []string
-	setup     func(m *MockKV)
-	want      map[string][]byte
-	expectErr bool
-},
-) {
+func runBatchGetRawSubtest(t *testing.T, tt batchGetRawTestCase) {
 	t.Helper()
 
 	m := newTestMockKV()
