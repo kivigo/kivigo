@@ -11,8 +11,6 @@ import (
 	"github.com/azrod/kivigo/pkg/models"
 )
 
-var ErrOperationNotSupported = errors.New("operation not supported")
-
 var (
 	_ models.KV           = (*Client)(nil)
 	_ models.KVWithHealth = (*Client)(nil)
@@ -90,7 +88,7 @@ func (c Client) GetRaw(ctx context.Context, key string) ([]byte, error) {
 func (c Client) List(ctx context.Context, prefix string) ([]string, error) {
 	// Memcached doesn't support listing keys natively
 	// This is a known limitation of Memcached
-	return nil, ErrOperationNotSupported
+	return nil, errs.ErrOperationNotSupported
 }
 
 // Delete deletes a key from Memcached.

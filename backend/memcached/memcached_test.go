@@ -195,7 +195,7 @@ func TestList(t *testing.T) {
 	// Memcached doesn't support listing keys
 	keys, err := c.List(context.Background(), "prefix")
 	require.Error(t, err)
-	require.Equal(t, ErrOperationNotSupported, err)
+	require.Equal(t, errs.ErrOperationNotSupported, err)
 	require.Nil(t, keys)
 }
 
