@@ -72,21 +72,27 @@ func (c Client) Close() error {
 
 // Get gets a value from the database.
 func (c Client) GetRaw(_ context.Context, key string) ([]byte, error) {
-	value := make([]byte, 0)
+	var value []byte
 
-	return value, c.c.View(func(tx *bbolt.Tx) error {
+	err := c.c.View(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte(dbName))
 		if b == nil {
 			return errs.ErrNotFound
 		}
 
-		value = b.Get([]byte(key))
-		if value == nil {
+		data := b.Get([]byte(key))
+		if data == nil {
 			return errs.ErrNotFound
 		}
 
+		// Copy the data since BoltDB data is only valid during the transaction
+		value = make([]byte, len(data))
+		copy(value, data)
+
 		return nil
 	})
+
+	return value, err
 }
 
 // Set sets a value in the database.
