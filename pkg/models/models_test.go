@@ -11,6 +11,7 @@ import (
 func TestEncoderInterface(t *testing.T) {
 	// Test that Encoder interface has the expected methods
 	var encoder Encoder
+
 	require.Nil(t, encoder) // Interface should be nil when not implemented
 
 	// Test with a mock implementation
@@ -32,6 +33,7 @@ func TestEncoderInterface(t *testing.T) {
 func TestKVInterface(t *testing.T) {
 	// Test that KV interface has the expected methods
 	var kv KV
+
 	require.Nil(t, kv)
 
 	// Test with a mock implementation
@@ -62,6 +64,7 @@ func TestKVInterface(t *testing.T) {
 
 func TestKVWithHealthInterface(t *testing.T) {
 	var kvHealth KVWithHealth
+
 	require.Nil(t, kvHealth)
 
 	mockKVHealth := &mockKVWithHealth{}
@@ -75,6 +78,7 @@ func TestKVWithHealthInterface(t *testing.T) {
 
 func TestKVWithBatchInterface(t *testing.T) {
 	var kvBatch KVWithBatch
+
 	require.Nil(t, kvBatch)
 
 	mockKVBatch := &mockKVWithBatch{}
@@ -99,25 +103,27 @@ func TestKVWithBatchInterface(t *testing.T) {
 func TestInterfaceComposition(t *testing.T) {
 	// Test that a struct can implement multiple interfaces
 	composite := &compositeKV{}
-	
+
 	// Should implement all interfaces
 	var kv KV = composite
+
 	var kvHealth KVWithHealth = composite
+
 	var kvBatch KVWithBatch = composite
-	
+
 	require.NotNil(t, kv)
 	require.NotNil(t, kvHealth)
 	require.NotNil(t, kvBatch)
-	
+
 	ctx := context.Background()
-	
+
 	// Test that all methods work
 	err := composite.SetRaw(ctx, "test", []byte("value"))
 	require.NoError(t, err)
-	
+
 	err = composite.Health(ctx)
 	require.NoError(t, err)
-	
+
 	err = composite.BatchSetRaw(ctx, map[string][]byte{"batch": []byte("test")})
 	require.NoError(t, err)
 }
@@ -132,6 +138,7 @@ func (m *mockEncoder) Encode(v any) ([]byte, error) {
 
 func (m *mockEncoder) Decode(data []byte, v any) error {
 	*(v.(*string)) = "decoded:" + string(data)
+
 	return nil
 }
 
@@ -145,10 +152,13 @@ func (m *mockKV) List(_ context.Context, _ string) ([]string, error) {
 	if m.data == nil {
 		return []string{"key"}, nil
 	}
+
 	keys := make([]string, 0, len(m.data))
+
 	for k := range m.data {
 		keys = append(keys, k)
 	}
+
 	return keys, nil
 }
 
@@ -156,9 +166,11 @@ func (m *mockKV) GetRaw(_ context.Context, key string) ([]byte, error) {
 	if m.data == nil {
 		m.data = make(map[string][]byte)
 	}
+
 	if val, ok := m.data[key]; ok {
 		return val, nil
 	}
+
 	return []byte("value"), nil
 }
 
@@ -166,7 +178,9 @@ func (m *mockKV) SetRaw(_ context.Context, key string, value []byte) error {
 	if m.data == nil {
 		m.data = make(map[string][]byte)
 	}
+
 	m.data[key] = value
+
 	return nil
 }
 
@@ -174,7 +188,9 @@ func (m *mockKV) Delete(_ context.Context, key string) error {
 	if m.data == nil {
 		m.data = make(map[string][]byte)
 	}
+
 	delete(m.data, key)
+
 	return nil
 }
 
@@ -192,12 +208,15 @@ func (m *mockKVWithBatch) BatchGetRaw(_ context.Context, keys []string) (map[str
 	if m.data == nil {
 		m.data = make(map[string][]byte)
 	}
+
 	result := make(map[string][]byte)
+
 	for _, key := range keys {
 		if val, ok := m.data[key]; ok {
 			result[key] = val
 		}
 	}
+
 	return result, nil
 }
 
@@ -205,9 +224,11 @@ func (m *mockKVWithBatch) BatchSetRaw(_ context.Context, kv map[string][]byte) e
 	if m.data == nil {
 		m.data = make(map[string][]byte)
 	}
+
 	for k, v := range kv {
 		m.data[k] = v
 	}
+
 	return nil
 }
 
@@ -215,9 +236,11 @@ func (m *mockKVWithBatch) BatchDelete(_ context.Context, keys []string) error {
 	if m.data == nil {
 		m.data = make(map[string][]byte)
 	}
+
 	for _, key := range keys {
 		delete(m.data, key)
 	}
+
 	return nil
 }
 
@@ -229,9 +252,11 @@ func (c *compositeKV) Close() error { return nil }
 
 func (c *compositeKV) List(_ context.Context, _ string) ([]string, error) {
 	keys := make([]string, 0, len(c.data))
+
 	for k := range c.data {
 		keys = append(keys, k)
 	}
+
 	return keys, nil
 }
 
@@ -243,12 +268,15 @@ func (c *compositeKV) SetRaw(_ context.Context, key string, value []byte) error 
 	if c.data == nil {
 		c.data = make(map[string][]byte)
 	}
+
 	c.data[key] = value
+
 	return nil
 }
 
 func (c *compositeKV) Delete(_ context.Context, key string) error {
 	delete(c.data, key)
+
 	return nil
 }
 
@@ -258,11 +286,13 @@ func (c *compositeKV) Health(_ context.Context) error {
 
 func (c *compositeKV) BatchGetRaw(_ context.Context, keys []string) (map[string][]byte, error) {
 	result := make(map[string][]byte)
+
 	for _, key := range keys {
 		if val, ok := c.data[key]; ok {
 			result[key] = val
 		}
 	}
+
 	return result, nil
 }
 
@@ -270,9 +300,11 @@ func (c *compositeKV) BatchSetRaw(_ context.Context, kv map[string][]byte) error
 	if c.data == nil {
 		c.data = make(map[string][]byte)
 	}
+
 	for k, v := range kv {
 		c.data[k] = v
 	}
+
 	return nil
 }
 
@@ -280,5 +312,6 @@ func (c *compositeKV) BatchDelete(_ context.Context, keys []string) error {
 	for _, key := range keys {
 		delete(c.data, key)
 	}
+
 	return nil
 }

@@ -65,8 +65,14 @@ func TestMockKV_SetRaw(t *testing.T) {
 	}
 }
 
-func TestMockKV_GetRaw(t *testing.T) {
-	tests := []struct {
+func getGetRawTestCases() []struct {
+	name      string
+	key       string
+	setup     func(m *MockKV)
+	want      []byte
+	expectErr bool
+} {
+	return []struct {
 		name      string
 		key       string
 		setup     func(m *MockKV)
@@ -115,27 +121,44 @@ func TestMockKV_GetRaw(t *testing.T) {
 			expectErr: false,
 		},
 	}
+}
+
+func runGetRawSubtest(t *testing.T, tt struct {
+	name      string
+	key       string
+	setup     func(m *MockKV)
+	want      []byte
+	expectErr bool
+},
+) {
+	t.Helper()
+
+	m := newTestMockKV()
+	tt.setup(m)
+
+	ctx := context.Background()
+
+	got, err := m.GetRaw(ctx, tt.key)
+	if tt.expectErr {
+		require.Error(t, err)
+
+		if tt.key == "" {
+			require.Equal(t, errs.ErrEmptyKey, err)
+		} else {
+			require.Equal(t, errs.ErrKeyNotFound, err)
+		}
+	} else {
+		require.NoError(t, err)
+		require.Equal(t, tt.want, got)
+	}
+}
+
+func TestMockKV_GetRaw(t *testing.T) {
+	tests := getGetRawTestCases()
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := newTestMockKV()
-			tt.setup(m)
-
-			ctx := context.Background()
-
-			got, err := m.GetRaw(ctx, tt.key)
-			if tt.expectErr {
-				require.Error(t, err)
-
-				if tt.key == "" {
-					require.Equal(t, errs.ErrEmptyKey, err)
-				} else {
-					require.Equal(t, errs.ErrKeyNotFound, err)
-				}
-			} else {
-				require.NoError(t, err)
-				require.Equal(t, tt.want, got)
-			}
+			runGetRawSubtest(t, tt)
 		})
 	}
 }
@@ -173,6 +196,7 @@ func TestMockKV_Delete(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			m := newTestMockKV()
 			tt.setup(m)
+
 			ctx := context.Background()
 
 			err := m.Delete(ctx, tt.key)
@@ -237,6 +261,7 @@ func TestMockKV_List(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			m := newTestMockKV()
 			tt.setup(m)
+
 			ctx := context.Background()
 
 			keys, err := m.List(ctx, tt.prefix)
@@ -255,7 +280,7 @@ func TestMockKV_Close(t *testing.T) {
 func TestMockKV_Health(t *testing.T) {
 	m := newTestMockKV()
 	ctx := context.Background()
-	
+
 	err := m.Health(ctx)
 	require.NoError(t, err)
 }
@@ -305,8 +330,14 @@ func TestMockKV_BatchSetRaw(t *testing.T) {
 	}
 }
 
-func TestMockKV_BatchGetRaw(t *testing.T) {
-	tests := []struct {
+func getBatchGetRawBasicTestCases() []struct {
+	name      string
+	keys      []string
+	setup     func(m *MockKV)
+	want      map[string][]byte
+	expectErr bool
+} {
+	return []struct {
 		name      string
 		keys      []string
 		setup     func(m *MockKV)
@@ -337,6 +368,23 @@ func TestMockKV_BatchGetRaw(t *testing.T) {
 			},
 			expectErr: false,
 		},
+	}
+}
+
+func getBatchGetRawEdgeTestCases() []struct {
+	name      string
+	keys      []string
+	setup     func(m *MockKV)
+	want      map[string][]byte
+	expectErr bool
+} {
+	return []struct {
+		name      string
+		keys      []string
+		setup     func(m *MockKV)
+		want      map[string][]byte
+		expectErr bool
+	}{
 		{
 			name:      "EmptyKeys",
 			keys:      []string{},
@@ -361,21 +409,51 @@ func TestMockKV_BatchGetRaw(t *testing.T) {
 			expectErr: false,
 		},
 	}
+}
+
+func getBatchGetRawTestCases() []struct {
+	name      string
+	keys      []string
+	setup     func(m *MockKV)
+	want      map[string][]byte
+	expectErr bool
+} {
+	basic := getBatchGetRawBasicTestCases()
+	edge := getBatchGetRawEdgeTestCases()
+
+	return append(basic, edge...)
+}
+
+func runBatchGetRawSubtest(t *testing.T, tt struct {
+	name      string
+	keys      []string
+	setup     func(m *MockKV)
+	want      map[string][]byte
+	expectErr bool
+},
+) {
+	t.Helper()
+
+	m := newTestMockKV()
+	tt.setup(m)
+
+	ctx := context.Background()
+
+	got, err := m.BatchGetRaw(ctx, tt.keys)
+	if tt.expectErr {
+		require.Error(t, err)
+	} else {
+		require.NoError(t, err)
+		require.Equal(t, tt.want, got)
+	}
+}
+
+func TestMockKV_BatchGetRaw(t *testing.T) {
+	tests := getBatchGetRawTestCases()
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := newTestMockKV()
-			tt.setup(m)
-
-			ctx := context.Background()
-
-			got, err := m.BatchGetRaw(ctx, tt.keys)
-			if tt.expectErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-				require.Equal(t, tt.want, got)
-			}
+			runBatchGetRawSubtest(t, tt)
 		})
 	}
 }
@@ -419,6 +497,7 @@ func TestMockKV_BatchDelete(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			m := newTestMockKV()
 			tt.setup(m)
+
 			ctx := context.Background()
 
 			err := m.BatchDelete(ctx, tt.keys)

@@ -49,21 +49,21 @@ func TestKVErrors(t *testing.T) {
 
 func TestErrHealthCheckFailed(t *testing.T) {
 	tests := []struct {
-		name      string
-		innerErr  error
-		wantMsg   string
+		name       string
+		innerErr   error
+		wantMsg    string
 		shouldWrap bool
 	}{
 		{
-			name:      "WithInnerError",
-			innerErr:  errors.New("connection timeout"),
-			wantMsg:   "health check failed: connection timeout",
+			name:       "WithInnerError",
+			innerErr:   errors.New("connection timeout"),
+			wantMsg:    "health check failed: connection timeout",
 			shouldWrap: true,
 		},
 		{
-			name:      "WithComplexError",
-			innerErr:  errors.New("database unreachable"),
-			wantMsg:   "health check failed: database unreachable",
+			name:       "WithComplexError",
+			innerErr:   errors.New("database unreachable"),
+			wantMsg:    "health check failed: database unreachable",
 			shouldWrap: true,
 		},
 	}
@@ -73,7 +73,7 @@ func TestErrHealthCheckFailed(t *testing.T) {
 			err := ErrHealthCheckFailed(tt.innerErr)
 			require.Error(t, err)
 			require.Equal(t, tt.wantMsg, err.Error())
-			
+
 			if tt.shouldWrap && tt.innerErr != nil {
 				require.True(t, errors.Is(err, tt.innerErr))
 			}
@@ -101,7 +101,7 @@ func TestErrorsAreDistinct(t *testing.T) {
 	for i, err1 := range allErrors {
 		for j, err2 := range allErrors {
 			if i != j {
-				require.False(t, errors.Is(err1, err2), 
+				require.False(t, errors.Is(err1, err2),
 					"Error %v should not be equal to %v", err1, err2)
 			}
 		}
@@ -111,10 +111,10 @@ func TestErrorsAreDistinct(t *testing.T) {
 func TestErrorUnwrapping(t *testing.T) {
 	innerErr := errors.New("inner error")
 	wrappedErr := ErrHealthCheckFailed(innerErr)
-	
+
 	// Test that the wrapped error contains the original error
 	require.True(t, errors.Is(wrappedErr, innerErr))
-	
+
 	// Note: pkg/errors.Wrap creates a different structure than standard library,
 	// so we test behavior rather than exact unwrapping
 	require.Contains(t, wrappedErr.Error(), innerErr.Error())
@@ -124,7 +124,7 @@ func TestErrorComparisons(t *testing.T) {
 	// Test that backend.go and kv.go ErrNotFound/ErrKeyNotFound are different
 	require.False(t, errors.Is(ErrNotFound, ErrKeyNotFound))
 	require.False(t, errors.Is(ErrKeyNotFound, ErrNotFound))
-	
+
 	// Even though they have similar messages, they should be different errors
 	require.NotEqual(t, ErrNotFound, ErrKeyNotFound)
 }
