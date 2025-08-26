@@ -83,6 +83,7 @@ KiviGo is designed for projects that need flexibility, testability, and the abil
 | Backend                        | Default (List/Get/Set/Delete) | Batch (Get/Set/Delete) | Health |
 |---------------------------------|:----------------------------:|:----------------------:|:------:|
 | [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) | ✅                    | ✅                     | ✅     |
+| [Azure Cosmos DB](https://azure.microsoft.com/en-us/services/cosmos-db/) | ✅                    | ✅                     | ✅     |
 
 ### 🛠️ Backend Options Initialization
 
