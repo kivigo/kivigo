@@ -1,0 +1,186 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.5.0)'
+        required: true
+        type: string
+      create_release:
+        description: 'Create GitHub release'
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  validate-inputs:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.validate.outputs.version }}
+    steps:
+      - name: 🔍 Validate version format
+        id: validate
+        run: |
+          version="${{ github.event.inputs.version }}"
+          
+          # Check if version starts with 'v' and follows semantic versioning
+          if [[ ! "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ Error: Version must follow semantic versioning format (e.g., v1.5.0)"
+            exit 1
+          fi
+          
+          echo "✅ Version format is valid: $version"
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+  discover-backends:
+    runs-on: ubuntu-latest
+    needs: validate-inputs
+    outputs:
+      backends: ${{ steps.discover.outputs.backends }}
+    steps:
+      - name: 🛎️ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔍 Discover backends
+        id: discover
+        run: |
+          # Find all backend directories that have go.mod files
+          backends=$(find backend -mindepth 1 -maxdepth 1 -type d | sort)
+          
+          # Filter to only include directories with go.mod files
+          backend_list=()
+          for backend in $backends; do
+            if [[ -f "$backend/go.mod" ]]; then
+              backend_name=$(basename "$backend")
+              backend_list+=("$backend_name")
+              echo "✅ Found backend: $backend_name"
+            fi
+          done
+          
+          # Convert to JSON array
+          backends_json=$(printf '%s\n' "${backend_list[@]}" | jq -R . | jq -s .)
+          echo "backends=$backends_json" >> $GITHUB_OUTPUT
+          echo "📦 Discovered backends: $backends_json"
+
+  create-tags:
+    runs-on: ubuntu-latest
+    needs: [validate-inputs, discover-backends]
+    steps:
+      - name: 🛎️ Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🏷️ Create main project tag
+        run: |
+          version="${{ needs.validate-inputs.outputs.version }}"
+          
+          # Check if tag already exists
+          if git tag -l | grep -q "^${version}$"; then
+            echo "⚠️ Tag $version already exists for main project"
+          else
+            git tag "$version"
+            echo "✅ Created main project tag: $version"
+          fi
+
+      - name: 🏷️ Create backend tags
+        run: |
+          version="${{ needs.validate-inputs.outputs.version }}"
+          backends='${{ needs.discover-backends.outputs.backends }}'
+          
+          echo "Creating backend tags for version: $version"
+          
+          # Parse backends JSON array
+          echo "$backends" | jq -r '.[]' | while read -r backend; do
+            backend_tag="backend/${backend}/${version}"
+            
+            # Check if tag already exists
+            if git tag -l | grep -q "^${backend_tag}$"; then
+              echo "⚠️ Tag $backend_tag already exists"
+            else
+              git tag "$backend_tag"
+              echo "✅ Created backend tag: $backend_tag"
+            fi
+          done
+
+      - name: 🚀 Push all tags
+        run: |
+          version="${{ needs.validate-inputs.outputs.version }}"
+          
+          echo "Pushing main project tag..."
+          git push origin "$version" || echo "⚠️ Main project tag $version may already exist remotely"
+          
+          echo "Pushing backend tags..."
+          backends='${{ needs.discover-backends.outputs.backends }}'
+          echo "$backends" | jq -r '.[]' | while read -r backend; do
+            backend_tag="backend/${backend}/${version}"
+            git push origin "$backend_tag" || echo "⚠️ Backend tag $backend_tag may already exist remotely"
+            echo "📤 Pushed: $backend_tag"
+          done
+          
+          echo "🎉 All tags pushed successfully!"
+
+  create-release:
+    runs-on: ubuntu-latest
+    needs: [validate-inputs, create-tags]
+    if: ${{ github.event.inputs.create_release == 'true' }}
+    steps:
+      - name: 🛎️ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📋 Generate release notes
+        id: generate-notes
+        run: |
+          version="${{ needs.validate-inputs.outputs.version }}"
+          
+          # Create release notes
+          cat > release_notes.md << EOF
+          # KiviGo $version
+          
+          This release includes updates for the main KiviGo library and all backend modules.
+          
+          ## 📦 Tagged Components
+          
+          - **Main library**: \`$version\`
+          - **Backend modules**:
+          EOF
+          
+          # Add backend information
+          backends='${{ needs.discover-backends.outputs.backends }}'
+          echo "$backends" | jq -r '.[]' | while read -r backend; do
+            echo "  - \`backend/${backend}/${version}\`" >> release_notes.md
+          done
+          
+          cat >> release_notes.md << EOF
+          
+          ## 🔗 Module Usage
+          
+          To use specific backend modules in your Go project:
+          
+          \`\`\`bash
+          # Main library
+          go get github.com/azrod/kivigo@$version
+          
+          # Individual backends (example)
+          go get github.com/azrod/kivigo/backend/redis@backend/redis/$version
+          go get github.com/azrod/kivigo/backend/consul@backend/consul/$version
+          \`\`\`
+          
+          For more information, see the [README](https://github.com/azrod/kivigo/blob/main/README.md).
+          EOF
+          
+          echo "Generated release notes:"
+          cat release_notes.md
+
+      - name: 🚀 Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.validate-inputs.outputs.version }}
+          name: KiviGo ${{ needs.validate-inputs.outputs.version }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

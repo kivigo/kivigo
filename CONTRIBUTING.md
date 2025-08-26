@@ -60,6 +60,40 @@ Your help is welcome, whether it's for fixing bugs, adding features, improving d
 - Go to the GitHub page of your fork and open a Pull Request (PR) against the `main` branch.
 - Describe your changes and reference any related issues.
 
+## 🚀 Creating Releases
+
+For maintainers: KiviGo uses an automated release workflow that creates tags for both the main library and all backend modules.
+
+### Using the Release Workflow
+
+1. Go to the **Actions** tab in the GitHub repository
+2. Select the **Release** workflow
+3. Click **Run workflow**
+4. Enter the version (e.g., `v1.5.0`) following semantic versioning
+5. Choose whether to create a GitHub release (recommended: `true`)
+
+The workflow will automatically:
+- Create a main project tag (e.g., `v1.5.0`)
+- Create backend-specific tags (e.g., `backend/consul/v1.5.0`, `backend/redis/v1.5.0`)
+- Generate a GitHub release with usage instructions
+
+### Manual Tagging (Alternative)
+
+If needed, you can create tags manually:
+
+```sh
+# Main project
+git tag v1.5.0
+
+# Backend modules (repeat for each backend)
+git tag backend/consul/v1.5.0
+git tag backend/redis/v1.5.0
+# ... etc
+
+# Push all tags
+git push origin --tags
+```
+
 ## Code of Conduct
 
 Please be respectful and constructive in all interactions.  
