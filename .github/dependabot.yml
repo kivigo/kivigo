@@ -1,0 +1,143 @@
+version: 2
+updates:
+  # Main project dependencies
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "go"
+      - "main"
+
+  # Badger backend dependencies
+  - package-ecosystem: "gomod"
+    directory: "/backend/badger"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:30"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps(badger)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "go"
+      - "backend"
+      - "badger"
+    groups:
+      badger-dependencies:
+        patterns:
+          - "*"
+
+  # Consul backend dependencies  
+  - package-ecosystem: "gomod"
+    directory: "/backend/consul"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:00"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps(consul)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "go"
+      - "backend"
+      - "consul"
+    groups:
+      consul-dependencies:
+        patterns:
+          - "*"
+
+  # DynamoDB backend dependencies
+  - package-ecosystem: "gomod"
+    directory: "/backend/dynamodb"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:30"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps(dynamodb)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "go"
+      - "backend"
+      - "dynamodb"
+    groups:
+      dynamodb-dependencies:
+        patterns:
+          - "*"
+
+  # etcd backend dependencies
+  - package-ecosystem: "gomod"
+    directory: "/backend/etcd"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "11:00"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps(etcd)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "go"
+      - "backend"
+      - "etcd"
+    groups:
+      etcd-dependencies:
+        patterns:
+          - "*"
+
+  # Local/BoltDB backend dependencies
+  - package-ecosystem: "gomod"
+    directory: "/backend/local"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "11:30"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps(local)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "go"
+      - "backend"
+      - "local"
+    groups:
+      local-dependencies:
+        patterns:
+          - "*"
+
+  # Redis backend dependencies
+  - package-ecosystem: "gomod"
+    directory: "/backend/redis"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "12:00"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps(redis)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "go"
+      - "backend"
+      - "redis"
+    groups:
+      redis-dependencies:
+        patterns:
+          - "*"

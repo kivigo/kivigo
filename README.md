@@ -465,3 +465,13 @@ See [pkg.go.dev/github.com/azrod/kivigo](https://pkg.go.dev/github.com/azrod/kiv
 
 KiviGo is an open source project. **Contributions, issues, and feature requests are welcome!**  
 Feel free to open a pull request or an issue to help improve the project.
+
+### 🔄 Automated Dependency Management
+
+KiviGo uses Dependabot for automated dependency updates across all modules. Dependencies are:
+- **Automatically monitored** for the main project and all backend modules
+- **Grouped by module** to reduce PR noise (one PR per backend for all its updates)
+- **Selectively tested** - only affected modules are tested when dependencies change
+- **Updated weekly** on Mondays with staggered timing to prevent conflicts
+
+See [`docs/dependency-updates.md`](docs/dependency-updates.md) for detailed configuration and usage information.
