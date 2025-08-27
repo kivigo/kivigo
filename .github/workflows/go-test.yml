@@ -5,27 +5,74 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  discover-backends:
+  # Detect which modules were changed
+  detect-changes:
     if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     outputs:
-      backends: ${{ steps.set-matrix.outputs.backends }}
+      main-changed: ${{ steps.changes.outputs.main }}
+      backends-changed: ${{ steps.changes.outputs.backends }}
+      changed-backends: ${{ steps.changes.outputs.changed-backends }}
     steps:
       - name: 🛎️ Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: 🔍 Find backend directories
-        id: set-matrix
+      - name: 🔍 Detect changed modules
+        id: changes
         run: |
-          echo "backends=$(ls -d backend/* | grep -v '^backend/[^/]*/go.mod$' | grep -v '^backend/[^/]*/go.sum$' | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+          # Get list of changed files
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            changed_files=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }})
+          else
+            changed_files=$(git diff --name-only HEAD~1 HEAD)
+          fi
+          
+          echo "Changed files:"
+          echo "$changed_files"
+          
+          # Check if main/core module changed (pkg/, root go files, go.mod/go.sum, etc.)
+          main_changed="false"
+          if echo "$changed_files" | grep -E "^(pkg/|go\.mod|go\.sum|.*\.go|doc\.go|client\.go)$"; then
+            main_changed="true"
+            echo "✅ Main/core module files changed"
+          fi
+          echo "main=$main_changed" >> $GITHUB_OUTPUT
+          
+          # Check which backend modules changed
+          backend_changed="false"
+          changed_backends_list=()
+          
+          for backend_dir in backend/*/; do
+            if [[ -d "$backend_dir" ]]; then
+              backend_name=$(basename "$backend_dir")
+              if echo "$changed_files" | grep -E "^${backend_dir}"; then
+                backend_changed="true"
+                changed_backends_list+=("$backend_name")
+                echo "✅ Backend $backend_name files changed"
+              fi
+            fi
+          done
+          
+          echo "backends=$backend_changed" >> $GITHUB_OUTPUT
+          
+          # Convert array to JSON for matrix
+          if [ ${#changed_backends_list[@]} -gt 0 ]; then
+            changed_backends_json=$(printf '%s\n' "${changed_backends_list[@]}" | jq -R . | jq -s -c .)
+          else
+            changed_backends_json="[]"
+          fi
+          echo "changed-backends=$changed_backends_json" >> $GITHUB_OUTPUT
+          echo "Changed backends: $changed_backends_json"
 
-  test-backends:
-    if: github.actor != 'dependabot[bot]'
-    needs: discover-backends
+  # Test main package if main/core files changed
+  test-main:
+    if: github.actor != 'dependabot[bot]' && needs.detect-changes.outputs.main-changed == 'true'
     runs-on: ubuntu-latest
+    needs: detect-changes
     strategy:
       matrix:
-        backend: ${{fromJson(needs.discover-backends.outputs.backends)}}
         go-version: [1.23, 1.24]
     steps:
       - name: 🛎️ Checkout code
@@ -37,10 +84,10 @@ jobs:
           path: |
             ~/.cache/go-build
             ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
+          key: ${{ runner.os }}-go-${{ matrix.go-version }}-main-${{ hashFiles('go.sum') }}
           restore-keys: |
+            ${{ runner.os }}-go-${{ matrix.go-version }}-main-
             ${{ runner.os }}-go-${{ matrix.go-version }}-
-            ${{ runner.os }}-go-
 
       - name: 🏗️ Set up Go ${{ matrix.go-version }}
         uses: actions/setup-go@v5
@@ -48,33 +95,122 @@ jobs:
           go-version: ${{ matrix.go-version }}
 
       - name: 📦 Install dependencies
-        run: |
-          cd ${{ matrix.backend }}
-          go mod download
+        run: go mod download
 
-      - name: 🧪 Run backend tests with coverage
-        run: |
-          backend_name=$(basename ${{ matrix.backend }})
-          cd ${{ matrix.backend }}
-          go test -coverprofile=../coverage-${backend_name}.out ./...
+      - name: 🧪 Run main package tests with coverage
+        run: go test -v -timeout=300s -coverprofile=coverage-main.out ./pkg/...
 
-      - name: 📤 Send coverage to Coveralls (parallel)
+      - name: 📤 Upload coverage to Coveralls
         uses: coverallsapp/github-action@v2
+        if: matrix.go-version == '1.24'  # Only upload coverage once
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: backend/coverage-$(basename ${{ matrix.backend }}).out
-          coveralls-endpoint: https://coveralls.io
+          path-to-lcov: coverage-main.out
           parallel: true
-          flag-name: $(basename ${{ matrix.backend }})-${{ matrix.go-version }}
+          flag-name: main
 
+  # Test changed backend modules only
+  test-backends:
+    if: github.actor != 'dependabot[bot]' && needs.detect-changes.outputs.backends-changed == 'true' && needs.detect-changes.outputs.changed-backends != '[]'
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    strategy:
+      matrix:
+        backend: ${{ fromJson(needs.detect-changes.outputs.changed-backends) }}
+        go-version: [1.23, 1.24]
+    steps:
+      - name: 🛎️ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🗄️ Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ matrix.backend }}-${{ hashFiles(format('backend/{0}/go.sum', matrix.backend)) }}
+          restore-keys: |
+            ${{ runner.os }}-go-${{ matrix.go-version }}-${{ matrix.backend }}-
+            ${{ runner.os }}-go-${{ matrix.go-version }}-
+
+      - name: 🏗️ Set up Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: 📦 Install dependencies for ${{ matrix.backend }}
+        run: |
+          cd backend/${{ matrix.backend }}
+          go mod download
+
+      - name: 🧪 Run ${{ matrix.backend }} backend tests with coverage
+        run: |
+          cd backend/${{ matrix.backend }}
+          go test -v -timeout=300s -coverprofile=coverage-${{ matrix.backend }}.out ./...
+
+      - name: 📤 Upload coverage to Coveralls
+        uses: coverallsapp/github-action@v2
+        if: matrix.go-version == '1.24'  # Only upload coverage once per backend
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: backend/${{ matrix.backend }}/coverage-${{ matrix.backend }}.out
+          parallel: true
+          flag-name: ${{ matrix.backend }}
+
+  # Complete coverage reporting
   finish:
-    if: github.actor != 'dependabot[bot]'
-    needs: [test-backends]
+    if: github.actor != 'dependabot[bot]' && (needs.test-main.result == 'success' || needs.test-backends.result == 'success')
+    needs: [detect-changes, test-main, test-backends]
     runs-on: ubuntu-latest
     steps:
       - name: 🏁 Notify Coveralls of parallel build completion
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          coveralls-endpoint: https://coveralls.io
           parallel-finished: true
+
+  # Generate test summary for PR
+  test-summary:
+    if: github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    needs: [detect-changes, test-main, test-backends]
+    steps:
+      - name: 📊 Generate test summary
+        run: |
+          echo "## 🧪 Test Results Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.detect-changes.outputs.main-changed }}" = "true" ]; then
+            echo "### 📦 Main Package" >> $GITHUB_STEP_SUMMARY
+            if [ "${{ needs.test-main.result }}" = "success" ]; then
+              echo "✅ Main package tests passed" >> $GITHUB_STEP_SUMMARY
+            elif [ "${{ needs.test-main.result }}" = "failure" ]; then
+              echo "❌ Main package tests failed" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "⏸️ Main package tests skipped" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "### 📦 Main Package" >> $GITHUB_STEP_SUMMARY
+            echo "⏭️ No changes detected - tests skipped" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔌 Backend Modules" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.detect-changes.outputs.backends-changed }}" = "true" ]; then
+            echo "Changed backends: ${{ needs.detect-changes.outputs.changed-backends }}" >> $GITHUB_STEP_SUMMARY
+            if [ "${{ needs.test-backends.result }}" = "success" ]; then
+              echo "✅ Backend tests passed" >> $GITHUB_STEP_SUMMARY
+            elif [ "${{ needs.test-backends.result }}" = "failure" ]; then
+              echo "❌ Backend tests failed" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "⏸️ Backend tests skipped" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "⏭️ No backend changes detected - tests skipped" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ needs.test-main.result }}" = "success" ] || [ "${{ needs.test-backends.result }}" = "success" ]; then
+            echo "📊 **Coverage Report**: Check [Coveralls](https://coveralls.io/github/azrod/kivigo) for detailed coverage information" >> $GITHUB_STEP_SUMMARY
+          fi
