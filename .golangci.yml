@@ -49,7 +49,6 @@ linters:
     - maintidx
     - nakedret
     - nestif
-    - nlreturn
     - thelper
   disable:
     - wsl_v5
@@ -145,7 +144,6 @@ issues:
   max-same-issues: 0
 formatters:
   enable:
-    - gci
     - gofmt
     - gofumpt
   settings:

@@ -6,6 +6,7 @@ on:
 
 jobs:
   discover-backends:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     outputs:
       backends: ${{ steps.set-matrix.outputs.backends }}
@@ -19,6 +20,7 @@ jobs:
           echo "backends=$(ls -d backend/* | grep -v '^backend/[^/]*/go.mod$' | grep -v '^backend/[^/]*/go.sum$' | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
 
   test-backends:
+    if: github.actor != 'dependabot[bot]'
     needs: discover-backends
     runs-on: ubuntu-latest
     strategy:
@@ -66,6 +68,7 @@ jobs:
           flag-name: $(basename ${{ matrix.backend }})-${{ matrix.go-version }}
 
   finish:
+    if: github.actor != 'dependabot[bot]'
     needs: [test-backends]
     runs-on: ubuntu-latest
     steps:
