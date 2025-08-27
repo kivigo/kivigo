@@ -3,6 +3,7 @@ package mongodb
 import (
 	"context"
 	"errors"
+	"regexp"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -129,7 +130,7 @@ func (c Client) Delete(ctx context.Context, key string) error {
 func (c Client) List(ctx context.Context, prefix string) ([]string, error) {
 	filter := bson.M{}
 	if prefix != "" {
-		filter["_id"] = bson.M{"$regex": "^" + prefix, "$options": "i"}
+		filter["_id"] = bson.M{"$regex": "^" + regexp.QuoteMeta(prefix), "$options": "i"}
 	}
 
 	cursor, err := c.collection.Find(ctx, filter, options.Find().SetProjection(bson.M{"_id": 1}))
