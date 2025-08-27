@@ -64,8 +64,8 @@ jobs:
           
           # Convert array to JSON for matrix - ensure we have proper JSON even for empty arrays
           if [ ${#changed_backends_list[@]} -gt 0 ]; then
-            # Use jq to safely convert to JSON array
-            changed_backends_json=$(printf '%s\n' "${changed_backends_list[@]}" | jq -R . | jq -s .)
+            # Use jq to safely convert to JSON array (compact format for GitHub Actions)
+            changed_backends_json=$(printf '%s\n' "${changed_backends_list[@]}" | jq -R . | jq -s -c .)
           else
             changed_backends_json="[]"
           fi
