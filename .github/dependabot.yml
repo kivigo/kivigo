@@ -142,6 +142,27 @@ updates:
         patterns:
           - "*"
 
+  # MongoDB backend dependencies
+  - package-ecosystem: "gomod"
+    directory: "/backend/mongodb"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "12:15"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps(mongodb)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "go"
+      - "backend"
+      - "mongodb"
+    groups:
+      mongodb-dependencies:
+        patterns:
+          - "*"
+
   # Redis backend dependencies
   - package-ecosystem: "gomod"
     directory: "/backend/redis"
