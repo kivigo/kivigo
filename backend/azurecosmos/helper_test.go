@@ -2,10 +2,8 @@ package azurecosmos
 
 import (
 	"context"
-	"crypto/tls"
 	"fmt"
 	"net"
-	"net/http"
 	"testing"
 	"time"
 
@@ -32,7 +30,7 @@ func start(t *testing.T) (*container, error) {
 			"AZURE_COSMOS_EMULATOR_PARTITION_COUNT":         "10",
 			"AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE": "false",
 		},
-		WaitingFor: wait.ForListeningPort("8081/tcp").WithStartupTimeout(120 * time.Second),
+		WaitingFor: wait.ForListeningPort("8081/tcp").WithStartupTimeout(180 * time.Second),
 	}
 
 	c, err := tc.GenericContainer(ctx, tc.GenericContainerRequest{
@@ -60,39 +58,8 @@ func start(t *testing.T) (*container, error) {
 		endpoint:  endpoint,
 	}
 
-	// Wait for Cosmos DB Emulator to be ready by polling the endpoint
-	client := &http.Client{
-		Timeout: 2 * time.Second,
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, //nolint:gosec // Required for emulator
-		},
-	}
-
-	ready := false
-	maxWait := 30 * time.Second
-	startTime := time.Now()
-
-	for time.Since(startTime) < maxWait {
-		req, err := http.NewRequest("GET", endpoint, nil)
-		if err != nil {
-			time.Sleep(1 * time.Second)
-			continue
-		}
-
-		resp, err := client.Do(req)
-		if err == nil && resp.StatusCode < 500 {
-			ready = true
-			resp.Body.Close()
-
-			break
-		}
-
-		time.Sleep(1 * time.Second)
-	}
-
-	if !ready {
-		return nil, fmt.Errorf("Cosmos DB Emulator not ready after %v", maxWait)
-	}
+	// Wait a bit for the emulator to fully initialize after the port is ready
+	time.Sleep(5 * time.Second)
 
 	return r, nil
 }

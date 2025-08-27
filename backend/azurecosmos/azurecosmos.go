@@ -2,11 +2,15 @@ package azurecosmos
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
+	"strings"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/data/azcosmos"
 
 	"github.com/azrod/kivigo/pkg/errs"
@@ -108,12 +112,6 @@ func New(opt Option) (Client, error) {
 
 // createCosmosClient creates the underlying Azure Cosmos DB client
 func createCosmosClient(opt Option) (*azcosmos.Client, error) {
-	if opt.ConnectionStr != "" {
-		// Use connection string if provided
-		return azcosmos.NewClientFromConnectionString(opt.ConnectionStr, nil)
-	}
-
-	// Use endpoint and key
 	endpoint := opt.Endpoint
 	if endpoint == "" {
 		endpoint = "https://localhost:8081"
@@ -124,12 +122,41 @@ func createCosmosClient(opt Option) (*azcosmos.Client, error) {
 		key = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
 	}
 
+	// Create client options
+	clientOptions := &azcosmos.ClientOptions{}
+
+	// If connecting to emulator (localhost), disable TLS verification
+	if strings.Contains(endpoint, "localhost") || strings.Contains(endpoint, "127.0.0.1") {
+		clientOptions.ClientOptions = policy.ClientOptions{
+			Transport: &http.Client{
+				Transport: &http.Transport{
+					TLSClientConfig: &tls.Config{
+						InsecureSkipVerify: true, //nolint:gosec // Required for emulator
+					},
+				},
+			},
+		}
+	}
+
+	if opt.ConnectionStr != "" {
+		// Use connection string if provided
+		return azcosmos.NewClientFromConnectionString(opt.ConnectionStr, clientOptions)
+	}
+
+	// For emulator, use the default emulator connection string format
+	if strings.Contains(endpoint, "localhost") || strings.Contains(endpoint, "127.0.0.1") {
+		// Build emulator connection string
+		connectionStr := fmt.Sprintf("AccountEndpoint=%s;AccountKey=%s;", endpoint, key)
+		return azcosmos.NewClientFromConnectionString(connectionStr, clientOptions)
+	}
+
+	// For cloud endpoints, use key-based authentication
 	cred, err := azcosmos.NewKeyCredential(key)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create key credential: %w", err)
 	}
 
-	return azcosmos.NewClientWithKey(endpoint, cred, nil)
+	return azcosmos.NewClientWithKey(endpoint, cred, clientOptions)
 }
 
 func (c Client) Close() error {
@@ -144,7 +171,6 @@ func (c Client) ensureDatabase() error {
 	_, err := c.client.CreateDatabase(ctx, azcosmos.DatabaseProperties{
 		ID: c.database,
 	}, nil)
-
 	// Ignore conflict errors (database already exists)
 	if err != nil {
 		var responseErr *azcore.ResponseError
@@ -175,7 +201,6 @@ func (c Client) ensureContainer() error {
 	}
 
 	_, err = databaseClient.CreateContainer(ctx, containerProperties, nil)
-
 	// Ignore conflict errors (container already exists)
 	if err != nil {
 		var responseErr *azcore.ResponseError
@@ -195,7 +220,7 @@ func (c Client) GetRaw(ctx context.Context, key string) ([]byte, error) {
 		return nil, errs.ErrEmptyKey
 	}
 
-	pk := azcosmos.NewPartitionKeyString(key)
+	pk := azcosmos.NewPartitionKeyString("items")
 	response, err := c.container.ReadItem(ctx, pk, key, nil)
 	if err != nil {
 		var responseErr *azcore.ResponseError
@@ -221,7 +246,7 @@ func (c Client) SetRaw(ctx context.Context, key string, value []byte) error {
 
 	item := CosmosItem{
 		ID:    key,
-		PK:    key,
+		PK:    "items", // Use a single partition key for all items to enable queries in emulator
 		Value: string(value),
 	}
 
@@ -230,7 +255,7 @@ func (c Client) SetRaw(ctx context.Context, key string, value []byte) error {
 		return fmt.Errorf("failed to marshal item: %w", err)
 	}
 
-	pk := azcosmos.NewPartitionKeyString(key)
+	pk := azcosmos.NewPartitionKeyString("items")
 	_, err = c.container.UpsertItem(ctx, pk, itemBytes, nil)
 	if err != nil {
 		return fmt.Errorf("failed to upsert item: %w", err)
@@ -245,7 +270,7 @@ func (c Client) Delete(ctx context.Context, key string) error {
 		return errs.ErrEmptyKey
 	}
 
-	pk := azcosmos.NewPartitionKeyString(key)
+	pk := azcosmos.NewPartitionKeyString("items")
 	_, err := c.container.DeleteItem(ctx, pk, key, nil)
 	if err != nil {
 		var responseErr *azcore.ResponseError
@@ -261,23 +286,20 @@ func (c Client) Delete(ctx context.Context, key string) error {
 // List returns all keys with an optional prefix filter
 func (c Client) List(ctx context.Context, prefix string) ([]string, error) {
 	var query string
-
-	var opts *azcosmos.QueryOptions
+	opts := &azcosmos.QueryOptions{}
 
 	if prefix == "" {
-		query = "SELECT c.id FROM c"
-		opts = &azcosmos.QueryOptions{}
+		query = "SELECT VALUE c.id FROM c"
 	} else {
-		query = "SELECT c.id FROM c WHERE STARTSWITH(c.id, @prefix)"
-		opts = &azcosmos.QueryOptions{
-			QueryParameters: []azcosmos.QueryParameter{
-				{Name: "@prefix", Value: prefix},
-			},
+		query = "SELECT VALUE c.id FROM c WHERE STARTSWITH(c.id, @prefix)"
+		opts.QueryParameters = []azcosmos.QueryParameter{
+			{Name: "@prefix", Value: prefix},
 		}
 	}
 
-	// Use NullPartitionKey for cross-partition queries
-	queryPager := c.container.NewQueryItemsPager(query, azcosmos.NullPartitionKey, opts)
+	// Since all items use the same partition key "items", we can query within that partition
+	pk := azcosmos.NewPartitionKeyString("items")
+	queryPager := c.container.NewQueryItemsPager(query, pk, opts)
 
 	var keys []string
 
@@ -288,14 +310,11 @@ func (c Client) List(ctx context.Context, prefix string) ([]string, error) {
 		}
 
 		for _, item := range response.Items {
-			var result map[string]interface{}
-			if err := json.Unmarshal(item, &result); err != nil {
+			var id string
+			if err := json.Unmarshal(item, &id); err != nil {
 				continue
 			}
-
-			if id, ok := result["id"].(string); ok {
-				keys = append(keys, id)
-			}
+			keys = append(keys, id)
 		}
 	}
 

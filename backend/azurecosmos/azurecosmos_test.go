@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -36,7 +37,8 @@ func newTestClient(t *testing.T) Client {
 	opt := DefaultOptions()
 	opt.Endpoint = testAzureCosmos.endpoint
 	opt.Database = "test_kivigo"
-	opt.Container = "test_items"
+	// Use unique container for each test to avoid conflicts
+	opt.Container = fmt.Sprintf("test_%s_%d", strings.ReplaceAll(t.Name(), "/", "_"), time.Now().UnixNano())
 
 	c, err := New(opt)
 	require.NoError(t, err)
@@ -202,6 +204,9 @@ func TestAzureCosmos_List(t *testing.T) {
 		err := c.SetRaw(context.Background(), k, v)
 		require.NoError(t, err)
 	}
+
+	// Add a small delay to ensure items are available for querying (eventual consistency)
+	time.Sleep(100 * time.Millisecond)
 
 	tests := []struct {
 		name     string
