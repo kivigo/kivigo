@@ -21,7 +21,6 @@ const dbName = "kivigo"
 
 type (
 	Client struct {
-		_ models.Backend
 		c *bbolt.DB
 	}
 
