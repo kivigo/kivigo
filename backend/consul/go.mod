@@ -5,9 +5,9 @@ go 1.23.8
 toolchain go1.24.5
 
 require (
-	github.com/azrod/kivigo v1.2.0
+	github.com/azrod/kivigo v1.3.0
 	github.com/hashicorp/consul/api v1.32.1
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.38.0
 )
 
