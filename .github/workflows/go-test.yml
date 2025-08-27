@@ -34,7 +34,7 @@ jobs:
           
           # Check if main/core module changed (pkg/, root go files, go.mod/go.sum, etc.)
           main_changed="false"
-          if echo "$changed_files" | grep -E "^(pkg/|go\.mod|go\.sum|.*\.go|doc\.go|client\.go)$"; then
+          if echo "$changed_files" | grep -E "^(pkg/|go\.mod|go\.sum|[^/]*\.go)"; then
             main_changed="true"
             echo "✅ Main/core module files changed"
           fi

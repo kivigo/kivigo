@@ -14,33 +14,33 @@ import (
 
 func newTestClient(t *testing.T) Client {
 	t.Helper()
-	
+
 	tmpDir := t.TempDir()
 	opt := DefaultOptions()
 	opt.Path = tmpDir
 	opt.FileName = "test.db"
-	
+
 	client, err := New(opt)
 	require.NoError(t, err)
-	
+
 	t.Cleanup(func() {
 		client.Close()
 	})
-	
+
 	return client
 }
 
 func TestNew(t *testing.T) {
 	tmpDir := t.TempDir()
-	
+
 	tests := []struct {
 		name    string
 		opt     Option
 		wantErr bool
 	}{
 		{
-			name: "DefaultOptions",
-			opt:  DefaultOptions(),
+			name:    "DefaultOptions",
+			opt:     DefaultOptions(),
 			wantErr: false,
 		},
 		{
@@ -60,7 +60,7 @@ func TestNew(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "InvalidPath", 
+			name: "InvalidPath",
 			opt: Option{
 				Path:     "/nonexistent/invalid/path/that/does/not/exist",
 				FileName: "test.db",
@@ -68,23 +68,23 @@ func TestNew(t *testing.T) {
 			wantErr: true,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.opt.Path != "./" && !tt.wantErr {
 				// Use temp dir for custom paths
 				tt.opt.Path = tmpDir
 			}
-			
+
 			client, err := New(tt.opt)
 			if tt.wantErr {
 				require.Error(t, err)
 				return
 			}
-			
+
 			require.NoError(t, err)
 			require.NoError(t, client.Close())
-			
+
 			// Clean up the created file
 			if tt.opt.Path != "./" {
 				dbPath := filepath.Join(tt.opt.Path, tt.opt.FileName)
@@ -137,12 +137,12 @@ func TestSetRaw(t *testing.T) {
 			wantErr: false,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			client := newTestClient(t)
 			ctx := context.Background()
-			
+
 			err := client.SetRaw(ctx, tt.key, tt.value)
 			if tt.wantErr {
 				require.Error(t, err)
@@ -190,13 +190,13 @@ func TestGetRaw(t *testing.T) {
 			expectErr: false,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			client := newTestClient(t)
 			ctx := context.Background()
 			tt.setup(client, ctx)
-			
+
 			got, err := client.GetRaw(ctx, tt.key)
 			if tt.expectErr {
 				require.Error(t, err)
@@ -215,7 +215,7 @@ func TestGetRawBugCheck(t *testing.T) {
 	// might not be returned properly
 	client := newTestClient(t)
 	ctx := context.Background()
-	
+
 	// Test with different value sizes to ensure the implementation is correct
 	testValues := [][]byte{
 		[]byte("small"),
@@ -223,14 +223,14 @@ func TestGetRawBugCheck(t *testing.T) {
 		[]byte(""), // empty value
 		[]byte("single"),
 	}
-	
+
 	for i, val := range testValues {
 		key := fmt.Sprintf("test-%d", i)
-		
+
 		// Set the value
 		err := client.SetRaw(ctx, key, val)
 		require.NoError(t, err)
-		
+
 		// Get the value back
 		retrieved, err := client.GetRaw(ctx, key)
 		require.NoError(t, err)
@@ -267,13 +267,13 @@ func TestDelete(t *testing.T) {
 			wantErr: false, // BoltDB doesn't error on deleting non-existent keys
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			client := newTestClient(t)
 			ctx := context.Background()
 			tt.setup(client, ctx)
-			
+
 			err := client.Delete(ctx, tt.key)
 			if tt.wantErr {
 				require.Error(t, err)
@@ -282,7 +282,7 @@ func TestDelete(t *testing.T) {
 				}
 			} else {
 				require.NoError(t, err)
-				
+
 				// Verify key was deleted
 				if tt.key != "" {
 					_, err := client.GetRaw(ctx, tt.key)
@@ -330,13 +330,13 @@ func TestList(t *testing.T) {
 			expectErr: false,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			client := newTestClient(t)
 			ctx := context.Background()
 			tt.setup(client, ctx)
-			
+
 			keys, err := client.List(ctx, tt.prefix)
 			if tt.expectErr {
 				require.Error(t, err)
@@ -352,15 +352,15 @@ func TestHealth(t *testing.T) {
 	t.Run("Healthy", func(t *testing.T) {
 		client := newTestClient(t)
 		ctx := context.Background()
-		
+
 		err := client.Health(ctx)
 		require.NoError(t, err)
 	})
-	
+
 	t.Run("Uninitialized", func(t *testing.T) {
 		client := Client{c: nil}
 		ctx := context.Background()
-		
+
 		err := client.Health(ctx)
 		require.Error(t, err)
 		require.Equal(t, errs.ErrClientNotInitialized, err)
@@ -392,18 +392,18 @@ func TestBatchSetRaw(t *testing.T) {
 			wantErr: false,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			client := newTestClient(t)
 			ctx := context.Background()
-			
+
 			err := client.BatchSetRaw(ctx, tt.kv)
 			if tt.wantErr {
 				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
-				
+
 				// Verify all keys were set
 				for k, v := range tt.kv {
 					got, err := client.GetRaw(ctx, k)
@@ -456,13 +456,13 @@ func TestBatchGetRaw(t *testing.T) {
 			expectErr: false,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			client := newTestClient(t)
 			ctx := context.Background()
 			tt.setup(client, ctx)
-			
+
 			got, err := client.BatchGetRaw(ctx, tt.keys)
 			if tt.expectErr {
 				require.Error(t, err)
@@ -505,19 +505,19 @@ func TestBatchDelete(t *testing.T) {
 			wantErr: false,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			client := newTestClient(t)
 			ctx := context.Background()
 			tt.setup(client, ctx)
-			
+
 			err := client.BatchDelete(ctx, tt.keys)
 			if tt.wantErr {
 				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
-				
+
 				// Verify keys were deleted
 				for _, k := range tt.keys {
 					_, err := client.GetRaw(ctx, k)
@@ -533,13 +533,13 @@ func TestClose(t *testing.T) {
 	opt := DefaultOptions()
 	opt.Path = tmpDir
 	opt.FileName = "test.db"
-	
+
 	client, err := New(opt)
 	require.NoError(t, err)
-	
+
 	err = client.Close()
 	require.NoError(t, err)
-	
+
 	// Verify database is closed by trying to use it
 	ctx := context.Background()
 	_, err = client.GetRaw(ctx, "test")
