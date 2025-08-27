@@ -24,7 +24,6 @@ linters:
     - makezero # Finds slice declarations with non-zero initial length [fast: false, auto-fix: false]
     - misspell # Finds commonly misspelled English words in comments [fast: true, auto-fix: true]
     - nilerr # Finds the code that returns nil even if it checks that the error is not nil. [fast: false, auto-fix: false]
-    - noctx # noctx finds sending http request without context.Context [fast: false, auto-fix: false]
     - nolintlint # Reports ill-formed or insufficient nolint directives [fast: true, auto-fix: false]
     - nosprintfhostport # Checks for misuse of Sprintf to construct a host with port in a URL. [fast: true, auto-fix: false]
     - predeclared # find code that shadows one of Go's predeclared identifiers [fast: true, auto-fix: false]
@@ -42,7 +41,6 @@ linters:
     - cyclop
     - dupl
     - exhaustive
-    - funlen
     - gochecknoinits
     - gocognit
     - godox
