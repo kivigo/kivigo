@@ -193,6 +193,13 @@ func TestMySQL_BatchSetRaw(t *testing.T) {
 	err := c.BatchSetRaw(ctx, map[string][]byte{})
 	require.ErrorIs(t, err, errs.ErrEmptyBatch)
 
+	// Test batch with empty key
+	err = c.BatchSetRaw(ctx, map[string][]byte{
+		"valid_key": []byte("value"),
+		"":          []byte("empty_key_value"),
+	})
+	require.ErrorIs(t, err, errs.ErrEmptyKey)
+
 	// Test batch set
 	testData := map[string][]byte{
 		"batchset1": []byte("setvalue1"),
@@ -225,6 +232,10 @@ func TestMySQL_BatchDelete(t *testing.T) {
 	// Test empty batch
 	err := c.BatchDelete(ctx, []string{})
 	require.ErrorIs(t, err, errs.ErrEmptyBatch)
+
+	// Test batch with empty key
+	err = c.BatchDelete(ctx, []string{"valid_key", ""})
+	require.ErrorIs(t, err, errs.ErrEmptyKey)
 
 	// Set up test data
 	testData := map[string][]byte{

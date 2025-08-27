@@ -234,38 +234,78 @@ func (c Client) BatchGetRaw(ctx context.Context, keys []string) (map[string][]by
 	return results, rows.Err()
 }
 
+// validateKeys checks if any key in the slice is empty.
+func validateKeys(keys []string) error {
+	for _, key := range keys {
+		if key == "" {
+			return errs.ErrEmptyKey
+		}
+	}
+	return nil
+}
+
+// validateKeyValuePairs checks if any key in the map is empty.
+func validateKeyValuePairs(kv map[string][]byte) error {
+	for key := range kv {
+		if key == "" {
+			return errs.ErrEmptyKey
+		}
+	}
+	return nil
+}
+
+// executeTransaction runs a transaction with automatic rollback handling.
+func (c Client) executeTransaction(ctx context.Context, fn func(*sql.Tx) error) error {
+	tx, err := c.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	var committed bool
+	defer func() {
+		if !committed {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				// Log rollback error if needed, but don't override the main error
+			}
+		}
+	}()
+
+	if err := fn(tx); err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+	committed = true
+	return nil
+}
+
 // BatchSetRaw stores multiple key-value pairs atomically.
 func (c Client) BatchSetRaw(ctx context.Context, kv map[string][]byte) error {
 	if len(kv) == 0 {
 		return errs.ErrEmptyBatch
 	}
 
-	// Start transaction
-	tx, err := c.db.BeginTx(ctx, nil)
-	if err != nil {
+	if err := validateKeyValuePairs(kv); err != nil {
 		return err
 	}
 
-	defer func() {
-		if rollbackErr := tx.Rollback(); rollbackErr != nil {
-			// Log rollback error if needed, but don't override the main error
-		}
-	}()
-
-	query := fmt.Sprintf("REPLACE INTO %s (key_name, value_data) VALUES (?, ?)", c.tableName) //nolint:gosec // table name is controlled internally
-	stmt, err := tx.PrepareContext(ctx, query)
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-
-	for key, value := range kv {
-		if _, err := stmt.ExecContext(ctx, key, value); err != nil {
+	return c.executeTransaction(ctx, func(tx *sql.Tx) error {
+		query := fmt.Sprintf("REPLACE INTO %s (key_name, value_data) VALUES (?, ?)", c.tableName) //nolint:gosec // table name is controlled internally
+		stmt, err := tx.PrepareContext(ctx, query)
+		if err != nil {
 			return err
 		}
-	}
+		defer stmt.Close()
 
-	return tx.Commit()
+		for key, value := range kv {
+			if _, err := stmt.ExecContext(ctx, key, value); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }
 
 // BatchDelete removes multiple keys atomically.
@@ -274,30 +314,23 @@ func (c Client) BatchDelete(ctx context.Context, keys []string) error {
 		return errs.ErrEmptyBatch
 	}
 
-	// Start transaction
-	tx, err := c.db.BeginTx(ctx, nil)
-	if err != nil {
+	if err := validateKeys(keys); err != nil {
 		return err
 	}
 
-	defer func() {
-		if rollbackErr := tx.Rollback(); rollbackErr != nil {
-			// Log rollback error if needed, but don't override the main error
-		}
-	}()
-
-	query := fmt.Sprintf("DELETE FROM %s WHERE key_name = ?", c.tableName) //nolint:gosec // table name is controlled internally
-	stmt, err := tx.PrepareContext(ctx, query)
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-
-	for _, key := range keys {
-		if _, err := stmt.ExecContext(ctx, key); err != nil {
+	return c.executeTransaction(ctx, func(tx *sql.Tx) error {
+		query := fmt.Sprintf("DELETE FROM %s WHERE key_name = ?", c.tableName) //nolint:gosec // table name is controlled internally
+		stmt, err := tx.PrepareContext(ctx, query)
+		if err != nil {
 			return err
 		}
-	}
+		defer stmt.Close()
 
-	return tx.Commit()
+		for _, key := range keys {
+			if _, err := stmt.ExecContext(ctx, key); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }

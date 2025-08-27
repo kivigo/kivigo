@@ -2,10 +2,12 @@ package mysql
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"testing"
 	"time"
 
+	_ "github.com/go-sql-driver/mysql" // MySQL driver
 	tc "github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 )
@@ -64,7 +66,25 @@ func start(t *testing.T) (*container, error) {
 	}
 
 	// Wait a bit for MySQL to be fully ready
-	time.Sleep(2 * time.Second)
+	time.Sleep(3 * time.Second)
+
+	// Verify connection works
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open test connection: %w", err)
+	}
+	defer db.Close()
+
+	// Try to ping the database with retries
+	for i := 0; i < 10; i++ {
+		if err := db.Ping(); err == nil {
+			break
+		}
+		if i == 9 {
+			return nil, fmt.Errorf("failed to connect to MySQL after retries")
+		}
+		time.Sleep(1 * time.Second)
+	}
 
 	return r, nil
 }
