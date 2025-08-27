@@ -183,3 +183,24 @@ updates:
       redis-dependencies:
         patterns:
           - "*"
+
+  # MySQL backend dependencies
+  - package-ecosystem: "gomod"
+    directory: "/backend/mysql"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "13:00"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps(mysql)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "go"
+      - "backend"
+      - "mysql"
+    groups:
+      mysql-dependencies:
+        patterns:
+          - "*"
