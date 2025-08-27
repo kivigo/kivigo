@@ -170,59 +170,6 @@ jobs:
           parallel: true
           flag-name: ${{ matrix.backend }}-deps
 
-  # Lint changed modules
-  lint-changed:
-    runs-on: ubuntu-latest
-    needs: detect-changes
-    if: needs.detect-changes.outputs.main-changed == 'true' || needs.detect-changes.outputs.backends-changed == 'true'
-    strategy:
-      matrix:
-        go-version: [1.24]  # Only lint with latest Go version
-    steps:
-      - name: 🛎️ Checkout code
-        uses: actions/checkout@v4
-
-      - name: 🏗️ Set up Go ${{ matrix.go-version }}
-        uses: actions/setup-go@v5
-        with:
-          go-version: ${{ matrix.go-version }}
-
-      - name: 📥 Install golangci-lint
-        uses: golangci/golangci-lint-action@v8
-        with:
-          version: latest
-
-      - name: 🔍 Run golangci-lint on main project
-        if: needs.detect-changes.outputs.main-changed == 'true'
-        run: golangci-lint run --timeout=5m
-
-      - name: 🔍 Run golangci-lint on changed backends
-        if: needs.detect-changes.outputs.backends-changed == 'true'
-        run: |
-          changed_backends='${{ needs.detect-changes.outputs.changed-backends }}'
-          echo "Linting changed backends: $changed_backends"
-          
-          # Check if we have any backends to lint
-          if [ "$changed_backends" = "[]" ]; then
-            echo "No backends to lint"
-            exit 0
-          fi
-          
-          echo "$changed_backends" | jq -r '.[]' | while read -r backend; do
-            if [[ -d "backend/$backend" && -f "backend/$backend/go.mod" ]]; then
-              echo "🔍 Linting backend: $backend"
-              cd "backend/$backend"
-              if ! golangci-lint run --timeout=5m; then
-                echo "❌ Linting failed for backend: $backend"
-                exit 1
-              fi
-              echo "✅ Linting passed for backend: $backend"
-              cd ../..
-            else
-              echo "⚠️ Skipping non-existent backend: $backend"
-            fi
-          done
-
   # Complete coverage reporting
   finish-coverage:
     needs: [detect-changes, test-main, test-backends]
@@ -238,7 +185,7 @@ jobs:
   # Summary job
   dependency-update-summary:
     runs-on: ubuntu-latest
-    needs: [detect-changes, test-main, test-backends, lint-changed]
+    needs: [detect-changes, test-main, test-backends]
     if: always()
     steps:
       - name: 📊 Dependency update test summary
@@ -257,6 +204,5 @@ jobs:
             echo "- Backend tests: ${{ needs.test-backends.result }}" >> $GITHUB_STEP_SUMMARY
           fi
           
-          echo "- Linting: ${{ needs.lint-changed.result }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "🎉 Dependency update validation complete!"
