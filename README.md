@@ -465,7 +465,14 @@ You can inject `MockKV` into your tests to simulate all key-value backend behavi
 
 ## 📚 Documentation
 
-See [pkg.go.dev/github.com/azrod/kivigo](https://pkg.go.dev/github.com/azrod/kivigo) for full documentation, and explore the [`pkg/backend`](pkg/backend/) and [`pkg/encoder`](pkg/encoder/) folders for more details on implementations.
+Visit our comprehensive documentation at **[https://azrod.github.io/kivigo/](https://azrod.github.io/kivigo/)** for:
+
+- **Getting Started Guide** - Set up your first key-value store in minutes
+- **Complete Backend Documentation** - Detailed guides for all supported backends
+- **Advanced Features** - Health checks, custom backends, encoders, batch operations, and more
+- **Code Examples** - Real-world usage patterns and best practices
+
+For API reference, see [pkg.go.dev/github.com/azrod/kivigo](https://pkg.go.dev/github.com/azrod/kivigo).
 
 ## 🛠️ Design Decisions
 

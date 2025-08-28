@@ -4,6 +4,35 @@
 
 KiviGo is a lightweight, modular key-value store library for Go that provides a unified interface for different backends (Redis, BoltDB, Consul, etcd, Badger) and encoders (JSON, YAML). Each backend is implemented as a separate Go module to minimize dependencies.
 
+## 📚 Documentation
+
+KiviGo has comprehensive documentation available at [https://azrod.github.io/kivigo/](https://azrod.github.io/kivigo/) built with Docusaurus.
+
+The documentation includes:
+- Getting started guide
+- Complete backend documentation with examples
+- Advanced features (health checks, custom backends, encoders, mock testing, batch operations)
+- Code examples throughout
+
+For API reference, see [pkg.go.dev/github.com/azrod/kivigo](https://pkg.go.dev/github.com/azrod/kivigo).
+
+### Documentation Development
+
+To work on the documentation:
+
+```bash
+# Install dependencies
+cd website && npm install
+
+# Start development server
+npm start
+
+# Build for production  
+npm run build
+```
+
+The documentation is automatically deployed to GitHub Pages when changes are pushed to main or when releases are created.
+
 ## Working Effectively
 
 ### Bootstrap and Build
@@ -354,19 +383,25 @@ When you add a new backend:
 1. **Create the backend in `backend/<name>/` as a separate Go module.**
 2. **Add tests and helper files as described above.**
 3. **Update documentation and README with the new backend.**
-4. **MANDATORY: Update `.github/dependabot.yml` to include the new backend module.**
+4. **MANDATORY: Create documentation page for the new backend.**
+   - Create `website/docs/backends/<name>.md` using the BackendTemplate component
+   - Update `website/sidebars.ts` to include the new backend in the backends section
+   - Follow the template pattern used by existing backends (badger, redis, consul, etc.)
+   - Include installation instructions, configuration examples, usage examples, and feature descriptions
+5. **MANDATORY: Update `.github/dependabot.yml` to include the new backend module.**
    - Add a new entry under `updates:` for the backend, e.g.:
      ```yaml
      - package-ecosystem: "gomod"
        directory: "/backend/<name>"
      ```
    - This ensures Dependabot will track and update dependencies for the new backend.
-5. **Final step: Review your own PR before merging.**
+6. **Final step: Review your own PR before merging.**
    - Check that all tests pass (main package and all backends)
    - Check coverage and lint
    - Review code and documentation changes
    - Ensure CI and Dependabot config are up to date
+   - Verify the documentation builds successfully with `cd website && npm run build`
    - Add a validation comment to your PR
    - **There must be zero lint errors in the output of `golangci-lint run --timeout=5m`.**
 
-Always follow these steps to keep dependency management, CI, and code quality up to date.
+Always follow these steps to keep dependency management, CI, documentation, and code quality up to date.
