@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"net"
 	"testing"
 	"time"
 
@@ -57,7 +58,7 @@ func start(t *testing.T) (*container, error) {
 		return nil, err
 	}
 
-	dsn := fmt.Sprintf("postgres://testuser:testpass@%s:%s/kivigo?sslmode=disable", host, port.Port())
+	dsn := fmt.Sprintf("postgres://testuser:testpass@%s/kivigo?sslmode=disable", net.JoinHostPort(host, port.Port()))
 
 	r := &container{
 		container: c,

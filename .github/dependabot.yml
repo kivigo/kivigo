@@ -204,3 +204,24 @@ updates:
       mysql-dependencies:
         patterns:
           - "*"
+
+  # PostgreSQL backend dependencies
+  - package-ecosystem: "gomod"
+    directory: "/backend/postgresql"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "13:30"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps(postgresql)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "go"
+      - "backend"
+      - "postgresql"
+    groups:
+      postgresql-dependencies:
+        patterns:
+          - "*"

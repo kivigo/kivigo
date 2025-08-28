@@ -130,9 +130,9 @@ func (c Client) List(ctx context.Context, prefix string) ([]string, error) {
 	var args []interface{}
 
 	if prefix == "" {
-		query = fmt.Sprintf("SELECT key_name FROM %s ORDER BY key_name", c.tableName) //nolint:gosec // table name is controlled internally
+		query = fmt.Sprintf("SELECT key_name FROM %s ORDER BY key_name", c.tableName)
 	} else {
-		query = fmt.Sprintf("SELECT key_name FROM %s WHERE key_name LIKE $1 ORDER BY key_name", c.tableName) //nolint:gosec // table name is controlled internally
+		query = fmt.Sprintf("SELECT key_name FROM %s WHERE key_name LIKE $1 ORDER BY key_name", c.tableName)
 		args = append(args, prefix+"%")
 	}
 
@@ -190,8 +190,8 @@ func (c Client) BatchGetRaw(ctx context.Context, keys []string) (map[string][]by
 		args[i] = key
 	}
 
-	query := fmt.Sprintf("SELECT key_name, value_data FROM %s WHERE key_name IN (%s)",
-		c.tableName, strings.Join(placeholders, ",")) //nolint:gosec // table name is controlled internally
+	query := fmt.Sprintf("SELECT key_name, value_data FROM %s WHERE key_name IN (%s)", //nolint:gosec // table name is controlled internally
+		c.tableName, strings.Join(placeholders, ","))
 
 	rows, err := c.db.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -229,7 +229,9 @@ func (c Client) BatchSetRaw(ctx context.Context, kv map[string][]byte) error {
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback()
+	defer func() {
+		_ = tx.Rollback()
+	}()
 
 	query := fmt.Sprintf("INSERT INTO %s (key_name, value_data) VALUES ($1, $2) ON CONFLICT (key_name) DO UPDATE SET value_data = EXCLUDED.value_data", c.tableName) //nolint:gosec // table name is controlled internally
 	stmt, err := tx.PrepareContext(ctx, query)
@@ -261,8 +263,8 @@ func (c Client) BatchDelete(ctx context.Context, keys []string) error {
 		args[i] = key
 	}
 
-	query := fmt.Sprintf("DELETE FROM %s WHERE key_name IN (%s)",
-		c.tableName, strings.Join(placeholders, ",")) //nolint:gosec // table name is controlled internally
+	query := fmt.Sprintf("DELETE FROM %s WHERE key_name IN (%s)", //nolint:gosec // table name is controlled internally
+		c.tableName, strings.Join(placeholders, ","))
 
 	_, err := c.db.ExecContext(ctx, query, args...)
 	return err
