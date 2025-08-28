@@ -20,8 +20,14 @@ function HomepageHeader() {
         <div className={styles.buttons}>
           <Link
             className="button button--secondary button--lg"
-            to="/docs/intro">
-            Docusaurus Tutorial - 5min ⏱️
+            to="/docs/getting-started">
+            Get Started - 5min ⏱️
+          </Link>
+          <Link
+            className="button button--outline button--lg"
+            to="/docs/backends/overview"
+            style={{marginLeft: '1rem'}}>
+            View Backends
           </Link>
         </div>
       </div>
@@ -33,8 +39,8 @@ export default function Home(): ReactNode {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
+      title={`${siteConfig.title} - Lightweight key-value store library for Go`}
+      description="KiviGo is a lightweight, modular key-value store library for Go that provides a unified interface for different backends like Redis, BadgerDB, etcd, Consul, and more.">
       <HomepageHeader />
       <main>
         <HomepageFeatures />

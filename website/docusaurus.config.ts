@@ -63,12 +63,16 @@ const config: Config = {
   themeConfig: {
     // Replace with your project's social card
     image: 'img/kivigo-white.png',
+    colorMode: {
+      defaultMode: 'light',
+      disableSwitch: true,
+      respectPrefersColorScheme: false,
+    },
     navbar: {
       title: 'KiviGo',
       logo: {
         alt: 'KiviGo Logo',
         src: 'img/kivigo-white.png',
-        srcDark: 'img/kivigo-dark.png',
       },
       items: [
         {
@@ -140,7 +144,6 @@ const config: Config = {
     },
     prism: {
       theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
       additionalLanguages: ['go', 'bash', 'yaml', 'json'],
     },
   } satisfies Preset.ThemeConfig,

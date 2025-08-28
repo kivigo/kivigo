@@ -11,32 +11,32 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
+    title: 'Multiple Backends',
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Support for Redis, BadgerDB, etcd, Consul, MongoDB, MySQL, PostgreSQL, 
+        and more. Switch between backends with minimal code changes and unified API.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
+    title: 'Built for Go',
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Native Go implementation with type safety, proper error handling, 
+        and context support. Designed following Go best practices and idioms.
       </>
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'Enterprise Ready',
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Health checks, batch operations, custom encoders, mock testing support, 
+        and comprehensive documentation. Production-ready with monitoring capabilities.
       </>
     ),
   },
