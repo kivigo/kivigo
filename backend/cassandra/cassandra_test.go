@@ -14,11 +14,16 @@ import (
 	"github.com/azrod/kivigo/pkg/errs"
 )
 
+const (
+	skipTestcontainersValue = "true"
+	skipTestcontainersEnv   = "SKIP_TESTCONTAINERS"
+)
+
 var testCassandra *container
 
 func TestMain(m *testing.M) {
 	// Skip testcontainer tests if explicitly disabled
-	if os.Getenv("SKIP_TESTCONTAINERS") == "true" {
+	if os.Getenv(skipTestcontainersEnv) == skipTestcontainersValue {
 		fmt.Println("⏭️ Skipping testcontainer tests (SKIP_TESTCONTAINERS=true)")
 		os.Exit(0)
 	}
@@ -36,13 +41,17 @@ func TestMain(m *testing.M) {
 	code := m.Run()
 
 	// Cleanup: stop the container
+	cleanup()
+
+	os.Exit(code)
+}
+
+func cleanup() {
 	if testCassandra != nil {
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
 		_ = testCassandra.Stop(ctx)
 	}
-
-	os.Exit(code)
 }
 
 func cassandraAvailable(t *testing.T) bool {
@@ -88,10 +97,10 @@ func newTestClient(t *testing.T) Client {
 }
 
 func TestCassandra_BasicOps(t *testing.T) {
-	if os.Getenv("SKIP_TESTCONTAINERS") == "true" {
+	if os.Getenv(skipTestcontainersEnv) == skipTestcontainersValue {
 		t.Skip("Skipping testcontainer tests (SKIP_TESTCONTAINERS=true)")
 	}
-	
+
 	if os.Getenv("CI") == "" && !cassandraAvailable(t) {
 		t.Skip("Cassandra not available")
 	}
@@ -125,10 +134,10 @@ func TestCassandra_BasicOps(t *testing.T) {
 }
 
 func TestCassandra_BatchOps(t *testing.T) {
-	if os.Getenv("SKIP_TESTCONTAINERS") == "true" {
+	if os.Getenv(skipTestcontainersEnv) == skipTestcontainersValue {
 		t.Skip("Skipping testcontainer tests (SKIP_TESTCONTAINERS=true)")
 	}
-	
+
 	if os.Getenv("CI") == "" && !cassandraAvailable(t) {
 		t.Skip("Cassandra not available")
 	}
@@ -165,10 +174,10 @@ func TestCassandra_BatchOps(t *testing.T) {
 }
 
 func TestCassandra_Health(t *testing.T) {
-	if os.Getenv("SKIP_TESTCONTAINERS") == "true" {
+	if os.Getenv(skipTestcontainersEnv) == skipTestcontainersValue {
 		t.Skip("Skipping testcontainer tests (SKIP_TESTCONTAINERS=true)")
 	}
-	
+
 	if os.Getenv("CI") == "" && !cassandraAvailable(t) {
 		t.Skip("Cassandra not available")
 	}
@@ -182,10 +191,10 @@ func TestCassandra_Health(t *testing.T) {
 }
 
 func TestCassandra_ErrorCases(t *testing.T) {
-	if os.Getenv("SKIP_TESTCONTAINERS") == "true" {
+	if os.Getenv(skipTestcontainersEnv) == skipTestcontainersValue {
 		t.Skip("Skipping testcontainer tests (SKIP_TESTCONTAINERS=true)")
 	}
-	
+
 	if os.Getenv("CI") == "" && !cassandraAvailable(t) {
 		t.Skip("Cassandra not available")
 	}
@@ -226,10 +235,10 @@ func TestCassandra_ErrorCases(t *testing.T) {
 }
 
 func TestCassandra_ListWithPrefix(t *testing.T) {
-	if os.Getenv("SKIP_TESTCONTAINERS") == "true" {
+	if os.Getenv(skipTestcontainersEnv) == skipTestcontainersValue {
 		t.Skip("Skipping testcontainer tests (SKIP_TESTCONTAINERS=true)")
 	}
-	
+
 	if os.Getenv("CI") == "" && !cassandraAvailable(t) {
 		t.Skip("Cassandra not available")
 	}
@@ -265,10 +274,10 @@ func TestCassandra_ListWithPrefix(t *testing.T) {
 }
 
 func TestCassandra_BatchGetPartialResults(t *testing.T) {
-	if os.Getenv("SKIP_TESTCONTAINERS") == "true" {
+	if os.Getenv(skipTestcontainersEnv) == skipTestcontainersValue {
 		t.Skip("Skipping testcontainer tests (SKIP_TESTCONTAINERS=true)")
 	}
-	
+
 	if os.Getenv("CI") == "" && !cassandraAvailable(t) {
 		t.Skip("Cassandra not available")
 	}
