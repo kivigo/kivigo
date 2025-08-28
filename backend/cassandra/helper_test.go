@@ -1,3 +1,5 @@
+//go:build !unit
+
 package cassandra
 
 import (
@@ -22,8 +24,9 @@ func start(t *testing.T) (*container, error) {
 
 	fmt.Println("🚀 Starting Cassandra (testcontainers)...")
 
+	// Use an older, more stable Cassandra version for CI compatibility
 	req := tc.ContainerRequest{
-		Image:        "cassandra:latest",
+		Image:        "cassandra:3.11",
 		ExposedPorts: []string{"9042/tcp"},
 		WaitingFor:   wait.ForListeningPort("9042/tcp").WithStartupTimeout(60 * time.Second),
 		Env: map[string]string{
@@ -58,8 +61,8 @@ func start(t *testing.T) (*container, error) {
 		hosts:     hosts,
 	}
 
-	// Wait a bit more for Cassandra to be fully ready
-	time.Sleep(10 * time.Second)
+	// Give Cassandra time to initialize
+	time.Sleep(5 * time.Second)
 
 	return r, nil
 }
