@@ -158,7 +158,10 @@ func TestCassandra_BatchOps(t *testing.T) {
 	// Verify deletion
 	got, err = c.BatchGetRaw(ctx, []string{"batch:key1", "batch:key2", "batch:key3"})
 	require.NoError(t, err)
-	require.Empty(t, got)
+	require.Len(t, got, 3)
+	require.Nil(t, got["batch:key1"])
+	require.Nil(t, got["batch:key2"])
+	require.Nil(t, got["batch:key3"])
 }
 
 func TestCassandra_Health(t *testing.T) {
