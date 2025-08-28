@@ -28,16 +28,15 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
   configurationExample={`package main
 
 import (
-    "github.com/azrod/kivigo/pkg/client"
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/consul"
-    "github.com/hashicorp/consul/api"
 )
 
 func main() {
     // Basic configuration
     opt := consul.DefaultOptions()
     opt.Address = "localhost:8500"
-    
+
     // Custom configuration with auth
     customOpt := &consul.Config{
         Address: "consul.example.com:8500",
@@ -54,7 +53,7 @@ func main() {
     defer kvStore.Close()
     
     // Create client
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         panic(err)
     }
@@ -65,8 +64,8 @@ import (
     "context"
     "fmt"
     "log"
-    
-    "github.com/azrod/kivigo/pkg/client"
+
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/consul"
 )
 
@@ -81,14 +80,14 @@ func main() {
     // Setup
     opt := consul.DefaultOptions()
     opt.Address = "localhost:8500"
-    
+
     kvStore, err := consul.New(opt)
     if err != nil {
         log.Fatal(err)
     }
     defer kvStore.Close()
     
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         log.Fatal(err)
     }

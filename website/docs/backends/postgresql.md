@@ -30,10 +30,9 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
 
 import (
     "time"
-    
-    "github.com/azrod/kivigo/pkg/client"
+
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/postgresql"
-    _ "github.com/lib/pq"
 )
 
 func main() {
@@ -43,7 +42,7 @@ func main() {
     opt.TableName = "keyvalue"
     opt.KeyColumn = "key"
     opt.ValueColumn = "value"
-    
+
     // Advanced configuration with SSL and connection pool
     advOpt := postgresql.NewOptions()
     advOpt.DataSourceName = "postgres://user:password@postgres-server:5432/kivigo?sslmode=require&sslcert=client-cert.pem&sslkey=client-key.pem&sslrootcert=ca-cert.pem"
@@ -71,7 +70,7 @@ func main() {
     defer kvStore.Close()
     
     // Create client
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         panic(err)
     }
@@ -83,8 +82,8 @@ import (
     "fmt"
     "log"
     "time"
-    
-    "github.com/azrod/kivigo/pkg/client"
+
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/postgresql"
 )
 
@@ -107,14 +106,14 @@ func main() {
     opt.KeyColumn = "log_key"
     opt.ValueColumn = "log_data"
     opt.UseJSONB = true  // Use JSONB for better JSON performance
-    
+
     kvStore, err := postgresql.New(opt)
     if err != nil {
         log.Fatal(err)
     }
     defer kvStore.Close()
     
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         log.Fatal(err)
     }
@@ -188,7 +187,7 @@ import (
     "context"
     "log"
     "time"
-    
+
     "github.com/azrod/kivigo/backend/postgresql"
 )
 
@@ -196,7 +195,7 @@ func main() {
     opt := postgresql.NewOptions()
     opt.DataSourceName = "postgres://user:password@localhost:5432/kivigo?sslmode=disable"
     opt.TableName = "keyvalue"
-    
+
     kvStore, err := postgresql.New(opt)
     if err != nil {
         log.Fatal(err)
@@ -268,8 +267,8 @@ import (
     "fmt"
     "log"
     "time"
-    
-    "github.com/azrod/kivigo/pkg/client"
+
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/postgresql"
 )
 
@@ -280,14 +279,14 @@ func main() {
     opt.KeyColumn = "metric_key"
     opt.ValueColumn = "metric_data"
     opt.UseJSONB = true
-    
+
     kvStore, err := postgresql.New(opt)
     if err != nil {
         log.Fatal(err)
     }
     defer kvStore.Close()
     
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         log.Fatal(err)
     }

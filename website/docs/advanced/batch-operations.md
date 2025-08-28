@@ -43,7 +43,7 @@ import (
     "context"
     "log"
     
-    "github.com/azrod/kivigo/pkg/client"
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/redis"
 )
 
@@ -55,7 +55,7 @@ func main() {
     }
     defer kvStore.Close()
     
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         log.Fatal(err)
     }

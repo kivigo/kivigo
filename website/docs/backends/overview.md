@@ -9,36 +9,42 @@ KiviGo supports a wide variety of backends, each designed for different use case
 ## Backend Categories
 
 ### 🗄️ Embedded Stores
+
 These backends store data locally in files, perfect for single-node applications or development environments.
 
 - **[BadgerDB](./badger)** - Fast, embedded key-value store with built-in caching
 - **[BoltDB (Local)](./local)** - Simple, reliable embedded database
 
 ### 🌐 Distributed Stores
+
 These backends are designed for distributed systems and service discovery.
 
 - **[Consul](./consul)** - Service discovery and configuration management
 - **[etcd](./etcd)** - Distributed key-value store for critical data
 
 ### ⚡ Distributed Caches
+
 High-performance caching solutions for fast data access.
 
 - **[Redis](./redis)** - In-memory data structure store
 - **[Memcached](./memcached)** - Distributed memory caching system
 
 ### ☁️ Cloud Services
+
 Managed cloud backends that scale automatically.
 
 - **[Azure Cosmos DB](./azurecosmos)** - Globally distributed, multi-model database
 - **[DynamoDB](./dynamodb)** - Amazon's managed NoSQL database
 
 ### 🗃️ SQL Databases
+
 Traditional relational databases with strong consistency guarantees.
 
 - **[MySQL](./mysql)** - Popular open-source relational database
 - **[PostgreSQL](./postgresql)** - Advanced open-source relational database
 
 ### 🍃 NoSQL Databases
+
 Document and collection-based databases for flexible schemas.
 
 - **[MongoDB](./mongodb)** - Document-oriented NoSQL database
@@ -62,23 +68,28 @@ Document and collection-based databases for flexible schemas.
 ## Choosing the Right Backend
 
 ### 🏠 For Local Development
+
 - **BadgerDB**: Fast development with persistence
 - **BoltDB**: Simple, reliable file-based storage
 
 ### 📊 For Caching
+
 - **Redis**: Feature-rich caching with data structures
 - **Memcached**: Simple, high-performance memory caching
 
 ### 🔧 For Configuration Management
+
 - **Consul**: Service discovery + configuration
 - **etcd**: Kubernetes-style distributed configuration
 
 ### 🌍 For Production Applications
+
 - **Redis**: High-performance applications
 - **PostgreSQL**: ACID compliance requirements
 - **MongoDB**: Flexible schema applications
 
 ### ☁️ For Cloud-Native Applications
+
 - **Azure Cosmos DB**: Multi-region Azure applications
 - **DynamoDB**: AWS-native applications
 
@@ -108,12 +119,13 @@ import "github.com/azrod/kivigo/backend/redis"
 kvStore, err := redis.New(redis.DefaultOptions())
 
 // The client usage is identical regardless of backend
-client, err := client.New(kvStore, client.Option{})
+client, err := kivigo.New(kvStore)
 ```
 
 ## Performance Characteristics
 
 ### Read Performance (approximate)
+
 1. **Memcached** - Fastest (in-memory)
 2. **Redis** - Very fast (in-memory with persistence)
 3. **BadgerDB** - Fast (local disk with caching)
@@ -122,6 +134,7 @@ client, err := client.New(kvStore, client.Option{})
 6. **Cloud services** - Variable (network dependent)
 
 ### Write Performance (approximate)
+
 1. **Memcached** - Fastest (memory only)
 2. **Redis** - Very fast (async persistence)
 3. **BadgerDB** - Fast (optimized writes)
@@ -132,16 +145,19 @@ client, err := client.New(kvStore, client.Option{})
 ## Deployment Considerations
 
 ### Local/Embedded Backends
+
 - **Pros**: No external dependencies, fast, simple deployment
 - **Cons**: Single node only, backup complexity
 - **Best for**: Development, single-node applications
 
 ### Remote/Distributed Backends
+
 - **Pros**: Shared across services, scalable, managed backups
 - **Cons**: Network dependency, operational complexity
 - **Best for**: Production applications, microservices
 
 ### Cloud Backends
+
 - **Pros**: Fully managed, auto-scaling, global distribution
 - **Cons**: Vendor lock-in, cost, network latency
 - **Best for**: Cloud-native applications, global scale
@@ -158,7 +174,7 @@ kvStore, err := badger.New(badger.DefaultOptions("./data"))
 kvStore, err := redis.New(redis.DefaultOptions())
 
 // Client code remains the same!
-client, err := client.New(kvStore, client.Option{})
+client, err := kivigo.New(kvStore)
 ```
 
 For data migration, you can use KiviGo's List functionality to transfer data:

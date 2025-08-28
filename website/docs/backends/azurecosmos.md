@@ -29,17 +29,17 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
   configurationExample={`package main
 
 import (
-    "github.com/azrod/kivigo/pkg/client"
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/azurecosmos"
 )
 
 func main() {
     // Configuration with connection string
     opt := azurecosmos.NewOptions()
-    opt.ConnectionString = "AccountEndpoint=https://your-account.documents.azure.com:443/;AccountKey=your-key;"
+    opt.ConnectionString = "AccountEndpoint=<https://your-account.documents.azure.com:443/;AccountKey=your-key>;"
     opt.DatabaseName = "kivigo"
     opt.ContainerName = "keyvalue"
-    
+
     // Optional: Configure consistency level
     opt.ConsistencyLevel = azurecosmos.SessionConsistency
     
@@ -57,7 +57,7 @@ func main() {
     defer kvStore.Close()
     
     // Create client
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         panic(err)
     }
@@ -68,8 +68,8 @@ import (
     "context"
     "fmt"
     "log"
-    
-    "github.com/azrod/kivigo/pkg/client"
+
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/azurecosmos"
 )
 
@@ -83,17 +83,17 @@ type UserProfile struct {
 func main() {
     // Setup
     opt := azurecosmos.NewOptions()
-    opt.ConnectionString = "AccountEndpoint=https://your-account.documents.azure.com:443/;AccountKey=your-key;"
+    opt.ConnectionString = "AccountEndpoint=<https://your-account.documents.azure.com:443/;AccountKey=your-key>;"
     opt.DatabaseName = "kivigo"
     opt.ContainerName = "profiles"
-    
+
     kvStore, err := azurecosmos.New(opt)
     if err != nil {
         log.Fatal(err)
     }
     defer kvStore.Close()
     
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         log.Fatal(err)
     }
@@ -136,16 +136,16 @@ import (
     "context"
     "log"
     "time"
-    
+
     "github.com/azrod/kivigo/backend/azurecosmos"
 )
 
 func main() {
     opt := azurecosmos.NewOptions()
-    opt.ConnectionString = "AccountEndpoint=https://your-account.documents.azure.com:443/;AccountKey=your-key;"
+    opt.ConnectionString = "AccountEndpoint=<https://your-account.documents.azure.com:443/;AccountKey=your-key>;"
     opt.DatabaseName = "kivigo"
     opt.ContainerName = "keyvalue"
-    
+
     kvStore, err := azurecosmos.New(opt)
     if err != nil {
         log.Fatal(err)
@@ -196,24 +196,24 @@ import (
     "context"
     "fmt"
     "log"
-    
-    "github.com/azrod/kivigo/pkg/client"
+
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/azurecosmos"
 )
 
 func main() {
     opt := azurecosmos.NewOptions()
-    opt.ConnectionString = "AccountEndpoint=https://your-account.documents.azure.com:443/;AccountKey=your-key;"
+    opt.ConnectionString = "AccountEndpoint=<https://your-account.documents.azure.com:443/;AccountKey=your-key>;"
     opt.DatabaseName = "kivigo"
     opt.ContainerName = "keyvalue"
-    
+
     kvStore, err := azurecosmos.New(opt)
     if err != nil {
         log.Fatal(err)
     }
     defer kvStore.Close()
     
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         log.Fatal(err)
     }

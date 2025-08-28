@@ -30,8 +30,8 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
 
 import (
     "time"
-    
-    "github.com/azrod/kivigo/pkg/client"
+
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/memcached"
 )
 
@@ -41,7 +41,7 @@ func main() {
     opt.Servers = []string{"localhost:11211"}
     opt.Timeout = 1 * time.Second
     opt.MaxIdleConns = 2
-    
+
     // Multiple servers with consistent hashing
     multiOpt := memcached.NewOptions()
     multiOpt.Servers = []string{
@@ -64,7 +64,7 @@ func main() {
     defer kvStore.Close()
     
     // Create client
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         panic(err)
     }
@@ -76,8 +76,8 @@ import (
     "fmt"
     "log"
     "time"
-    
-    "github.com/azrod/kivigo/pkg/client"
+
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/memcached"
 )
 
@@ -93,14 +93,14 @@ func main() {
     opt.Servers = []string{"localhost:11211"}
     opt.Timeout = 1 * time.Second
     opt.DefaultTTL = 300 // 5 minutes
-    
+
     kvStore, err := memcached.New(opt)
     if err != nil {
         log.Fatal(err)
     }
     defer kvStore.Close()
     
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         log.Fatal(err)
     }
@@ -167,7 +167,7 @@ import (
     "context"
     "log"
     "time"
-    
+
     "github.com/azrod/kivigo/backend/memcached"
 )
 
@@ -175,7 +175,7 @@ func main() {
     opt := memcached.NewOptions()
     opt.Servers = []string{"localhost:11211"}
     opt.Timeout = 1 * time.Second
-    
+
     kvStore, err := memcached.New(opt)
     if err != nil {
         log.Fatal(err)
@@ -239,8 +239,8 @@ import (
     "context"
     "fmt"
     "log"
-    
-    "github.com/azrod/kivigo/pkg/client"
+
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/memcached"
 )
 
@@ -249,14 +249,14 @@ func main() {
     opt.Servers = []string{"localhost:11211"}
     opt.Timeout = 1 * time.Second
     opt.DefaultTTL = 1800 // 30 minutes
-    
+
     kvStore, err := memcached.New(opt)
     if err != nil {
         log.Fatal(err)
     }
     defer kvStore.Close()
     
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         log.Fatal(err)
     }

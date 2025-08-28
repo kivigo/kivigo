@@ -31,10 +31,9 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
 import (
     "database/sql"
     "time"
-    
-    "github.com/azrod/kivigo/pkg/client"
+
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/mysql"
-    _ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
@@ -44,7 +43,7 @@ func main() {
     opt.TableName = "keyvalue"
     opt.KeyColumn = "key_name"
     opt.ValueColumn = "value_data"
-    
+
     // Advanced configuration with connection pool
     advOpt := mysql.NewOptions()
     advOpt.DataSourceName = "user:password@tcp(mysql-server:3306)/kivigo?charset=utf8mb4&parseTime=true&loc=Local"
@@ -71,7 +70,7 @@ func main() {
     defer kvStore.Close()
     
     // Create client
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         panic(err)
     }
@@ -83,8 +82,8 @@ import (
     "fmt"
     "log"
     "time"
-    
-    "github.com/azrod/kivigo/pkg/client"
+
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/mysql"
 )
 
@@ -111,14 +110,14 @@ func main() {
     opt.TableName = "orders"
     opt.KeyColumn = "order_key"
     opt.ValueColumn = "order_data"
-    
+
     kvStore, err := mysql.New(opt)
     if err != nil {
         log.Fatal(err)
     }
     defer kvStore.Close()
     
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         log.Fatal(err)
     }
@@ -176,7 +175,7 @@ import (
     "context"
     "log"
     "time"
-    
+
     "github.com/azrod/kivigo/backend/mysql"
 )
 
@@ -184,7 +183,7 @@ func main() {
     opt := mysql.NewOptions()
     opt.DataSourceName = "user:password@tcp(localhost:3306)/kivigo?parseTime=true"
     opt.TableName = "keyvalue"
-    
+
     kvStore, err := mysql.New(opt)
     if err != nil {
         log.Fatal(err)
@@ -255,8 +254,8 @@ import (
     "fmt"
     "log"
     "time"
-    
-    "github.com/azrod/kivigo/pkg/client"
+
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/mysql"
 )
 
@@ -266,14 +265,14 @@ func main() {
     opt.TableName = "inventory"
     opt.KeyColumn = "item_key"
     opt.ValueColumn = "item_data"
-    
+
     kvStore, err := mysql.New(opt)
     if err != nil {
         log.Fatal(err)
     }
     defer kvStore.Close()
     
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         log.Fatal(err)
     }

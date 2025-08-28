@@ -11,6 +11,7 @@ KiviGo supports pluggable encoders that handle the serialization and deserializa
 KiviGo comes with built-in support for several encoding formats:
 
 ### JSON Encoder (Default)
+
 ```go
 import "github.com/azrod/kivigo/pkg/encoder"
 
@@ -20,6 +21,7 @@ client, err := client.New(kvStore, client.Option{
 ```
 
 ### YAML Encoder
+
 ```go
 import "github.com/azrod/kivigo/pkg/encoder"
 
@@ -31,6 +33,7 @@ client, err := client.New(kvStore, client.Option{
 ## Using Different Encoders
 
 ### JSON Example
+
 ```go
 package main
 
@@ -39,7 +42,7 @@ import (
     "fmt"
     "log"
     
-    "github.com/azrod/kivigo/pkg/client"
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/pkg/encoder"
     "github.com/azrod/kivigo/backend/badger"
 )
@@ -83,6 +86,7 @@ func main() {
 ```
 
 ### YAML Example
+
 ```go
 // YAML encoder
 yamlClient, err := client.New(kvStore, client.Option{
@@ -134,6 +138,7 @@ func main() {
 ## Advanced Encoder Features
 
 ### Compression Encoder
+
 Wrap existing encoders with compression:
 
 ```go
@@ -196,6 +201,7 @@ client, err := client.New(kvStore, client.Option{
 ```
 
 ### Encryption Encoder
+
 Add encryption to your data:
 
 ```go
@@ -280,6 +286,7 @@ client, err := client.New(kvStore, client.Option{
 ## Performance Considerations
 
 ### Encoding Benchmarks
+
 Different encoders have different performance characteristics:
 
 ```go
@@ -341,6 +348,7 @@ func safeEncodeDecode() {
 ## Best Practices
 
 ### 1. Consistent Encoding
+
 Use the same encoder for a given key across your application:
 
 ```go
@@ -354,6 +362,7 @@ jsonClient.Get(ctx, "user:1", &user) // Works!
 ```
 
 ### 2. Schema Evolution
+
 Design your structs for backward compatibility:
 
 ```go
@@ -369,6 +378,7 @@ type User struct {
 ```
 
 ### 3. Performance Testing
+
 Always benchmark your encoder choice with real data:
 
 ```go
@@ -390,6 +400,7 @@ func TestEncoderPerformance(t *testing.T) {
 ```
 
 ### 4. Validation
+
 Validate data after decoding:
 
 ```go

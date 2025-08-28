@@ -31,8 +31,8 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
 import (
     "context"
     "time"
-    
-    "github.com/azrod/kivigo/pkg/client"
+
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/mongodb"
     "go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -43,7 +43,7 @@ func main() {
     opt.ConnectionURI = "mongodb://localhost:27017"
     opt.Database = "kivigo"
     opt.Collection = "keyvalue"
-    
+
     // Advanced configuration with authentication
     authOpt := mongodb.NewOptions()
     authOpt.ConnectionURI = "mongodb://username:password@mongodb-server:27017/kivigo?authSource=admin"
@@ -72,7 +72,7 @@ func main() {
     defer kvStore.Close()
     
     // Create client
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         panic(err)
     }
@@ -84,8 +84,8 @@ import (
     "fmt"
     "log"
     "time"
-    
-    "github.com/azrod/kivigo/pkg/client"
+
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/mongodb"
 )
 
@@ -106,14 +106,14 @@ func main() {
     opt.ConnectionURI = "mongodb://localhost:27017"
     opt.Database = "kivigo"
     opt.Collection = "documents"
-    
+
     kvStore, err := mongodb.New(opt)
     if err != nil {
         log.Fatal(err)
     }
     defer kvStore.Close()
     
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         log.Fatal(err)
     }
@@ -170,7 +170,7 @@ import (
     "context"
     "log"
     "time"
-    
+
     "github.com/azrod/kivigo/backend/mongodb"
 )
 
@@ -179,7 +179,7 @@ func main() {
     opt.ConnectionURI = "mongodb://localhost:27017"
     opt.Database = "kivigo"
     opt.Collection = "keyvalue"
-    
+
     kvStore, err := mongodb.New(opt)
     if err != nil {
         log.Fatal(err)
@@ -245,8 +245,8 @@ import (
     "fmt"
     "log"
     "time"
-    
-    "github.com/azrod/kivigo/pkg/client"
+
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/mongodb"
 )
 
@@ -255,14 +255,14 @@ func main() {
     opt.ConnectionURI = "mongodb://localhost:27017"
     opt.Database = "kivigo"
     opt.Collection = "analytics"
-    
+
     kvStore, err := mongodb.New(opt)
     if err != nil {
         log.Fatal(err)
     }
     defer kvStore.Close()
     
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         log.Fatal(err)
     }

@@ -29,7 +29,7 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
   configurationExample={`package main
 
 import (
-    "github.com/azrod/kivigo/pkg/client"
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/dynamodb"
     "github.com/aws/aws-sdk-go-v2/config"
 )
@@ -40,7 +40,7 @@ func main() {
     if err != nil {
         panic(err)
     }
-    
+
     // Basic configuration
     opt := dynamodb.NewOptions()
     opt.Config = awsConfig
@@ -64,7 +64,7 @@ func main() {
     defer kvStore.Close()
     
     // Create client
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         panic(err)
     }
@@ -75,8 +75,8 @@ import (
     "context"
     "fmt"
     "log"
-    
-    "github.com/azrod/kivigo/pkg/client"
+
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/dynamodb"
     "github.com/aws/aws-sdk-go-v2/config"
 )
@@ -94,7 +94,7 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    
+
     opt := dynamodb.NewOptions()
     opt.Config = awsConfig
     opt.TableName = "kivigo-sessions"
@@ -106,7 +106,7 @@ func main() {
     }
     defer kvStore.Close()
     
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         log.Fatal(err)
     }
@@ -153,7 +153,7 @@ import (
     "context"
     "log"
     "time"
-    
+
     "github.com/azrod/kivigo/backend/dynamodb"
     "github.com/aws/aws-sdk-go-v2/config"
 )
@@ -163,7 +163,7 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    
+
     opt := dynamodb.NewOptions()
     opt.Config = awsConfig
     opt.TableName = "kivigo-keyvalue"
@@ -216,8 +216,8 @@ import (
     "context"
     "fmt"
     "log"
-    
-    "github.com/azrod/kivigo/pkg/client"
+
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/dynamodb"
     "github.com/aws/aws-sdk-go-v2/config"
 )
@@ -227,7 +227,7 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    
+
     opt := dynamodb.NewOptions()
     opt.Config = awsConfig
     opt.TableName = "kivigo-keyvalue"
@@ -239,7 +239,7 @@ func main() {
     }
     defer kvStore.Close()
     
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         log.Fatal(err)
     }

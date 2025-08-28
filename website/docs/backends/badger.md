@@ -29,15 +29,14 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
   configurationExample={`package main
 
 import (
-    "github.com/azrod/kivigo/pkg/client"
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/badger"
-    bd "github.com/dgraph-io/badger/v4"
 )
 
 func main() {
     // Basic configuration
     opt := badger.DefaultOptions("./data")
-    
+
     // Custom configuration
     customOpt := badger.NewOptions()
     customOpt.Dir = "./data/keys"
@@ -53,7 +52,7 @@ func main() {
     defer kvStore.Close()
     
     // Create client
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         panic(err)
     }
@@ -64,8 +63,8 @@ import (
     "context"
     "fmt"
     "log"
-    
-    "github.com/azrod/kivigo/pkg/client"
+
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/badger"
 )
 
@@ -83,8 +82,8 @@ func main() {
         log.Fatal(err)
     }
     defer kvStore.Close()
-    
-    client, err := client.New(kvStore, client.Option{})
+
+    client, err := kivigo.New(kvStore)
     if err != nil {
         log.Fatal(err)
     }
@@ -126,7 +125,7 @@ import (
     "context"
     "log"
     "time"
-    
+
     "github.com/azrod/kivigo/backend/badger"
 )
 
@@ -137,7 +136,7 @@ func main() {
         log.Fatal(err)
     }
     defer kvStore.Close()
-    
+
     ctx := context.Background()
     
     // Simple health check
@@ -172,8 +171,8 @@ import (
     "context"
     "fmt"
     "log"
-    
-    "github.com/azrod/kivigo/pkg/client"
+
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/badger"
 )
 
@@ -184,8 +183,8 @@ func main() {
         log.Fatal(err)
     }
     defer kvStore.Close()
-    
-    client, err := client.New(kvStore, client.Option{})
+
+    client, err := kivigo.New(kvStore)
     if err != nil {
         log.Fatal(err)
     }

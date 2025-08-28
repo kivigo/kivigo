@@ -32,7 +32,7 @@ import (
     "fmt"
     "log"
 
-    "github.com/azrod/kivigo/pkg/client"
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/badger"
 )
 
@@ -46,7 +46,7 @@ func main() {
     defer kvStore.Close()
 
     // Create KiviGo client
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         log.Fatal(err)
     }
@@ -114,6 +114,7 @@ func main() {
 ## Common Operations
 
 ### Setting Values
+
 ```go
 // Simple values
 err := client.Set(ctx, "counter", 42)
@@ -126,6 +127,7 @@ err := client.Set(ctx, "items", []string{"a", "b", "c"})
 ```
 
 ### Getting Values
+
 ```go
 // Get into a variable of the correct type
 var counter int
@@ -139,6 +141,7 @@ err := client.Get(ctx, "items", &items)
 ```
 
 ### Listing Keys
+
 ```go
 // List all keys with a prefix
 keys, err := client.List(ctx, "user:")
@@ -146,6 +149,7 @@ keys, err := client.List(ctx, "user:")
 ```
 
 ### Deleting Values
+
 ```go
 err := client.Delete(ctx, "user:1")
 ```
@@ -155,6 +159,7 @@ err := client.Delete(ctx, "user:1")
 KiviGo supports multiple backends. Here are some quick examples:
 
 ### Redis Backend
+
 ```bash
 go get github.com/azrod/kivigo/backend/redis
 ```
@@ -168,6 +173,7 @@ kvStore, err := redis.New(opt)
 ```
 
 ### Local/BoltDB Backend
+
 ```bash
 go get github.com/azrod/kivigo/backend/local
 ```
@@ -179,6 +185,7 @@ kvStore, err := local.New(local.Option{Path: "./data.db"})
 ```
 
 ### Consul Backend
+
 ```bash
 go get github.com/azrod/kivigo/backend/consul
 ```
@@ -196,6 +203,7 @@ kvStore, err := consul.New(opt)
 By default, KiviGo uses JSON encoding. You can specify different encoders:
 
 ### YAML Encoder
+
 ```go
 import "github.com/azrod/kivigo/pkg/encoder"
 
@@ -205,6 +213,7 @@ client, err := client.New(kvStore, client.Option{
 ```
 
 ### JSON Encoder (Default)
+
 ```go
 import "github.com/azrod/kivigo/pkg/encoder"
 
@@ -265,7 +274,7 @@ import (
     "fmt"
     "log"
 
-    "github.com/azrod/kivigo/pkg/client"
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/pkg/errs"
     "github.com/azrod/kivigo/backend/badger"
 )
@@ -286,7 +295,7 @@ func main() {
     }
     defer kvStore.Close()
 
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         log.Fatal("Failed to create client:", err)
     }

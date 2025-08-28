@@ -29,16 +29,15 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
   configurationExample={`package main
 
 import (
-    "github.com/azrod/kivigo/pkg/client"
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/redis"
-    "github.com/redis/go-redis/v9"
 )
 
 func main() {
     // Basic configuration
     opt := redis.DefaultOptions()
     opt.Addr = "localhost:6379"
-    
+
     // Custom configuration
     customOpt := &redis.Options{
         Addr:         "localhost:6379",
@@ -74,7 +73,7 @@ func main() {
     defer kvStore.Close()
     
     // Create client
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         panic(err)
     }
@@ -86,8 +85,8 @@ import (
     "fmt"
     "log"
     "time"
-    
-    "github.com/azrod/kivigo/pkg/client"
+
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/redis"
 )
 
@@ -101,14 +100,14 @@ func main() {
     // Setup Redis connection
     opt := redis.DefaultOptions()
     opt.Addr = "localhost:6379"
-    
+
     kvStore, err := redis.New(opt)
     if err != nil {
         log.Fatal(err)
     }
     defer kvStore.Close()
     
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         log.Fatal(err)
     }
@@ -156,14 +155,14 @@ import (
     "context"
     "log"
     "time"
-    
+
     "github.com/azrod/kivigo/backend/redis"
 )
 
 func main() {
     opt := redis.DefaultOptions()
     opt.Addr = "localhost:6379"
-    
+
     kvStore, err := redis.New(opt)
     if err != nil {
         log.Fatal(err)
@@ -216,22 +215,22 @@ import (
     "context"
     "fmt"
     "log"
-    
-    "github.com/azrod/kivigo/pkg/client"
+
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/backend/redis"
 )
 
 func main() {
     opt := redis.DefaultOptions()
     opt.Addr = "localhost:6379"
-    
+
     kvStore, err := redis.New(opt)
     if err != nil {
         log.Fatal(err)
     }
     defer kvStore.Close()
     
-    client, err := client.New(kvStore, client.Option{})
+    client, err := kivigo.New(kvStore)
     if err != nil {
         log.Fatal(err)
     }

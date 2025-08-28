@@ -643,7 +643,7 @@ import (
     "context"
     "log"
     
-    "github.com/azrod/kivigo/pkg/client"
+    "github.com/azrod/kivigo"
     "your-module/memory" // Your custom backend
 )
 
