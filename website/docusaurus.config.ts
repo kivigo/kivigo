@@ -1,5 +1,5 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
+import { themes as prismThemes } from 'prism-react-renderer';
+import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
@@ -48,7 +48,7 @@ const config: Config = {
             'https://github.com/azrod/kivigo/tree/main/website/',
           versions: {
             current: {
-              label: 'Next 🚧',
+              label: 'v1.0.0',
             },
           },
           lastVersion: 'current',
