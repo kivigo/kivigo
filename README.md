@@ -90,6 +90,7 @@ KiviGo is designed for projects that need flexibility, testability, and the abil
 | Backend                        | Default (List/Get/Set/Delete) | Batch (Get/Set/Delete) | Health |
 |---------------------------------|:----------------------------:|:----------------------:|:------:|
 | [MySQL](https://mysql.com/)      | ✅                           | ✅                     | ✅     |
+| [PostgreSQL](https://postgresql.org/) | ✅                           | ✅                     | ✅     |
 
 #### NOSQL
 
