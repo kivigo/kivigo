@@ -2,6 +2,7 @@ package cassandra
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -128,7 +129,7 @@ func (c Client) GetRaw(ctx context.Context, key string) ([]byte, error) {
 	query := fmt.Sprintf("SELECT value FROM %s.%s WHERE key = ?", c.keyspace, c.table)
 	err := c.session.Query(query, key).WithContext(ctx).Scan(&value)
 	if err != nil {
-		if err == gocql.ErrNotFound {
+		if errors.Is(err, gocql.ErrNotFound) {
 			return nil, errs.ErrNotFound
 		}
 		return nil, err
@@ -155,7 +156,7 @@ func (c Client) List(ctx context.Context, prefix string) ([]string, error) {
 
 	var keys []string
 	query := fmt.Sprintf("SELECT key FROM %s.%s", c.keyspace, c.table)
-	
+
 	iter := c.session.Query(query).WithContext(ctx).Iter()
 	defer iter.Close()
 
@@ -193,7 +194,7 @@ func (c Client) BatchGetRaw(ctx context.Context, keys []string) (map[string][]by
 	}
 
 	results := make(map[string][]byte, len(keys))
-	
+
 	// Initialize all keys to nil (not found)
 	for _, key := range keys {
 		results[key] = nil
@@ -202,13 +203,13 @@ func (c Client) BatchGetRaw(ctx context.Context, keys []string) (map[string][]by
 	// For Cassandra, we need to execute multiple queries since it doesn't support IN queries efficiently
 	// for large sets of keys. We'll use concurrent queries for better performance.
 	query := fmt.Sprintf("SELECT value FROM %s.%s WHERE key = ?", c.keyspace, c.table)
-	
+
 	for _, key := range keys {
 		var value []byte
 		err := c.session.Query(query, key).WithContext(ctx).Scan(&value)
 		if err == nil {
 			results[key] = value
-		} else if err != gocql.ErrNotFound {
+		} else if !errors.Is(err, gocql.ErrNotFound) {
 			return nil, err
 		}
 		// If err == gocql.ErrNotFound, we keep results[key] = nil
@@ -233,7 +234,7 @@ func (c Client) BatchSetRaw(ctx context.Context, kv map[string][]byte) error {
 	// Use Cassandra batch for atomic writes
 	batch := c.session.NewBatch(gocql.LoggedBatch)
 	query := fmt.Sprintf("INSERT INTO %s.%s (key, value) VALUES (?, ?)", c.keyspace, c.table)
-	
+
 	for key, value := range kv {
 		batch.Query(query, key, value)
 	}
@@ -257,7 +258,7 @@ func (c Client) BatchDelete(ctx context.Context, keys []string) error {
 	// Use Cassandra batch for atomic deletes
 	batch := c.session.NewBatch(gocql.LoggedBatch)
 	query := fmt.Sprintf("DELETE FROM %s.%s WHERE key = ?", c.keyspace, c.table)
-	
+
 	for _, key := range keys {
 		batch.Query(query, key)
 	}

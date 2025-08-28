@@ -89,6 +89,7 @@ KiviGo is designed for projects that need flexibility, testability, and the abil
 
 | Backend                        | Default (List/Get/Set/Delete) | Batch (Get/Set/Delete) | Health |
 |---------------------------------|:----------------------------:|:----------------------:|:------:|
+| [Apache Cassandra](https://cassandra.apache.org/) | ✅               | ✅                     | ✅     |
 | [MongoDB](https://www.mongodb.com/) | ✅                    | ✅                     | ✅     |
 
 ### 🛠️ Backend Options Initialization

@@ -37,6 +37,27 @@ updates:
         patterns:
           - "*"
 
+  # Cassandra backend dependencies
+  - package-ecosystem: "gomod"
+    directory: "/backend/cassandra"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:45"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps(cassandra)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "go"
+      - "backend"
+      - "cassandra"
+    groups:
+      cassandra-dependencies:
+        patterns:
+          - "*"
+
   # Consul backend dependencies  
   - package-ecosystem: "gomod"
     directory: "/backend/consul"
