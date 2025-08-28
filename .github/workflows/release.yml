@@ -185,8 +185,8 @@ jobs:
           cd website
           version="${{ needs.validate-inputs.outputs.version }}"
           doc_version=${version#v}
-          # Remplace le label dans docusaurus.config.ts
-          sed -i.bak -E "s/(current:\s*\{\s*label:\s*')[^']+(',)/\1v${doc_version}\2/" docusaurus.config.ts
+          # Remplace la valeur de lastVersion dans docusaurus.config.ts
+          sed -i.bak -E "s/(lastVersion:\s*')[^']+(',)/\1${doc_version}\2/" docusaurus.config.ts
           rm docusaurus.config.ts.bak
 
       - name: 🏗️ Build website
@@ -213,6 +213,6 @@ jobs:
           doc_version=${version#v}
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/version-${doc_version} versions.json
+          git add docs/${doc_version} versions.json
           git commit -m "docs: add documentation for version ${doc_version}" || echo "No changes to commit"
           git push origin main

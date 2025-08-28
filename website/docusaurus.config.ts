@@ -46,11 +46,11 @@ const config: Config = {
           // Remove this to remove the "edit this page" links.
           editUrl:
             'https://github.com/azrod/kivigo/tree/main/website/',
-          versions: {
-            current: {
-              label: 'v1.0.0',
-            },
-          },
+          // versions: {
+          //   current: {
+          //     label: 'v1.0.0',
+          //   },
+          // },
           lastVersion: 'current',
         },
         theme: {
