@@ -192,9 +192,21 @@ jobs:
   deploy-docs:
     runs-on: ubuntu-latest
     needs: [validate-inputs, create-tags]
+    
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
     steps:
       - name: 🛎️ Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: 📋 Setup Node.js
         uses: actions/setup-node@v4
@@ -208,14 +220,40 @@ jobs:
           cd website
           npm ci
 
+      - name: 📚 Create versioned documentation
+        run: |
+          cd website
+          version="${{ needs.validate-inputs.outputs.version }}"
+          # Remove 'v' prefix for Docusaurus version
+          doc_version=${version#v}
+          
+          echo "Creating versioned documentation for version: $doc_version"
+          
+          # Check if this version already exists
+          if [[ -f versions.json ]] && jq -e ". | index(\"$doc_version\")" versions.json > /dev/null; then
+            echo "ℹ️ Version $doc_version already exists, skipping versioning"
+          else
+            # Use Docusaurus versioning command to create the version
+            npm run version "$doc_version"
+            echo "✅ Created version $doc_version using Docusaurus versioning"
+          fi
+          
+          # Show current versions
+          if [[ -f versions.json ]]; then
+            echo "📋 Current versions:"
+            cat versions.json
+          fi
+
       - name: 🏗️ Build website
         run: |
           cd website
           npm run build
 
-      - name: 🚀 Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: 📤 Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./website/build
-          cname: azrod.github.io
+          path: website/build
+
+      - name: 🚀 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

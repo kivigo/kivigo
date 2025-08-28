@@ -51,6 +51,7 @@ const config: Config = {
               label: 'Next 🚧',
             },
           },
+          lastVersion: 'current',
         },
         theme: {
           customCss: './src/css/custom.css',
