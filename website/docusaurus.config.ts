@@ -46,12 +46,13 @@ const config: Config = {
           // Remove this to remove the "edit this page" links.
           editUrl:
             'https://github.com/azrod/kivigo/tree/main/website/',
-          // versions: {
-          //   current: {
-          //     label: 'v1.0.0',
-          //   },
-          // },
+          versions: {
+            current: {
+              label: 'current',
+            },
+          },
           lastVersion: 'current',
+          includeCurrentVersion: true
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -64,7 +65,7 @@ const config: Config = {
     // Replace with your project's social card
     image: 'img/kivigo-white.png',
     colorMode: {
-      defaultMode: 'light',
+      defaultMode: 'dark',
       disableSwitch: true,
       respectPrefersColorScheme: false,
     },
