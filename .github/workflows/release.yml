@@ -208,11 +208,12 @@ jobs:
 
       - name: 📚 Commit documentation version
         run: |
-          cd website
-          version="${{ needs.validate-inputs.outputs.version }}"
-          doc_version=${version#v}
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "docs: add documentation for version ${doc_version}" || echo "No changes to commit"
-          git push origin main
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -a -m "docs: add documentation for version ${doc_version}" || echo "No changes to commit"
+          
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
