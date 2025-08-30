@@ -49,6 +49,29 @@ Document and collection-based databases for flexible schemas.
 
 - **[MongoDB](./mongodb)** - Document-oriented NoSQL database
 
+## 🛠️ Backend Options Initialization
+
+All KiviGo backends provide two helper functions for option management:
+
+- **NewOptions()**  
+  Returns an empty options struct for the backend.  
+  Example:  
+
+  ```go
+  opts := backend.NewOptions() // All fields are zero values
+  ```
+
+- **DefaultOptions(...)**  
+  Returns a recommended or minimal set of options for the backend.  
+  This function can accept parameters to customize the defaults.  
+  Example:  
+
+  ```go
+  opts := backend.DefaultOptions(path, otherParams...)
+  ```
+
+This design makes it easy to discover, configure, and override backend options in a consistent way across all supported backends.
+
 ## Feature Comparison
 
 | Backend | Default Ops | Batch Ops | Health Check | Local/Remote | Persistence |

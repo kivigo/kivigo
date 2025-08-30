@@ -1,0 +1,35 @@
+---
+id: overview
+title: Overview
+sidebar_position: 1
+---
+
+# Overview
+
+KiviGo is a lightweight key-value store library for Go. It provides a simple interface for storing and retrieving key-value pairs, supporting multiple backends (E.g. Redis,  BoltDB) and encoders (JSON, YAML, etc.). KiviGo is designed to be easy to use, performant, and flexible.
+
+## **Why "KiviGo"?**  
+
+The name is a play on words: "Kivi" sounds like "key-value" (the core concept of the library) and "Go" refers to the Go programming language. It also playfully evokes the fruit "kiwi" 🥝 !
+
+## Motivation
+
+KiviGo was created to simplify and unify key-value storage in Go applications. In many projects, developers face the challenge of switching between different storage backends (like Redis, BoltDB, or in-memory stores) or need to support multiple serialization formats (such as JSON or YAML). Each backend often comes with its own API, error handling, and setup, making code harder to maintain and test.
+
+## What problem does KiviGo solve?
+
+- Provides a single, consistent API for key-value operations, regardless of the underlying backend.
+- Makes it easy to swap storage engines (e.g., from local development with BoltDB to production with Redis) without changing your application logic.
+- Supports pluggable encoders, so you can choose or implement the serialization format that fits your needs.
+- Simplifies testing by providing a mock backend.
+- Enables health checks and batch operations in a backend-agnostic way.
+
+## Use cases
+
+- Building microservices that need simple, fast key-value storage with the flexibility to change backends.
+- Prototyping applications locally with BoltDB, then moving to Redis for production.
+- Writing unit tests for storage logic without requiring a real database.
+- Implementing custom backends (e.g., in-memory, cloud-based) while keeping the same client code.
+- Supporting advanced features like batch operations, health checks, and custom serialization with minimal effort.
+
+KiviGo helps you focus on your application logic, not on backend-specific details.

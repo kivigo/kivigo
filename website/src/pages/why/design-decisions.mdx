@@ -1,0 +1,19 @@
+---
+id: design-decisions
+title: Design Decisions
+sidebar_position: 3
+---
+
+# 🛠️ Design Decisions
+
+1. **Zero-boilerplate usage:**  
+   The package should be usable without having to write additional code. Structs are automatically marshalled and unmarshalled using the selected encoder (e.g., JSON, YAML), so you do not need to implement custom (un)marshal interfaces or methods for your types.
+
+2. **Modular Go packages:**  
+   Each KiviGo backend or encoder implementation is provided as a separate Go module. Unlike repositories that use a single Go module with many subpackages, this approach allows you to fetch and use only the dependencies you need. For example, if you only require the Redis backend, `go get` will only download the Redis-related dependencies, not all dependencies used throughout the entire repository. This keeps your project lightweight and minimizes unnecessary dependencies.
+
+3. **Consistent API design:**  
+   KiviGo aims to provide a consistent and intuitive API across different backends and encoders. This means that once you learn how to use one backend or encoder, you can easily switch to another without having to relearn the API. This is achieved by defining clear interfaces and using common patterns throughout the library.
+
+4. **Extensibility:**  
+   KiviGo is designed to be easily extensible. If you need to add support for a new backend or encoder, you can do so without modifying the core library. This is accomplished by following established patterns and using interfaces, making it straightforward to integrate new functionality.

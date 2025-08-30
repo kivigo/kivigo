@@ -58,8 +58,8 @@ export default function BackendTemplate({
 
         {/* container dédié pour les badges */}
         <div className={styles.badges}>
-          <span className={`${styles.badge} ${styles['badge-light']}`}>Cloud Database</span>
-          <span className={`${styles.badge} ${styles['badge-green']}`}>backend/dynamodb</span>
+          <span className={`${styles.badge} ${styles['badge-light']}`}>{category}</span>
+          <span className={`${styles.badge} ${styles['badge-green']}`}>{packageName}</span>
         </div>
       </div>
 

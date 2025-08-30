@@ -51,7 +51,7 @@ const config: Config = {
               label: 'current',
             },
           },
-          lastVersion: '1.4.0',
+          lastVersion: 'current',
           includeCurrentVersion: true
         },
         theme: {
@@ -77,14 +77,33 @@ const config: Config = {
       },
       items: [
         {
+          type: 'dropdown',
+          label: 'Why KiviGo?',
+          position: 'left',
+          items: [
+            {
+              label: 'Overview',
+              href: '/why/overview',
+            },
+            {
+              label: 'Comparison',
+              href: '/why/comparison',
+            },
+            {
+              label: 'Design Decisions',
+              href: '/why/design-decisions',
+            },
+          ],
+        },
+        {
           type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
+          sidebarId: 'documentationSidebar',
           position: 'left',
           label: 'Documentation',
         },
         {
           type: 'docsVersionDropdown',
-          position: 'left',
+          position: 'right',
           dropdownActiveClassDisabled: true,
         },
         {
