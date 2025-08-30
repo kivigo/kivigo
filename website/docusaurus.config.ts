@@ -7,7 +7,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'KiviGo',
   tagline: 'Lightweight key-value store library for Go',
-  favicon: 'img/kivigo-dark.png',
+  favicon: 'img/favicon.ico',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -144,7 +144,7 @@ const config: Config = {
       copyright: `Copyright © ${new Date().getFullYear()} KiviGo. Built with Docusaurus.`,
     },
     prism: {
-      theme: prismThemes.github,
+      theme: prismThemes.gruvboxMaterialDark,
       additionalLanguages: ['go', 'bash', 'yaml', 'json'],
     },
   } satisfies Preset.ThemeConfig,

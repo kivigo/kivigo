@@ -2,6 +2,7 @@ import React from 'react';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import CodeBlock from '@theme/CodeBlock';
+import styles from './styles.module.css';
 
 interface Feature {
   name: string;
@@ -29,6 +30,12 @@ interface BackendTemplateProps {
   }>;
 }
 
+function getFeatureGridClass(count: number) {
+  if (count <= 4) return `${styles['features-compact-grid']} ${styles['grid-1']}`;
+  if (count <= 8) return `${styles['features-compact-grid']} ${styles['grid-2']}`;
+  return `${styles['features-compact-grid']} ${styles['grid-3']}`;
+}
+
 export default function BackendTemplate({
   name,
   description,
@@ -46,22 +53,23 @@ export default function BackendTemplate({
   links = []
 }: BackendTemplateProps) {
   return (
-    <div className="backend-template">
-      <div className="backend-header">
-        <h1>{name} Backend</h1>
-        <div className="backend-meta">
-          <span className="badge badge--secondary">{category}</span>
-          <span className="badge badge--primary">{packageName}</span>
+    <div className={styles['backend-template']}>
+      <div className={styles['backend-header']}>
+
+        {/* container dédié pour les badges */}
+        <div className={styles.badges}>
+          <span className={`${styles.badge} ${styles['badge-light']}`}>Cloud Database</span>
+          <span className={`${styles.badge} ${styles['badge-green']}`}>backend/dynamodb</span>
         </div>
       </div>
-      
+
       <p className="backend-description">{description}</p>
 
       <h2>📦 Installation</h2>
       <CodeBlock language="bash">
         {`go get ${importPath}`}
       </CodeBlock>
-      
+
       {installationNotes && (
         <div className="admonition admonition-info">
           <div className="admonition-content">
@@ -82,16 +90,19 @@ export default function BackendTemplate({
       )}
 
       <h2>✨ Features</h2>
-      <div className="features-grid">
+      <div className={getFeatureGridClass(features.length)}>
         {features.map((feature, index) => (
-          <div key={index} className="feature-item">
-            <span className={`feature-status ${feature.supported ? 'supported' : 'not-supported'}`}>
+          <div
+            key={index}
+            className={`${styles['feature-compact-item']} ${feature.supported ? styles.supported : styles['not-supported']}`}
+            title={feature.description || feature.name}
+          >
+            <span className={styles['feature-compact-status']}>
               {feature.supported ? '✅' : '❌'}
             </span>
-            <span className="feature-name">{feature.name}</span>
-            {feature.description && (
-              <p className="feature-description">{feature.description}</p>
-            )}
+            <span className={styles['feature-compact-name']}>
+              {feature.name}
+            </span>
           </div>
         ))}
       </div>
@@ -103,13 +114,13 @@ export default function BackendTemplate({
             {configurationExample}
           </CodeBlock>
         </TabItem>
-        
+
         <TabItem value="basic-usage" label="Basic Usage">
           <CodeBlock language="go">
             {usageExample}
           </CodeBlock>
         </TabItem>
-        
+
         {healthCheckExample && (
           <TabItem value="health-check" label="Health Check">
             <CodeBlock language="go">
@@ -117,7 +128,7 @@ export default function BackendTemplate({
             </CodeBlock>
           </TabItem>
         )}
-        
+
         {batchExample && (
           <TabItem value="batch-operations" label="Batch Operations">
             <CodeBlock language="go">

@@ -1,52 +1,52 @@
-import type {ReactNode} from 'react';
+import type { ReactNode } from 'react';
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
 
 type FeatureItem = {
   title: string;
-  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
+  Img: string; // chemin vers le PNG
   description: ReactNode;
 };
 
 const FeatureList: FeatureItem[] = [
   {
     title: 'Multiple Backends',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    Img: require('@site/static/img/kiwi-backends.png').default,
     description: (
       <>
-        Support for Redis, BadgerDB, etcd, Consul, MongoDB, MySQL, PostgreSQL, 
+        Support for Redis, BadgerDB, etcd, Consul, MongoDB, MySQL, PostgreSQL,
         and more. Switch between backends with minimal code changes and unified API.
       </>
     ),
   },
   {
     title: 'Built for Go',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    Img: require('@site/static/img/kiwi-go.png').default,
     description: (
       <>
-        Native Go implementation with type safety, proper error handling, 
+        Native Go implementation with type safety, proper error handling,
         and context support. Designed following Go best practices and idioms.
       </>
     ),
   },
   {
     title: 'Enterprise Ready',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    Img: require('@site/static/img/kiwi-health.png').default,
     description: (
       <>
-        Health checks, batch operations, custom encoders, mock testing support, 
+        Health checks, batch operations, custom encoders, mock testing support,
         and comprehensive documentation. Production-ready with monitoring capabilities.
       </>
     ),
   },
 ];
 
-function Feature({title, Svg, description}: FeatureItem) {
+function Feature({ title, Img, description }: FeatureItem) {
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
+        <img src={Img} alt={title} className={styles.featureImg} />
       </div>
       <div className="text--center padding-horiz--md">
         <Heading as="h3">{title}</Heading>

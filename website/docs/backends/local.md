@@ -1,5 +1,6 @@
 ---
 sidebar_position: 6
+title: BoltDB (Local)
 ---
 
 import BackendTemplate from '@site/src/components/BackendTemplate';

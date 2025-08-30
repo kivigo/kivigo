@@ -1,5 +1,6 @@
 ---
 sidebar_position: 12
+title: Azure Cosmos DB
 ---
 
 import BackendTemplate from '@site/src/components/BackendTemplate';

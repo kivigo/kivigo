@@ -1,5 +1,6 @@
 ---
 sidebar_position: 5
+title: etcd
 ---
 
 import BackendTemplate from '@site/src/components/BackendTemplate';

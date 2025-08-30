@@ -1,5 +1,6 @@
 ---
 sidebar_position: 3
+title: Redis
 ---
 
 import BackendTemplate from '@site/src/components/BackendTemplate';

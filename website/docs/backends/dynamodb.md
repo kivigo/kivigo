@@ -1,5 +1,6 @@
 ---
 sidebar_position: 13
+title: Amazon DynamoDB
 ---
 
 import BackendTemplate from '@site/src/components/BackendTemplate';

@@ -1,5 +1,6 @@
 ---
 sidebar_position: 4
+title: Consul
 ---
 
 import BackendTemplate from '@site/src/components/BackendTemplate';

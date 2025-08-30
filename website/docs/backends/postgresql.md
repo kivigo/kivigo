@@ -1,5 +1,6 @@
 ---
 sidebar_position: 11
+title: PostgreSQL
 ---
 
 import BackendTemplate from '@site/src/components/BackendTemplate';

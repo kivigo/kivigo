@@ -17,7 +17,6 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
     { name: "Persistence", supported: true, description: "Data is stored on disk" },
     { name: "ACID Transactions", supported: true, description: "Full ACID compliance" },
     { name: "Compression", supported: true, description: "Built-in data compression" },
-    { name: "TTL/Expiration", supported: true, description: "Automatic key expiration" },
     { name: "Concurrent Access", supported: true, description: "Thread-safe operations" }
   ]}
   dependencies={[

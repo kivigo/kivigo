@@ -1,5 +1,6 @@
 ---
 sidebar_position: 10
+title: MySQL
 ---
 
 import BackendTemplate from '@site/src/components/BackendTemplate';

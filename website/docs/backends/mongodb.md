@@ -1,5 +1,6 @@
 ---
 sidebar_position: 9
+title: MongoDB
 ---
 
 import BackendTemplate from '@site/src/components/BackendTemplate';
