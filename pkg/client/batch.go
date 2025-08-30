@@ -84,6 +84,32 @@ func (c Client) BatchSet(ctx context.Context, kv map[string]any) error {
 		return fmt.Errorf("BatchSet not supported by backend")
 	}
 
+	if err := c.validateBatchSetInput(kv); err != nil {
+		return err
+	}
+
+	raws, err := c.encodeBatchValues(kv)
+	if err != nil {
+		return err
+	}
+
+	err = batch.BatchSetRaw(ctx, raws)
+	if err != nil {
+		return err
+	}
+
+	// Trigger hooks after successful operation
+	if c.hooks != nil {
+		for k, v := range raws {
+			c.hooks.Run(ctx, EventBatchSet, k, v)
+		}
+	}
+
+	return nil
+}
+
+// validateBatchSetInput validates the input for BatchSet operation.
+func (c Client) validateBatchSetInput(kv map[string]any) error {
 	if len(kv) == 0 {
 		return errs.ErrEmptyBatch
 	}
@@ -92,22 +118,61 @@ func (c Client) BatchSet(ctx context.Context, kv map[string]any) error {
 		if k == "" {
 			return errs.ErrEmptyKey
 		}
-
 		if v == nil {
 			return fmt.Errorf("value for key %s cannot be nil", k)
 		}
 	}
 
+	return nil
+}
+
+// encodeBatchValues encodes all values in the batch.
+func (c Client) encodeBatchValues(kv map[string]any) (map[string][]byte, error) {
 	raws := make(map[string][]byte, len(kv))
 
 	for k, v := range kv {
 		raw, err := c.opts.Encoder.Encode(v)
 		if err != nil {
-			return fmt.Errorf("failed to encode value for key %s: %w", k, err)
+			return nil, fmt.Errorf("failed to encode value for key %s: %w", k, err)
 		}
-
 		raws[k] = raw
 	}
 
-	return batch.BatchSetRaw(ctx, raws)
+	return raws, nil
+}
+
+// BatchDelete removes multiple values from the key-value store in a single batch operation.
+// It takes a context and a slice of keys to delete, and returns an error if the backend does not support batch operations.
+// Example usage:
+//
+//	err := client.BatchDelete(ctx, []string{"key1", "key2"})
+func (c Client) BatchDelete(ctx context.Context, keys []string) error {
+	batch, ok := c.KV.(models.KVWithBatch)
+	if !ok {
+		return fmt.Errorf("BatchDelete not supported by backend")
+	}
+
+	if len(keys) == 0 {
+		return errs.ErrEmptyBatch
+	}
+
+	for _, key := range keys {
+		if key == "" {
+			return errs.ErrEmptyKey
+		}
+	}
+
+	err := batch.BatchDelete(ctx, keys)
+	if err != nil {
+		return err
+	}
+
+	// Trigger hooks after successful operation
+	if c.hooks != nil {
+		for _, k := range keys {
+			c.hooks.Run(ctx, EventBatchDel, k, nil)
+		}
+	}
+
+	return nil
 }

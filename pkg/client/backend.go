@@ -30,5 +30,35 @@ func (c Client) Set(ctx context.Context, key string, value any) error {
 		return err
 	}
 
-	return c.SetRaw(ctx, key, vV)
+	err = c.SetRaw(ctx, key, vV)
+	if err != nil {
+		return err
+	}
+
+	// Trigger hooks after successful operation
+	if c.hooks != nil {
+		c.hooks.Run(ctx, EventSet, key, vV)
+	}
+
+	return nil
+}
+
+// Delete removes the value associated with the specified key.
+// Returns an error if the operation fails.
+//
+// Example:
+//
+//	err := client.Delete(ctx, "myKey")
+func (c Client) Delete(ctx context.Context, key string) error {
+	err := c.KV.Delete(ctx, key)
+	if err != nil {
+		return err
+	}
+
+	// Trigger hooks after successful operation
+	if c.hooks != nil {
+		c.hooks.Run(ctx, EventDelete, key, nil)
+	}
+
+	return nil
 }
