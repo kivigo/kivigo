@@ -1,4 +1,5 @@
-![KiviGo Logo](/docs/kivigo-white.png)
+
+<img style="float: left; width: 200px; margin-right: 1em;" src="https://raw.githubusercontent.com/azrod/kivigo/refs/heads/main/website/static/img/logo-kivigo.png" alt="KiviGo Logo" />
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/azrod/kivigo.svg)](https://pkg.go.dev/github.com/azrod/kivigo)
 [![Go Report Card](https://goreportcard.com/badge/github.com/azrod/kivigo)](https://goreportcard.com/report/github.com/azrod/kivigo)
@@ -7,8 +8,8 @@
 
 KiviGo is a lightweight key-value store library for Go. It provides a simple interface for storing and retrieving key-value pairs, supporting multiple backends (E.g. Redis,  BoltDB) and encoders (JSON, YAML, etc.). KiviGo is designed to be easy to use, performant, and flexible.
 
-> **Why "KiviGo"?**  
-> The name is a play on words: "Kivi" sounds like "key-value" (the core concept of the library) and "Go" refers to the Go programming language. It also playfully evokes the fruit "kiwi" 🥝 !
+**Why "KiviGo"?**  
+The name is a play on words: "Kivi" sounds like "key-value" (the core concept of the library) and "Go" refers to the Go programming language. It also playfully evokes the fruit "kiwi" 🥝 !
 
 ## ✨ Features
 
