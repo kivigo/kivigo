@@ -1,5 +1,5 @@
 
-<img align="left" width="200"  src="https://raw.githubusercontent.com/azrod/kivigo/refs/heads/main/website/static/img/logo-kivigo.png" alt="KiviGo Logo" />
+<img align="left" width="250"  src="https://raw.githubusercontent.com/azrod/kivigo/refs/heads/main/website/static/img/logo-kivigo.png" alt="KiviGo Logo" />
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/azrod/kivigo.svg)](https://pkg.go.dev/github.com/azrod/kivigo)
 [![Go Report Card](https://goreportcard.com/badge/github.com/azrod/kivigo)](https://goreportcard.com/report/github.com/azrod/kivigo)
