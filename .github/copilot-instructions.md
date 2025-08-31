@@ -33,6 +33,8 @@ npm run build
 
 The documentation is automatically deployed to GitHub Pages when changes are pushed to main or when releases are created.
 
+Never modify /website/versioned_docs/ directory directly. This is a archived directory for versioned documentation.
+
 ## Working Effectively
 
 ### Bootstrap and Build
@@ -162,7 +164,7 @@ import (
     "fmt"
     "log"
 
-    "github.com/azrod/kivigo/pkg/client"
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/pkg/encoder"
     "github.com/azrod/kivigo/pkg/mock"
 )
@@ -170,7 +172,7 @@ import (
 func main() {
     // Test with mock backend
     mockKV := &mock.MockKV{Data: map[string][]byte{}}
-    c, err := client.New(mockKV, client.Option{Encoder: encoder.JSON})
+    c, err := kivigo.New(mockKV, kivigo.Option{Encoder: encoder.JSON})
     if err != nil {
         log.Fatal(err)
     }
@@ -243,7 +245,8 @@ echo "✅ All validation tests passed!"
 
 ### Key Directories
 ```
-pkg/client/     # Main client implementation
+/               # Main implementation
+pkg/client/     # Client implementation
 pkg/encoder/    # JSON, YAML encoders
 pkg/mock/       # Mock backend for testing
 backend/badger/ # BadgerDB backend
@@ -361,13 +364,13 @@ cat > test_kivigo.go << 'EOF'
 package main
 import (
     "context"; "fmt"
-    "github.com/azrod/kivigo/pkg/client"
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/pkg/encoder"
     "github.com/azrod/kivigo/pkg/mock"
 )
 func main() {
     mockKV := &mock.MockKV{Data: map[string][]byte{}}
-    c, _ := client.New(mockKV, client.Option{Encoder: encoder.JSON})
+    c, _ := kivigo.New(mockKV, kivigo.Option{Encoder: encoder.JSON})
     c.Set(context.Background(), "test", "value")
     var v string; c.Get(context.Background(), "test", &v)
     fmt.Printf("✅ Test passed: %s\n", v)

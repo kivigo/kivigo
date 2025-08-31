@@ -35,8 +35,8 @@ const FeatureList: FeatureItem[] = [
     Img: require('@site/static/img/kiwi-health.png').default,
     description: (
       <>
-        Health checks, batch operations, custom encoders, mock testing support,
-        and comprehensive documentation. Production-ready with monitoring capabilities.
+        Health checks, batch operations, custom encoders, mock testing support, client-side hooks
+        and comprehensive documentation.
       </>
     ),
   },

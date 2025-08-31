@@ -41,7 +41,7 @@ import (
     "context"
     "log"
     
-    "github.com/azrod/kivigo/pkg/client"
+    "github.com/azrod/kivigo"
     "github.com/azrod/kivigo/pkg/encoder"
     "github.com/azrod/kivigo/backend/redis"
 )
@@ -53,8 +53,8 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    
-    client, err := client.New(backend, client.Option{
+
+    client, err := kivigo.New(backend, kivigo.Option{
         Encoder: encoder.JSON,
     })
     if err != nil {

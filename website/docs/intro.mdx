@@ -2,11 +2,17 @@
 sidebar_position: 1
 ---
 
+import logo from '../static/img/logo-kivigo.png';
+
+
 # KiviGo Documentation
 
-![KiviGo Logo](/img/kivigo-white.png)
+<img style={{float: "left", width: "150px", marginRight: "1em"}} src={logo}></img>
 
-Welcome to **KiviGo**, a lightweight, modular key-value store library for Go that provides a unified interface for different backends and encoders.
+Welcome to **KiviGo**, a lightweight, modular key-value store library for Go that provides a unified interface for different backends and encoders. 
+
+The name is a play on words: "**Kivi**" sounds like "**key-value**" (the core concept of the library) and "**Go**" refers to the Go programming language. It also playfully evokes the fruit "**kiwi**" 🥝 !
+
 
 ## 🚀 What is KiviGo?
 
@@ -21,7 +27,9 @@ KiviGo is designed to simplify key-value storage operations in Go applications b
 ## ✨ Key Features
 
 ### 🔧 Multiple Backends
+
 Choose from a variety of storage backends:
+
 - **Embedded**: BadgerDB, BoltDB (local)
 - **Distributed**: Redis, Consul, etcd
 - **Cloud**: Azure Cosmos DB, DynamoDB
@@ -30,9 +38,11 @@ Choose from a variety of storage backends:
 - **In-Memory**: Memcached
 
 ### 📦 Modular Dependencies
+
 Each backend is provided as a separate Go module. If you only need Redis, you only get Redis dependencies - keeping your application lightweight.
 
 ### 🎯 Simple API
+
 ```go
 // Store any Go struct
 type User struct {
@@ -49,6 +59,7 @@ err = client.Get(ctx, "user:123", &retrievedUser)
 ```
 
 ### 🧪 Testing Made Easy
+
 Built-in mock backend for unit testing without external dependencies:
 
 ```go
@@ -71,15 +82,19 @@ KiviGo is perfect for:
 ## 🏗️ Design Philosophy
 
 ### 1. Zero-Boilerplate Usage
+
 No need to implement custom marshal/unmarshal methods. KiviGo automatically handles serialization using your chosen encoder.
 
 ### 2. Modular Go Packages
+
 Each backend is a separate Go module. This approach allows you to:
+
 - Fetch only the dependencies you need
 - Keep your project lightweight
 - Avoid version conflicts between different backend dependencies
 
 ### 3. Consistent Interface
+
 Whether you're using Redis, BadgerDB, or any other backend, the API remains the same:
 
 ```go
