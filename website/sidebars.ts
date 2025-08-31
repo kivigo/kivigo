@@ -44,6 +44,7 @@ const sidebars: SidebarsConfig = {
         'advanced/custom-backend',
         'advanced/mock-testing',
         'advanced/batch-operations',
+        'advanced/hooks',
       ],
     },
   ],

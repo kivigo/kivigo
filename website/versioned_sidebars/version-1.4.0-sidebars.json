@@ -28,7 +28,8 @@
         "advanced/encoders",
         "advanced/custom-backend",
         "advanced/mock-testing",
-        "advanced/batch-operations"
+        "advanced/batch-operations",
+        "advanced/hooks"
       ]
     }
   ]
