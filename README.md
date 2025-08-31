@@ -16,6 +16,7 @@ The name is a play on words: "Kivi" sounds like "key-value" (the core concept of
 - Unified interface for different backends ([Redis](pkg/backend/redis/redis.go), [local/BoltDB](pkg/backend/local/local.go), etc.)
 - Pluggable encoding/decoding ([JSON](pkg/encoder/json/json.go), [YAML](pkg/encoder/yaml/yaml.go), etc.)
 - Health check support (with custom checks)
+- **Key expiration (TTL) support** for backends that support it (Redis, Memcached)
 - List, add, and delete keys
 - Easily extensible for new backends or encoders
 
@@ -29,6 +30,46 @@ Visit our comprehensive documentation at **[https://azrod.github.io/kivigo/](htt
 - **Code Examples** - Real-world usage patterns and best practices
 
 For API reference, see [pkg.go.dev/github.com/azrod/kivigo](https://pkg.go.dev/github.com/azrod/kivigo).
+
+## 🚀 Quick Example
+
+Here's a simple example showing key expiration (TTL) support:
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "time"
+
+    "github.com/azrod/kivigo/pkg/client"
+    "github.com/azrod/kivigo/pkg/encoder"
+    "github.com/azrod/kivigo/backend/redis"
+)
+
+func main() {
+    // Create Redis backend
+    backend, _ := redis.New(redis.DefaultOptions())
+    
+    // Create KiviGo client
+    c, _ := client.New(backend, client.Option{Encoder: encoder.JSON})
+    defer c.Close()
+
+    ctx := context.Background()
+
+    // Store a value
+    c.Set(ctx, "user:123", map[string]string{"name": "John"})
+
+    // Set expiration if backend supports it
+    if c.SupportsExpiration() {
+        c.Expire(ctx, "user:123", 30*time.Second)
+        fmt.Println("✅ Key will expire in 30 seconds")
+    } else {
+        fmt.Println("⚠️ Backend doesn't support expiration")
+    }
+}
+```
 
 ## 🥝 Motivation
 
