@@ -73,7 +73,7 @@ const config: Config = {
       title: 'KiviGo',
       logo: {
         alt: 'KiviGo Logo',
-        src: 'img/kivigo-white.png',
+        src: 'img/logo-kivigo.png',
       },
       items: [
         {

@@ -10,7 +10,8 @@ import (
 type (
 	Client struct {
 		models.KV
-		opts Option
+		opts  Option
+		hooks *HooksRegistry
 	}
 
 	Options func(Option) Option
@@ -48,9 +49,37 @@ type (
 //
 // Returns a Client and an error if initialization fails.
 func New(kv models.KV, opts Option) (Client, error) {
-	return Client{KV: kv, opts: opts}, nil
+	return Client{
+		KV:    kv,
+		opts:  opts,
+		hooks: NewHooksRegistry(),
+	}, nil
 }
 
 func (c Client) Close() error {
 	return c.KV.Close()
+}
+
+// RegisterHook registers a new hook with the client.
+// Returns a unique hook ID, an error channel for receiving hook errors,
+// and an unregister function to remove the hook.
+//
+// Example usage:
+//
+//	id, errCh, unregister := client.RegisterHook(func(ctx context.Context, evt EventType, key string, value []byte) error {
+//	    log.Printf("Hook triggered: %s %s", evt, key)
+//	    return nil
+//	}, HookOptions{Events: []EventType{EventSet}})
+//	defer unregister()
+func (c Client) RegisterHook(cb HookFunc, opts HookOptions) (string, <-chan error, func()) {
+	return c.hooks.RegisterHook(cb, opts)
+}
+
+// UnregisterHook removes a hook by its ID.
+//
+// Example usage:
+//
+//	client.UnregisterHook(hookID)
+func (c Client) UnregisterHook(id string) {
+	c.hooks.UnregisterHook(id)
 }
