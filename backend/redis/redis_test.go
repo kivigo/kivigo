@@ -378,3 +378,85 @@ func TestRedis_Health_CheckFailed(t *testing.T) {
 	require.Error(t, healthErr)
 	require.ErrorContains(t, healthErr, "health check failed")
 }
+
+// ---------- TTL Tests ----------
+func TestRedis_SupportsExpiration(t *testing.T) {
+	if os.Getenv("CI") == "" && !redisAvailable(t) {
+		t.Skip("Redis not available on localhost:6379")
+	}
+
+	c := newTestClient(t)
+	defer c.Close()
+
+	// Redis should support expiration
+	require.True(t, c.SupportsExpiration())
+}
+
+func TestRedis_Expire(t *testing.T) {
+	if os.Getenv("CI") == "" && !redisAvailable(t) {
+		t.Skip("Redis not available on localhost:6379")
+	}
+
+	c := newTestClient(t)
+	defer c.Close()
+
+	ctx := context.Background()
+	key := "kivigo:test:expire"
+	value := []byte("test-value")
+
+	// Set a key first
+	require.NoError(t, c.SetRaw(ctx, key, value))
+
+	// Verify key exists
+	got, err := c.GetRaw(ctx, key)
+	require.NoError(t, err)
+	require.Equal(t, value, got)
+
+	// Set expiration
+	ttl := 1 * time.Second
+	require.NoError(t, c.Expire(ctx, key, ttl))
+
+	// Key should still exist immediately
+	_, err = c.GetRaw(ctx, key)
+	require.NoError(t, err)
+
+	// Wait for expiration
+	time.Sleep(ttl + 100*time.Millisecond)
+
+	// Key should be gone
+	_, err = c.GetRaw(ctx, key)
+	require.Error(t, err)
+	require.ErrorIs(t, err, errs.ErrNotFound)
+}
+
+func TestRedis_Expire_EmptyKey(t *testing.T) {
+	if os.Getenv("CI") == "" && !redisAvailable(t) {
+		t.Skip("Redis not available on localhost:6379")
+	}
+
+	c := newTestClient(t)
+	defer c.Close()
+
+	ctx := context.Background()
+
+	err := c.Expire(ctx, "", 30*time.Second)
+	require.ErrorIs(t, err, errs.ErrEmptyKey)
+}
+
+func TestRedis_Expire_NonExistentKey(t *testing.T) {
+	if os.Getenv("CI") == "" && !redisAvailable(t) {
+		t.Skip("Redis not available on localhost:6379")
+	}
+
+	c := newTestClient(t)
+	defer c.Close()
+
+	ctx := context.Background()
+	key := "kivigo:test:nonexistent"
+
+	// Try to expire a key that doesn't exist
+	err := c.Expire(ctx, key, 30*time.Second)
+	// Redis returns success even for non-existent keys, but the command has no effect
+	// This is expected behavior for Redis EXPIRE command
+	require.NoError(t, err)
+}

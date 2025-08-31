@@ -2,6 +2,8 @@ module github.com/azrod/kivigo/backend/redis
 
 go 1.23.8
 
+replace github.com/azrod/kivigo => ../../
+
 require (
 	github.com/azrod/kivigo v1.3.0
 	github.com/redis/go-redis/v9 v9.12.1

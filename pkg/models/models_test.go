@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -99,6 +100,25 @@ func TestKVWithBatchInterface(t *testing.T) {
 	require.Equal(t, kv, result)
 
 	err = kvBatch.BatchDelete(ctx, []string{"key1", "key2"})
+	require.NoError(t, err)
+}
+
+func TestKVWithTTLInterface(t *testing.T) {
+	var kvTTL KVWithTTL
+
+	require.Nil(t, kvTTL)
+
+	mockKVTTL := &mockKVWithTTL{}
+	kvTTL = mockKVTTL
+	require.NotNil(t, kvTTL)
+
+	// Test TTL support check
+	supports := kvTTL.SupportsExpiration()
+	require.True(t, supports)
+
+	// Test expiration
+	ctx := context.Background()
+	err := kvTTL.Expire(ctx, "test-key", 30*time.Second)
 	require.NoError(t, err)
 }
 
@@ -315,5 +335,15 @@ func (c *compositeKV) BatchDelete(_ context.Context, keys []string) error {
 		delete(c.data, key)
 	}
 
+	return nil
+}
+
+type mockKVWithTTL struct{}
+
+func (m *mockKVWithTTL) SupportsExpiration() bool {
+	return true
+}
+
+func (m *mockKVWithTTL) Expire(_ context.Context, _ string, _ time.Duration) error {
 	return nil
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 
@@ -15,6 +16,7 @@ var (
 	_ models.KV           = (*Client)(nil)
 	_ models.KVWithHealth = (*Client)(nil)
 	_ models.KVWithBatch  = (*Client)(nil)
+	_ models.KVWithTTL    = (*Client)(nil)
 )
 
 type (
@@ -186,4 +188,21 @@ func (c Client) BatchDelete(ctx context.Context, keys []string) error {
 	_, err := pipe.Exec(ctx)
 
 	return err
+}
+
+// SupportsExpiration returns true since Redis natively supports key expiration.
+func (c Client) SupportsExpiration() bool {
+	return true
+}
+
+// Expire sets a time-to-live (TTL) for the specified key in Redis.
+// The key will be automatically deleted after the TTL duration.
+func (c Client) Expire(ctx context.Context, key string, ttl time.Duration) error {
+	// Check if key is not empty
+	if key == "" {
+		return errs.ErrEmptyKey
+	}
+
+	// Use Redis EXPIRE command to set TTL
+	return c.c.Expire(ctx, key, ttl).Err()
 }
