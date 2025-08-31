@@ -51,7 +51,7 @@ const config: Config = {
               label: 'current',
             },
           },
-          lastVersion: 'current',
+          lastVersion: '1.5.0',
           includeCurrentVersion: true
         },
         theme: {
