@@ -15,6 +15,7 @@ var (
 	_ models.KV           = (*Client)(nil)
 	_ models.KVWithHealth = (*Client)(nil)
 	_ models.KVWithBatch  = (*Client)(nil)
+	_ models.KVWithTTL    = (*Client)(nil)
 )
 
 type (
@@ -192,4 +193,39 @@ func (c Client) BatchDelete(ctx context.Context, keys []string) error {
 	}
 
 	return lastError
+}
+
+// SupportsExpiration returns true since Memcached natively supports key expiration.
+func (c Client) SupportsExpiration() bool {
+	return true
+}
+
+// Expire sets a time-to-live (TTL) for the specified key in Memcached.
+// The key will be automatically deleted after the TTL duration.
+// Note: This requires getting the current value and re-setting it with expiration.
+func (c Client) Expire(ctx context.Context, key string, ttl time.Duration) error {
+	// Check if key is not empty
+	if key == "" {
+		return errs.ErrEmptyKey
+	}
+
+	// Get the current value
+	item, err := c.c.Get(key)
+	if err != nil {
+		if errors.Is(err, memcache.ErrCacheMiss) {
+			return errs.ErrNotFound
+		}
+		return err
+	}
+
+	// Create a new item with the same value but with expiration
+	newItem := &memcache.Item{
+		Key:        key,
+		Value:      item.Value,
+		Flags:      item.Flags,
+		Expiration: int32(ttl.Seconds()),
+	}
+
+	// Set the item with new expiration
+	return c.c.Set(newItem)
 }

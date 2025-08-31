@@ -423,3 +423,68 @@ func TestBatchDelete(t *testing.T) {
 		require.Equal(t, errs.ErrNotFound, err)
 	}
 }
+
+// ---------- TTL Tests ----------
+func TestMemcached_SupportsExpiration(t *testing.T) {
+	c := newTestClient(t)
+	defer c.Close()
+
+	// Memcached should support expiration
+	require.True(t, c.SupportsExpiration())
+}
+
+func TestMemcached_Expire(t *testing.T) {
+	c := newTestClient(t)
+	defer c.Close()
+
+	ctx := context.Background()
+	key := "kivigo:test:expire"
+	value := []byte("test-value")
+
+	// Set a key first
+	require.NoError(t, c.SetRaw(ctx, key, value))
+
+	// Verify key exists
+	got, err := c.GetRaw(ctx, key)
+	require.NoError(t, err)
+	require.Equal(t, value, got)
+
+	// Set expiration
+	ttl := 1 * time.Second
+	require.NoError(t, c.Expire(ctx, key, ttl))
+
+	// Key should still exist immediately
+	_, err = c.GetRaw(ctx, key)
+	require.NoError(t, err)
+
+	// Wait for expiration
+	time.Sleep(ttl + 100*time.Millisecond)
+
+	// Key should be gone
+	_, err = c.GetRaw(ctx, key)
+	require.Error(t, err)
+	require.Equal(t, errs.ErrNotFound, err)
+}
+
+func TestMemcached_Expire_EmptyKey(t *testing.T) {
+	c := newTestClient(t)
+	defer c.Close()
+
+	ctx := context.Background()
+
+	err := c.Expire(ctx, "", 30*time.Second)
+	require.ErrorIs(t, err, errs.ErrEmptyKey)
+}
+
+func TestMemcached_Expire_NonExistentKey(t *testing.T) {
+	c := newTestClient(t)
+	defer c.Close()
+
+	ctx := context.Background()
+	key := "kivigo:test:nonexistent"
+
+	// Try to expire a key that doesn't exist
+	err := c.Expire(ctx, key, 30*time.Second)
+	require.Error(t, err)
+	require.Equal(t, errs.ErrNotFound, err)
+}

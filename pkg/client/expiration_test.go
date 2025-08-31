@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/azrod/kivigo/pkg/encoder"
-	"github.com/azrod/kivigo/pkg/models"
 	"github.com/azrod/kivigo/pkg/mock"
+	"github.com/azrod/kivigo/pkg/models"
 )
 
 // mockKVWithTTL extends MockKV to support TTL operations.

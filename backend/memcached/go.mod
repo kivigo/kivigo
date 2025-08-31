@@ -4,6 +4,8 @@ go 1.23.8
 
 toolchain go1.24.6
 
+replace github.com/azrod/kivigo => ../../
+
 require (
 	github.com/azrod/kivigo v1.3.1-0.20250826205709-dbd1455ac5f3
 	github.com/bradfitz/gomemcache v0.0.0-20230905024940-24af94b03874
