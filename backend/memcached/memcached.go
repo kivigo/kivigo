@@ -118,7 +118,7 @@ func (c Client) Health(ctx context.Context) error {
 	testValue := []byte("ping")
 
 	if err := c.SetRaw(ctx, testKey, testValue); err != nil {
-		return errs.ErrHealthCheckFailed(err)
+		return err
 	}
 
 	// Clean up the test key
@@ -128,7 +128,7 @@ func (c Client) Health(ctx context.Context) error {
 
 	_, err := c.GetRaw(ctx, testKey)
 	if err != nil {
-		return errs.ErrHealthCheckFailed(err)
+		return err
 	}
 
 	return nil

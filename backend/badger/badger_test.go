@@ -38,7 +38,7 @@ func TestSetRaw(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			c := newTestClient(t)
-			ctx := t.Context()
+			ctx := context.Background()
 
 			err := c.SetRaw(ctx, tc.key, tc.value)
 			if tc.expectErr && err == nil {
@@ -89,7 +89,7 @@ func TestGetRaw(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			c := newTestClient(t)
-			ctx := t.Context()
+			ctx := context.Background()
 
 			tc.setup(c, ctx)
 
@@ -142,7 +142,7 @@ func TestDelete(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			c := newTestClient(t)
-			ctx := t.Context()
+			ctx := context.Background()
 
 			tc.setup(c, ctx)
 
@@ -173,7 +173,7 @@ func TestList(t *testing.T) { //nolint:cyclop
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			c := newTestClient(t)
-			ctx := t.Context()
+			ctx := context.Background()
 
 			for _, k := range tc.keys {
 				if tc.prefix != "" {
@@ -217,7 +217,7 @@ func TestBatchSetRaw(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			c := newTestClient(t)
-			ctx := t.Context()
+			ctx := context.Background()
 
 			err := c.BatchSetRaw(ctx, tc.kv)
 			if tc.expectErr && err == nil {
@@ -270,7 +270,7 @@ func TestBatchGetRaw(t *testing.T) { //nolint:funlen
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			c := newTestClient(t)
-			ctx := t.Context()
+			ctx := context.Background()
 			tc.setup(c, ctx)
 
 			got, err := c.BatchGetRaw(ctx, tc.getKeys)
@@ -330,7 +330,7 @@ func TestBatchDelete(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			c := newTestClient(t)
-			ctx := t.Context()
+			ctx := context.Background()
 			tc.setup(c, ctx)
 
 			err := c.BatchDelete(ctx, tc.delKeys)
@@ -347,7 +347,7 @@ func TestBatchDelete(t *testing.T) {
 
 func TestHealth(t *testing.T) {
 	c := newTestClient(t)
-	if err := c.Health(t.Context()); err != nil {
+	if err := c.Health(context.Background()); err != nil {
 		t.Errorf("Health failed: %v", err)
 	}
 }

@@ -35,7 +35,7 @@ func TestKVErrors(t *testing.T) {
 	}{
 		{"ErrClientNotInitialized", ErrClientNotInitialized, "client is not initialized"},
 		{"ErrEmptyBatch", ErrEmptyBatch, "empty batch provided"},
-		{"ErrKeyNotFound", ErrKeyNotFound, "key not found"},
+		{"ErrNotFound", ErrNotFound, "key not found"},
 	}
 
 	for _, tt := range tests {
@@ -95,7 +95,6 @@ func TestErrorsAreDistinct(t *testing.T) {
 		ErrEmptyPrefix,
 		ErrClientNotInitialized,
 		ErrEmptyBatch,
-		ErrKeyNotFound,
 	}
 
 	for i, err1 := range allErrors {
@@ -118,13 +117,4 @@ func TestErrorUnwrapping(t *testing.T) {
 	// Note: pkg/errors.Wrap creates a different structure than standard library,
 	// so we test behavior rather than exact unwrapping
 	require.Contains(t, wrappedErr.Error(), innerErr.Error())
-}
-
-func TestErrorComparisons(t *testing.T) {
-	// Test that backend.go and kv.go ErrNotFound/ErrKeyNotFound are different
-	require.False(t, errors.Is(ErrNotFound, ErrKeyNotFound))
-	require.False(t, errors.Is(ErrKeyNotFound, ErrNotFound))
-
-	// Even though they have similar messages, they should be different errors
-	require.NotEqual(t, ErrNotFound, ErrKeyNotFound)
 }

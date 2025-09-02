@@ -22,6 +22,9 @@ type (
 		// GetRaw retrieves the raw (encoded) value stored under the specified key.
 		// Returns the value as a byte slice, or an error if the key does not exist.
 		//
+		// Warning: Raw funcs are unsafe and any checks are performed before execution.
+		// Use normal funcs whenever possible or create directly your custom encoder/decoder.
+		//
 		// Example:
 		//   raw, err := backend.GetRaw(ctx, "myKey")
 		//   if err != nil {
@@ -32,6 +35,9 @@ type (
 
 		// SetRaw stores the given raw (encoded) value under the specified key.
 		// Returns an error if the operation fails.
+		//
+		// Warning: Raw funcs are unsafe and any checks are performed before execution.
+		// Use normal funcs whenever possible or create directly your custom encoder/decoder.
 		//
 		// Example:
 		//   err := backend.SetRaw(ctx, "myKey", []byte("myValue"))
@@ -55,6 +61,9 @@ type (
 		// BatchGetRaw retrieves multiple raw values for the given keys.
 		// Returns a map of key to raw value, or an error if the operation fails or is not supported.
 		//
+		// Warning: Raw funcs are unsafe and any checks are performed before execution.
+		// Use normal funcs whenever possible or create directly your custom encoder/decoder.
+		//
 		// Example:
 		//   raws, err := backend.BatchGetRaw(ctx, []string{"foo", "bar"})
 		//   if err != nil {
@@ -67,6 +76,9 @@ type (
 
 		// BatchSetRaw stores multiple key-value pairs atomically if supported by the backend.
 		// Returns an error if the operation fails or is not supported.
+		//
+		// Warning: Raw funcs are unsafe and any checks are performed before execution.
+		// Use normal funcs whenever possible or create directly your custom encoder/decoder.
 		//
 		// Example:
 		//   err := backend.BatchSetRaw(ctx, map[string][]byte{"foo": []byte("1"), "bar": []byte("2")})

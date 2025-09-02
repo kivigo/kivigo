@@ -45,7 +45,7 @@ func start(t *testing.T) (*container, error) {
 		return nil, err
 	}
 
-	endpoint := fmt.Sprintf("http://%s:%s", host, port.Port())
+	endpoint := fmt.Sprintf("http://%s:%s", host, port.Port()) //nolint:nosprintfhostport
 
 	r := &container{
 		container: c,

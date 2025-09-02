@@ -59,7 +59,7 @@ func New(opt Option) (Client, error) {
 
 	var err error
 
-	if opt.Endpoint != "" {
+	if opt.Endpoint != "" { //nolint:nestif
 		// For DynamoDB Local or custom endpoint
 		customResolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
 			return aws.Endpoint{URL: opt.Endpoint}, nil
@@ -143,7 +143,6 @@ func (c Client) ensureTable(ctx context.Context) error {
 		},
 		BillingMode: types.BillingModePayPerRequest,
 	})
-
 	if err != nil {
 		return err
 	}
@@ -181,7 +180,6 @@ func (c Client) GetRaw(ctx context.Context, key string) ([]byte, error) {
 			"PK": &types.AttributeValueMemberS{Value: key},
 		},
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -271,9 +269,8 @@ func (c Client) Health(ctx context.Context) error {
 	_, err := c.client.DescribeTable(ctx, &dynamodb.DescribeTableInput{
 		TableName: aws.String(c.tableName),
 	})
-
 	if err != nil {
-		return errs.ErrHealthCheckFailed(err)
+		return err
 	}
 
 	return nil
@@ -421,7 +418,6 @@ func (c Client) BatchSetRaw(ctx context.Context, kv map[string][]byte) error {
 				c.tableName: writeRequests,
 			},
 		})
-
 		if err != nil {
 			return err
 		}
@@ -464,7 +460,6 @@ func (c Client) BatchDelete(ctx context.Context, keys []string) error {
 				c.tableName: writeRequests,
 			},
 		})
-
 		if err != nil {
 			return err
 		}

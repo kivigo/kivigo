@@ -376,5 +376,4 @@ func TestRedis_Health_CheckFailed(t *testing.T) {
 	ctx := context.Background()
 	healthErr := c.Health(ctx)
 	require.Error(t, healthErr)
-	require.ErrorContains(t, healthErr, "health check failed")
 }

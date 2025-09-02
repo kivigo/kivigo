@@ -71,6 +71,11 @@ func (c Client) Close() error {
 
 // Get gets a value from the database.
 func (c Client) GetRaw(_ context.Context, key string) ([]byte, error) {
+	// Check if key is not empty
+	if key == "" {
+		return nil, errs.ErrEmptyKey
+	}
+
 	var value []byte
 
 	err := c.c.View(func(tx *bbolt.Tx) error {
@@ -154,7 +159,7 @@ func (c Client) Health(_ context.Context) error {
 	return c.c.View(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte(dbName))
 		if b == nil {
-			return errs.ErrHealthCheckFailed(fmt.Errorf("bucket %s not found", dbName))
+			return fmt.Errorf("bucket %s not found", dbName)
 		}
 
 		return nil

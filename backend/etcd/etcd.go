@@ -2,10 +2,10 @@ package etcd
 
 import (
 	"context"
-	"errors"
 
 	clientv3 "go.etcd.io/etcd/client/v3"
 
+	"github.com/azrod/kivigo/pkg/errs"
 	"github.com/azrod/kivigo/pkg/models"
 )
 
@@ -53,7 +53,7 @@ func (c *Client) GetRaw(ctx context.Context, key string) ([]byte, error) {
 	}
 
 	if len(resp.Kvs) == 0 {
-		return nil, errors.New("key not found")
+		return nil, errs.ErrNotFound
 	}
 
 	return resp.Kvs[0].Value, nil
@@ -81,7 +81,7 @@ func (c *Client) List(ctx context.Context, prefix string) ([]string, error) {
 
 func (c *Client) BatchGetRaw(ctx context.Context, keys []string) (map[string][]byte, error) {
 	if len(keys) == 0 {
-		return nil, errors.New("empty batch")
+		return nil, errs.ErrEmptyKey
 	}
 
 	ops := make([]clientv3.Op, 0, len(keys))
@@ -112,7 +112,7 @@ func (c *Client) BatchGetRaw(ctx context.Context, keys []string) (map[string][]b
 
 func (c *Client) BatchSetRaw(ctx context.Context, kv map[string][]byte) error {
 	if len(kv) == 0 {
-		return errors.New("empty batch")
+		return errs.ErrEmptyKey
 	}
 
 	ops := make([]clientv3.Op, 0, len(kv))
@@ -128,7 +128,7 @@ func (c *Client) BatchSetRaw(ctx context.Context, kv map[string][]byte) error {
 
 func (c *Client) BatchDelete(ctx context.Context, keys []string) error {
 	if len(keys) == 0 {
-		return errors.New("empty batch")
+		return errs.ErrEmptyKey
 	}
 
 	ops := make([]clientv3.Op, 0, len(keys))
