@@ -12,6 +12,25 @@ on:
         description: 'Release version (e.g., v1.5.0)'
         required: true
         type: string
+      release_type:
+        description: 'What to release'
+        required: true
+        type: choice
+        default: 'core+backends'
+        options:
+          - 'core'
+          - 'backends'
+          - 'core+backends'
+      latest:
+        description: 'Mark this release as latest'
+        required: false
+        type: boolean
+        default: false
+      create_github_release:
+        description: 'Create a GitHub release'
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   validate-inputs:
@@ -19,11 +38,17 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.validate.outputs.version }}
+      release_type: ${{ steps.validate.outputs.release_type }}
+      latest: ${{ steps.validate.outputs.latest }}
+      create_github_release: ${{ steps.validate.outputs.create_github_release }}
     steps:
       - name: 🔍 Validate version format
         id: validate
         run: |
           version="${{ github.event.inputs.version }}"
+          release_type="${{ github.event.inputs.release_type }}"
+          latest="${{ github.event.inputs.latest }}"
+          create_github_release="${{ github.event.inputs.create_github_release }}"
           
           # Check if version starts with 'v' and follows semantic versioning
           if [[ ! "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -32,12 +57,20 @@ jobs:
           fi
           
           echo "✅ Version format is valid: $version"
+          echo "📦 Release type: $release_type"
+          echo "🏷️ Mark as latest: $latest"
+          echo "📋 Create GitHub release: $create_github_release"
+          
           echo "version=$version" >> $GITHUB_OUTPUT
+          echo "release_type=$release_type" >> $GITHUB_OUTPUT
+          echo "latest=$latest" >> $GITHUB_OUTPUT
+          echo "create_github_release=$create_github_release" >> $GITHUB_OUTPUT
 
   discover-backends:
     name: 🔍 Discover Backends
     runs-on: ubuntu-latest
     needs: validate-inputs
+    if: ${{ needs.validate-inputs.outputs.release_type == 'backends' || needs.validate-inputs.outputs.release_type == 'core+backends' }}
     outputs:
       backends: ${{ steps.discover.outputs.backends }}
     steps:
@@ -69,6 +102,7 @@ jobs:
     name: 🏷️ Create and Push Tags
     runs-on: ubuntu-latest
     needs: [validate-inputs, discover-backends]
+    if: always() && !cancelled() && !failure()
     steps:
       - name: 🛎️ Checkout code
         uses: actions/checkout@v4
@@ -77,6 +111,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 🏷️ Create main project tag
+        if: ${{ needs.validate-inputs.outputs.release_type == 'core' || needs.validate-inputs.outputs.release_type == 'core+backends' }}
         run: |
           version="${{ needs.validate-inputs.outputs.version }}"
           
@@ -89,6 +124,7 @@ jobs:
           fi
 
       - name: 🏷️ Create backend tags
+        if: ${{ needs.validate-inputs.outputs.release_type == 'backends' || needs.validate-inputs.outputs.release_type == 'core+backends' }}
         run: |
           version="${{ needs.validate-inputs.outputs.version }}"
           backends='${{ needs.discover-backends.outputs.backends }}'
@@ -108,12 +144,19 @@ jobs:
             fi
           done
 
-      - name: 🚀 Push all tags
+      - name: 🚀 Push main project tag
+        if: ${{ needs.validate-inputs.outputs.release_type == 'core' || needs.validate-inputs.outputs.release_type == 'core+backends' }}
         run: |
           version="${{ needs.validate-inputs.outputs.version }}"
           
           echo "Pushing main project tag..."
           git push origin "$version" || echo "⚠️ Main project tag $version may already exist remotely"
+          echo "📤 Pushed main project tag: $version"
+
+      - name: 🚀 Push backend tags
+        if: ${{ needs.validate-inputs.outputs.release_type == 'backends' || needs.validate-inputs.outputs.release_type == 'core+backends' }}
+        run: |
+          version="${{ needs.validate-inputs.outputs.version }}"
           
           echo "Pushing backend tags..."
           backends='${{ needs.discover-backends.outputs.backends }}'
@@ -123,12 +166,68 @@ jobs:
             echo "📤 Pushed: $backend_tag"
           done
           
-          echo "🎉 All tags pushed successfully!"
+          echo "🎉 All backend tags pushed successfully!"
+
+  create-github-release:
+    name: 📋 Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [validate-inputs, create-tags]
+    if: ${{ needs.validate-inputs.outputs.create_github_release == 'true' && (needs.validate-inputs.outputs.release_type == 'core' || needs.validate-inputs.outputs.release_type == 'core+backends') }}
+    steps:
+      - name: 🛎️ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📋 Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.validate-inputs.outputs.version }}
+          name: Release ${{ needs.validate-inputs.outputs.version }}
+          make_latest: ${{ needs.validate-inputs.outputs.latest }}
+          generate_release_notes: true
+          body: |
+            ## KiviGo ${{ needs.validate-inputs.outputs.version }}
+            
+            ### Installation
+            
+            ```bash
+            go get github.com/azrod/kivigo@${{ needs.validate-inputs.outputs.version }}
+            ```
+            
+            ### Backend Modules
+            
+            For backend-specific modules, use:
+            
+            ```bash
+            # Redis backend
+            go get github.com/azrod/kivigo/backend/redis@backend/redis/${{ needs.validate-inputs.outputs.version }}
+            
+            # Consul backend  
+            go get github.com/azrod/kivigo/backend/consul@backend/consul/${{ needs.validate-inputs.outputs.version }}
+            
+            # etcd backend
+            go get github.com/azrod/kivigo/backend/etcd@backend/etcd/${{ needs.validate-inputs.outputs.version }}
+            
+            # Badger backend
+            go get github.com/azrod/kivigo/backend/badger@backend/badger/${{ needs.validate-inputs.outputs.version }}
+            
+            # Local (BoltDB) backend
+            go get github.com/azrod/kivigo/backend/local@backend/local/${{ needs.validate-inputs.outputs.version }}
+            ```
+            
+            ### Documentation
+            
+            - 📚 [Documentation](https://azrod.github.io/kivigo/)
+            - 📖 [API Reference](https://pkg.go.dev/github.com/azrod/kivigo@${{ needs.validate-inputs.outputs.version }})
+            
+            ### Release Type
+            
+            This release includes: **${{ needs.validate-inputs.outputs.release_type }}**
 
   deploy-docs:
     name: 📚🚀 Deploy Documentation to GitHub Pages
     runs-on: ubuntu-latest
     needs: [validate-inputs, create-tags]
+    if: ${{ needs.validate-inputs.outputs.release_type == 'core' || needs.validate-inputs.outputs.release_type == 'core+backends' }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
