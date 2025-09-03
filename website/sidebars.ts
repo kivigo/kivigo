@@ -16,7 +16,17 @@ const sidebars: SidebarsConfig = {
   // Documentation sidebar
   documentationSidebar: [
     'intro',
-    'getting-started',
+    {
+      type: 'category',
+      label: 'Getting Started',
+      items: [
+        'getting-started',
+        'installation',
+        'quick-start',
+        'operations',
+        'examples',
+      ],
+    },
     {
       type: 'category',
       label: 'Backends',
