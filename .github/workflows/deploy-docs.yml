@@ -1,0 +1,117 @@
+name: 📚 Deploy Documentation
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+"on":
+  workflow_call:
+    inputs:
+      version:
+        description: 'Release version for documentation (e.g., v1.5.0)'
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version for documentation (e.g., v1.5.0)'
+        required: true
+        type: string
+
+jobs:
+  deploy-docs:
+    name: 📚🚀 Deploy Documentation to GitHub Pages
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+      - name: 🔍 Validate version format
+        run: |
+          version="${{ inputs.version }}"
+          
+          # Check if version starts with 'v' and follows semantic versioning
+          if [[ ! "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ Error: Version must follow semantic versioning format (e.g., v1.5.0)"
+            exit 1
+          fi
+          
+          echo "✅ Version format is valid: $version"
+
+      - name: 🛎️ Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_PAT }}
+
+      - name: 📋 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: website/package-lock.json
+
+      - name: 📦 Install dependencies
+        run: |
+          cd website
+          npm ci
+
+      - name: 📚 Create versioned documentation
+        run: |
+          cd website
+          version="${{ inputs.version }}"
+          # Remove 'v' prefix for Docusaurus version
+          doc_version=${version#v}
+          
+          echo "Creating versioned documentation for version: $doc_version"
+          
+          # Check if this version already exists
+          if [[ -f versions.json ]] && jq -e ". | index(\"$doc_version\")" versions.json > /dev/null; then
+            echo "ℹ️ Version $doc_version already exists, skipping versioning"
+          else
+            # Use Docusaurus versioning command to create the version
+            npm run version "$doc_version"
+            echo "✅ Created version $doc_version using Docusaurus versioning"
+          fi
+          
+          # Show current versions
+          if [[ -f versions.json ]]; then
+            echo "📋 Current versions:"
+            cat versions.json
+          fi
+
+      - name: 📝 Update Docusaurus current version label
+        run: |
+          cd website
+          version="${{ inputs.version }}"
+          doc_version=${version#v}
+          # Remplace la valeur de lastVersion dans docusaurus.config.ts
+          sed -i.bak -E "s/(lastVersion:\s*')[^']+(',)/\1${doc_version}\2/" docusaurus.config.ts
+          rm docusaurus.config.ts.bak
+
+      - name: 🏗️ Build website
+        run: |
+          cd website
+          npm run build
+
+      - name: 🗂️ Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: 📤 Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: website/build
+
+      - name: 🚀 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: 📚 Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: add documentation for version ${{ inputs.version }}"
+          commit_user_name: github-actions[bot]
+          commit_user_email: github-actions[bot]@users.noreply.github.com
+          commit_author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>

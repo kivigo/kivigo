@@ -76,30 +76,26 @@ For maintainers: KiviGo uses an automated release workflow that creates tags for
      - `core`: Creates only the main project tag
      - `backends`: Creates only backend module tags
    - **Mark as latest**: Check to mark this release as the latest (default: unchecked)
-   - **Create GitHub release**: Check to create a GitHub release (default: checked)
+   - **Publish documentation**: Check to publish documentation (default: checked)
 
 The workflow will automatically:
 - Create tags based on your selection (main project and/or backend-specific tags)
-- Deploy documentation (for core releases)
-- Generate a GitHub release with usage instructions (if enabled)
+- Deploy documentation (for core releases, if enabled)
 
 #### Release Type Examples
 
 **Core + Backends (default)**:
 - Creates main project tag: `v1.5.0`
 - Creates backend tags: `backend/consul/v1.5.0`, `backend/redis/v1.5.0`, etc.
-- Deploys documentation
-- Creates GitHub release
+- Deploys documentation (if enabled)
 
 **Core only**:
 - Creates only main project tag: `v1.5.0`
-- Deploys documentation  
-- Creates GitHub release
+- Deploys documentation (if enabled)
 
 **Backends only**:
 - Creates only backend tags: `backend/consul/v1.5.0`, `backend/redis/v1.5.0`, etc.
 - No documentation deployment
-- No GitHub release
 
 ### Manual Tagging (Alternative)
 
@@ -117,6 +113,20 @@ git tag backend/redis/v1.5.0
 # Push all tags
 git push origin --tags
 ```
+
+### Documentation Deployment
+
+The documentation deployment is available as an independent workflow that can be run separately:
+
+1. Go to the **Actions** tab in the GitHub repository
+2. Select the **Deploy Documentation** workflow
+3. Click **Run workflow**
+4. Enter the version for which to deploy documentation (e.g., `v1.5.0`)
+
+This is useful when you need to:
+- Deploy documentation without creating a release
+- Re-deploy documentation for an existing version
+- Update documentation after fixing content issues
 
 ## Code of Conduct
 

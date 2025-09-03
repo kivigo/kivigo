@@ -26,8 +26,8 @@ permissions:
         required: false
         type: boolean
         default: false
-      create_github_release:
-        description: 'Create a GitHub release'
+      publish_docs:
+        description: 'Publish documentation'
         required: false
         type: boolean
         default: true
@@ -40,7 +40,7 @@ jobs:
       version: ${{ steps.validate.outputs.version }}
       release_type: ${{ steps.validate.outputs.release_type }}
       latest: ${{ steps.validate.outputs.latest }}
-      create_github_release: ${{ steps.validate.outputs.create_github_release }}
+      publish_docs: ${{ steps.validate.outputs.publish_docs }}
     steps:
       - name: 🔍 Validate version format
         id: validate
@@ -48,7 +48,7 @@ jobs:
           version="${{ github.event.inputs.version }}"
           release_type="${{ github.event.inputs.release_type }}"
           latest="${{ github.event.inputs.latest }}"
-          create_github_release="${{ github.event.inputs.create_github_release }}"
+          publish_docs="${{ github.event.inputs.publish_docs }}"
           
           # Check if version starts with 'v' and follows semantic versioning
           if [[ ! "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -59,12 +59,12 @@ jobs:
           echo "✅ Version format is valid: $version"
           echo "📦 Release type: $release_type"
           echo "🏷️ Mark as latest: $latest"
-          echo "📋 Create GitHub release: $create_github_release"
+          echo "📚 Publish documentation: $publish_docs"
           
           echo "version=$version" >> $GITHUB_OUTPUT
           echo "release_type=$release_type" >> $GITHUB_OUTPUT
           echo "latest=$latest" >> $GITHUB_OUTPUT
-          echo "create_github_release=$create_github_release" >> $GITHUB_OUTPUT
+          echo "publish_docs=$publish_docs" >> $GITHUB_OUTPUT
 
   discover-backends:
     name: 🔍 Discover Backends
@@ -168,148 +168,11 @@ jobs:
           
           echo "🎉 All backend tags pushed successfully!"
 
-  create-github-release:
-    name: 📋 Create GitHub Release
-    runs-on: ubuntu-latest
-    needs: [validate-inputs, create-tags]
-    if: ${{ needs.validate-inputs.outputs.create_github_release == 'true' && (needs.validate-inputs.outputs.release_type == 'core' || needs.validate-inputs.outputs.release_type == 'core+backends') }}
-    steps:
-      - name: 🛎️ Checkout code
-        uses: actions/checkout@v4
-
-      - name: 📋 Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ needs.validate-inputs.outputs.version }}
-          name: Release ${{ needs.validate-inputs.outputs.version }}
-          make_latest: ${{ needs.validate-inputs.outputs.latest }}
-          generate_release_notes: true
-          body: |
-            ## KiviGo ${{ needs.validate-inputs.outputs.version }}
-            
-            ### Installation
-            
-            ```bash
-            go get github.com/azrod/kivigo@${{ needs.validate-inputs.outputs.version }}
-            ```
-            
-            ### Backend Modules
-            
-            For backend-specific modules, use:
-            
-            ```bash
-            # Redis backend
-            go get github.com/azrod/kivigo/backend/redis@backend/redis/${{ needs.validate-inputs.outputs.version }}
-            
-            # Consul backend  
-            go get github.com/azrod/kivigo/backend/consul@backend/consul/${{ needs.validate-inputs.outputs.version }}
-            
-            # etcd backend
-            go get github.com/azrod/kivigo/backend/etcd@backend/etcd/${{ needs.validate-inputs.outputs.version }}
-            
-            # Badger backend
-            go get github.com/azrod/kivigo/backend/badger@backend/badger/${{ needs.validate-inputs.outputs.version }}
-            
-            # Local (BoltDB) backend
-            go get github.com/azrod/kivigo/backend/local@backend/local/${{ needs.validate-inputs.outputs.version }}
-            ```
-            
-            ### Documentation
-            
-            - 📚 [Documentation](https://azrod.github.io/kivigo/)
-            - 📖 [API Reference](https://pkg.go.dev/github.com/azrod/kivigo@${{ needs.validate-inputs.outputs.version }})
-            
-            ### Release Type
-            
-            This release includes: **${{ needs.validate-inputs.outputs.release_type }}**
-
   deploy-docs:
-    name: 📚🚀 Deploy Documentation to GitHub Pages
-    runs-on: ubuntu-latest
+    name: 📚 Deploy Documentation
     needs: [validate-inputs, create-tags]
-    if: ${{ needs.validate-inputs.outputs.release_type == 'core' || needs.validate-inputs.outputs.release_type == 'core+backends' }}
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    
-    steps:
-      - name: 🛎️ Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.CI_PAT }}
-
-      - name: 📋 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: website/package-lock.json
-
-      - name: 📦 Install dependencies
-        run: |
-          cd website
-          npm ci
-
-      - name: 📚 Create versioned documentation
-        run: |
-          cd website
-          version="${{ needs.validate-inputs.outputs.version }}"
-          # Remove 'v' prefix for Docusaurus version
-          doc_version=${version#v}
-          
-          echo "Creating versioned documentation for version: $doc_version"
-          
-          # Check if this version already exists
-          if [[ -f versions.json ]] && jq -e ". | index(\"$doc_version\")" versions.json > /dev/null; then
-            echo "ℹ️ Version $doc_version already exists, skipping versioning"
-          else
-            # Use Docusaurus versioning command to create the version
-            npm run version "$doc_version"
-            echo "✅ Created version $doc_version using Docusaurus versioning"
-          fi
-          
-          # Show current versions
-          if [[ -f versions.json ]]; then
-            echo "📋 Current versions:"
-            cat versions.json
-          fi
-
-      - name: 📝 Update Docusaurus current version label
-        run: |
-          cd website
-          version="${{ needs.validate-inputs.outputs.version }}"
-          doc_version=${version#v}
-          # Remplace la valeur de lastVersion dans docusaurus.config.ts
-          sed -i.bak -E "s/(lastVersion:\s*')[^']+(',)/\1${doc_version}\2/" docusaurus.config.ts
-          rm docusaurus.config.ts.bak
-
-      - name: 🏗️ Build website
-        run: |
-          cd website
-          npm run build
-
-      - name: 🗂️ Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: 📤 Upload to GitHub Pages
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: website/build
-
-      - name: 🚀 Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-
-      - name: 📚Commit and push changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "docs: add documentation for version"
-          commit_user_name: github-actions[bot]
-          commit_user_email: github-actions[bot]@users.noreply.github.com
-          commit_author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
+    if: ${{ needs.validate-inputs.outputs.publish_docs == 'true' && (needs.validate-inputs.outputs.release_type == 'core' || needs.validate-inputs.outputs.release_type == 'core+backends') }}
+    uses: ./.github/workflows/deploy-docs.yml
+    with:
+      version: ${{ needs.validate-inputs.outputs.version }}
+    secrets: inherit
