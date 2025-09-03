@@ -143,7 +143,7 @@ func runGetRawSubtest(t *testing.T, tt getRawTestCase) {
 		if tt.key == "" {
 			require.Equal(t, errs.ErrEmptyKey, err)
 		} else {
-			require.Equal(t, errs.ErrKeyNotFound, err)
+			require.Equal(t, errs.ErrNotFound, err)
 		}
 	} else {
 		require.NoError(t, err)
@@ -163,10 +163,11 @@ func TestMockKV_GetRaw(t *testing.T) {
 
 func TestMockKV_Delete(t *testing.T) {
 	tests := []struct {
-		name    string
-		key     string
-		setup   func(m *MockKV)
-		wantErr bool
+		name      string
+		key       string
+		setup     func(m *MockKV)
+		wantErr   bool
+		wantedErr error
 	}{
 		{
 			name: "Valid",
@@ -177,16 +178,18 @@ func TestMockKV_Delete(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name:    "EmptyKey",
-			key:     "",
-			setup:   func(m *MockKV) {},
-			wantErr: true,
+			name:      "EmptyKey",
+			key:       "",
+			setup:     func(m *MockKV) {},
+			wantErr:   true,
+			wantedErr: errs.ErrEmptyKey,
 		},
 		{
-			name:    "NonExistentKey",
-			key:     "missing-key",
-			setup:   func(m *MockKV) {},
-			wantErr: false,
+			name:      "NonExistentKey",
+			key:       "missing-key",
+			setup:     func(m *MockKV) {},
+			wantErr:   true,
+			wantedErr: errs.ErrNotFound,
 		},
 	}
 
@@ -200,7 +203,7 @@ func TestMockKV_Delete(t *testing.T) {
 			err := m.Delete(ctx, tt.key)
 			if tt.wantErr {
 				require.Error(t, err)
-				require.Equal(t, errs.ErrEmptyKey, err)
+				require.Equal(t, tt.wantedErr, err)
 			} else {
 				require.NoError(t, err)
 				// Verify key was removed
@@ -343,17 +346,6 @@ func getBatchGetRawBasicTestCases() []batchGetRawTestCase {
 			},
 			expectErr: false,
 		},
-		{
-			name: "PartialFound",
-			keys: []string{"key1", "missing"},
-			setup: func(m *MockKV) {
-				m.Data["key1"] = []byte("value1")
-			},
-			want: map[string][]byte{
-				"key1": []byte("value1"),
-			},
-			expectErr: false,
-		},
 	}
 }
 
@@ -380,7 +372,7 @@ func getBatchGetRawEdgeTestCases() []batchGetRawTestCase {
 				m.Data["other"] = []byte("value")
 			},
 			want:      map[string][]byte{},
-			expectErr: false,
+			expectErr: true,
 		},
 	}
 }
@@ -421,9 +413,11 @@ func TestMockKV_BatchGetRaw(t *testing.T) {
 
 func TestMockKV_BatchDelete(t *testing.T) {
 	tests := []struct {
-		name  string
-		keys  []string
-		setup func(m *MockKV)
+		name      string
+		keys      []string
+		setup     func(m *MockKV)
+		wantErr   bool
+		wantedErr error
 	}{
 		{
 			name: "Valid",
@@ -433,6 +427,8 @@ func TestMockKV_BatchDelete(t *testing.T) {
 				m.Data["key2"] = []byte("value2")
 				m.Data["key3"] = []byte("value3")
 			},
+			wantErr:   false,
+			wantedErr: nil,
 		},
 		{
 			name: "PartialExists",
@@ -441,16 +437,22 @@ func TestMockKV_BatchDelete(t *testing.T) {
 				m.Data["key1"] = []byte("value1")
 				m.Data["key2"] = []byte("value2")
 			},
+			wantErr:   true,
+			wantedErr: errs.ErrNotFound,
 		},
 		{
-			name:  "EmptyKeys",
-			keys:  []string{},
-			setup: func(m *MockKV) {},
+			name:      "EmptyKeys",
+			keys:      []string{},
+			setup:     func(m *MockKV) {},
+			wantErr:   true,
+			wantedErr: errs.ErrEmptyBatch,
 		},
 		{
-			name:  "NilKeys",
-			keys:  nil,
-			setup: func(m *MockKV) {},
+			name:      "NilKeys",
+			keys:      nil,
+			setup:     func(m *MockKV) {},
+			wantErr:   true,
+			wantedErr: errs.ErrEmptyBatch,
 		},
 	}
 
@@ -462,7 +464,12 @@ func TestMockKV_BatchDelete(t *testing.T) {
 			ctx := context.Background()
 
 			err := m.BatchDelete(ctx, tt.keys)
-			require.NoError(t, err)
+			if tt.wantErr {
+				require.Error(t, err)
+				require.Equal(t, tt.wantedErr, err)
+			} else {
+				require.NoError(t, err)
+			}
 
 			// Verify keys were deleted
 			for _, k := range tt.keys {

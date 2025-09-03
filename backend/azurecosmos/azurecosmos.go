@@ -330,12 +330,12 @@ func (c Client) Health(ctx context.Context) error {
 	// Try to read database info as a health check
 	databaseClient, err := c.client.NewDatabase(c.database)
 	if err != nil {
-		return errs.ErrHealthCheckFailed(err)
+		return err
 	}
 
 	_, err = databaseClient.Read(ctx, nil)
 	if err != nil {
-		return errs.ErrHealthCheckFailed(err)
+		return err
 	}
 
 	return nil

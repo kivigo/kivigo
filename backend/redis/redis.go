@@ -115,7 +115,7 @@ func (c Client) Health(ctx context.Context) error {
 
 	// Ping the Redis server to check health
 	if err := c.c.Ping(ctx).Err(); err != nil {
-		return errs.ErrHealthCheckFailed(err)
+		return err
 	}
 
 	return nil

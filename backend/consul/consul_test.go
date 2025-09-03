@@ -185,7 +185,7 @@ func TestBatchSetRaw(t *testing.T) {
 		expectErr bool
 	}{
 		{"Valid", map[string][]byte{"batch:key1": []byte("v1"), "batch:key2": []byte("v2")}, false},
-		{"EmptyBatch", map[string][]byte{}, true},
+		{"EmptyBatch", map[string][]byte{}, false},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -225,7 +225,7 @@ func TestBatchGetRaw(t *testing.T) {
 			name:      "EmptyBatch",
 			keys:      []string{},
 			want:      nil,
-			expectErr: true,
+			expectErr: false,
 		},
 		{
 			name:      "PartialNotFound",
@@ -270,7 +270,7 @@ func TestBatchDelete(t *testing.T) {
 		expectErr bool
 	}{
 		{"Valid", []string{"batchdel:key1", "batchdel:key2"}, false},
-		{"EmptyBatch", []string{}, true},
+		{"EmptyBatch", []string{}, false},
 		{"PartialNotFound", []string{"batchdel:key1", "batchdel:notfound"}, false},
 	}
 	for _, tc := range tests {

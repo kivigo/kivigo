@@ -3,6 +3,7 @@ package client_test
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -31,6 +32,11 @@ func Test_Get(t *testing.T) {
 			want:      teststruct{"existingValue"},
 			wantErr:   false,
 			createKey: true, // This will create the key before testing
+		},
+		{
+			name:    "invalid key",
+			key:     "",
+			wantErr: true,
 		},
 		{
 			name:      "existing-invalid-key",
@@ -154,6 +160,188 @@ func Test_Set(t *testing.T) {
 				if !reflect.DeepEqual(got, tt.value) {
 					t.Errorf("Get() = %v, want %v", got, tt.value)
 				}
+			}
+		})
+	}
+}
+
+func Test_Delete(t *testing.T) {
+	type test struct {
+		name    string
+		key     string
+		wantErr bool
+	}
+
+	tests := []test{
+		{
+			name:    "existing key",
+			key:     "existingKey",
+			wantErr: false,
+		},
+		{
+			name:    "invalid key",
+			key:     "",
+			wantErr: true,
+		},
+		{
+			name:    "non-existing key",
+			key:     "nonExistingKey",
+			wantErr: true,
+		},
+	}
+
+	mockKV := &mock.MockKV{Data: map[string][]byte{
+		"existingKey": []byte(`"existingValue"`),
+	}}
+
+	c, err := client.New(mockKV, client.Option{Encoder: encoder.JSON})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := c.Delete(context.Background(), tt.key)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Delete() error = %v, wantErr %v", err, tt.wantErr)
+
+				return
+			}
+		})
+	}
+}
+
+func Test_MatchKeys(t *testing.T) {
+	mockKV := &mock.MockKV{Data: map[string][]byte{
+		"prefix-1": []byte(`"val1"`),
+		"prefix-2": []byte(`"val2"`),
+		"other":    []byte(`"val3"`),
+	}}
+
+	c, err := client.New(mockKV, client.Option{Encoder: encoder.JSON})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []struct {
+		name    string
+		prefix  string
+		f       client.MatchKeysFunc
+		want    bool
+		wantErr bool
+	}{
+		{
+			name:    "nil func",
+			prefix:  "prefix",
+			f:       nil,
+			want:    false,
+			wantErr: true,
+		},
+		{
+			name:   "custom match - at least one key",
+			prefix: "prefix",
+			f: func(keys []string) (bool, error) {
+				return len(keys) > 0, nil
+			},
+			want:    true,
+			wantErr: false,
+		},
+		{
+			name:   "custom match - no keys",
+			prefix: "notfound",
+			f: func(keys []string) (bool, error) {
+				return len(keys) == 0, nil
+			},
+			want:    true,
+			wantErr: false,
+		},
+		{
+			name:   "custom match - error in func",
+			prefix: "prefix",
+			f: func(keys []string) (bool, error) {
+				return false, fmt.Errorf("custom error")
+			},
+			want:    false,
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := c.MatchKeys(context.Background(), tt.prefix, tt.f)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("MatchKeys() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if got != tt.want {
+				t.Errorf("MatchKeys() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_HasKey(t *testing.T) {
+	mockKV := &mock.MockKV{Data: map[string][]byte{
+		"foo": []byte(`"bar"`),
+	}}
+	c, err := client.New(mockKV, client.Option{Encoder: encoder.JSON})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []struct {
+		name    string
+		key     string
+		want    bool
+		wantErr bool
+	}{
+		{"existing key", "foo", true, false},
+		{"non-existing key", "baz", false, false},
+		{"empty key", "", false, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := c.HasKey(context.Background(), tt.key)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("HasKey() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if got != tt.want {
+				t.Errorf("HasKey() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_HasKeys(t *testing.T) {
+	mockKV := &mock.MockKV{Data: map[string][]byte{
+		"a": []byte(`"1"`),
+		"b": []byte(`"2"`),
+	}}
+	c, err := client.New(mockKV, client.Option{Encoder: encoder.JSON})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []struct {
+		name    string
+		keys    []string
+		want    bool
+		wantErr bool
+	}{
+		{"all existing", []string{"a", "b"}, true, false},
+		{"one missing", []string{"a", "c"}, false, false},
+		{"none existing", []string{"x", "y"}, false, false},
+		{"empty keys", []string{}, false, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := c.HasKeys(context.Background(), tt.keys)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("HasKeys() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if got != tt.want {
+				t.Errorf("HasKeys() = %v, want %v", got, tt.want)
 			}
 		})
 	}

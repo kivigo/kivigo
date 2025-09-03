@@ -44,14 +44,14 @@ func Test_BatchGet(t *testing.T) {
 			name:       "non-existent keys",
 			keys:       []string{"nonExistentKey1", "nonExistentKey2"},
 			want:       nil,
-			wantErr:    false,
+			wantErr:    true,
 			createKeys: false,
 		},
 		{
 			name:       "partial keys",
 			keys:       []string{"key1", "nonExistentKey"},
 			want:       map[string]any{"key1": testStruct{"value1"}},
-			wantErr:    false,
+			wantErr:    true,
 			createKeys: true,
 		},
 		{

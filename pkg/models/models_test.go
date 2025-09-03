@@ -173,7 +173,7 @@ func (m *mockKV) GetRaw(_ context.Context, key string) ([]byte, error) {
 		return val, nil
 	}
 
-	return nil, errs.ErrKeyNotFound
+	return nil, errs.ErrNotFound
 }
 
 func (m *mockKV) SetRaw(_ context.Context, key string, value []byte) error {

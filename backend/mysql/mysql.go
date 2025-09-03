@@ -183,7 +183,7 @@ func (c Client) Health(ctx context.Context) error {
 
 	// Ping the MySQL server to check health
 	if err := c.db.PingContext(ctx); err != nil {
-		return errs.ErrHealthCheckFailed(err)
+		return err
 	}
 
 	return nil

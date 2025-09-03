@@ -6,6 +6,7 @@ import (
 
 	"github.com/hashicorp/consul/api"
 
+	"github.com/azrod/kivigo/pkg/errs"
 	"github.com/azrod/kivigo/pkg/models"
 )
 
@@ -49,7 +50,7 @@ func (c *Client) GetRaw(_ context.Context, key string) ([]byte, error) {
 	}
 
 	if kvp == nil {
-		return nil, errors.New("key not found")
+		return nil, errs.ErrNotFound
 	}
 
 	return kvp.Value, nil
@@ -82,10 +83,6 @@ func (c *Client) Close() error {
 
 // BatchGetRaw retrieves multiple keys from Consul.
 func (c *Client) BatchGetRaw(ctx context.Context, keys []string) (map[string][]byte, error) {
-	if len(keys) == 0 {
-		return nil, errors.New("empty batch")
-	}
-
 	results := make(map[string][]byte, len(keys))
 
 	for _, key := range keys {
@@ -104,10 +101,6 @@ func (c *Client) BatchGetRaw(ctx context.Context, keys []string) (map[string][]b
 
 // BatchSetRaw sets multiple key-value pairs in Consul.
 func (c *Client) BatchSetRaw(ctx context.Context, kv map[string][]byte) error {
-	if len(kv) == 0 {
-		return errors.New("empty batch")
-	}
-
 	for key, value := range kv {
 		if err := c.SetRaw(ctx, key, value); err != nil {
 			return err
@@ -119,10 +112,6 @@ func (c *Client) BatchSetRaw(ctx context.Context, kv map[string][]byte) error {
 
 // BatchDelete deletes multiple keys from Consul.
 func (c *Client) BatchDelete(ctx context.Context, keys []string) error {
-	if len(keys) == 0 {
-		return errors.New("empty batch")
-	}
-
 	for _, key := range keys {
 		if err := c.Delete(ctx, key); err != nil {
 			return err
@@ -140,7 +129,7 @@ func (c *Client) Health(_ context.Context) error {
 	// Try to get the status leader as a simple health check
 	_, err := c.cli.Status().Leader()
 	if err != nil {
-		return errors.New("consul health check failed: " + err.Error())
+		return err
 	}
 
 	return nil

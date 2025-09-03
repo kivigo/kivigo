@@ -30,7 +30,7 @@ func (m *MockKV) GetRaw(_ context.Context, key string) ([]byte, error) {
 	m.mu.RUnlock()
 
 	if !ok {
-		return nil, errs.ErrKeyNotFound
+		return nil, errs.ErrNotFound
 	}
 
 	return val, nil
@@ -51,6 +51,10 @@ func (m *MockKV) SetRaw(_ context.Context, key string, value []byte) error {
 func (m *MockKV) Delete(_ context.Context, key string) error {
 	if key == "" {
 		return errs.ErrEmptyKey
+	}
+
+	if _, ok := m.Data[key]; !ok {
+		return errs.ErrNotFound
 	}
 
 	m.mu.Lock()
@@ -91,6 +95,9 @@ func (m *MockKV) BatchGetRaw(_ context.Context, keys []string) (map[string][]byt
 	for _, k := range keys {
 		if v, ok := m.Data[k]; ok {
 			result[k] = v
+		} else {
+			m.mu.RUnlock()
+			return nil, errs.ErrNotFound
 		}
 	}
 	m.mu.RUnlock()
@@ -113,8 +120,16 @@ func (m *MockKV) BatchSetRaw(_ context.Context, kv map[string][]byte) error {
 // BatchDelete implements models.KVWithBatch.
 // Deletes all keys provided.
 func (m *MockKV) BatchDelete(_ context.Context, keys []string) error {
+	if len(keys) == 0 {
+		return errs.ErrEmptyBatch
+	}
+
 	m.mu.Lock()
 	for _, k := range keys {
+		if _, ok := m.Data[k]; !ok {
+			m.mu.Unlock()
+			return errs.ErrNotFound
+		}
 		delete(m.Data, k)
 	}
 	m.mu.Unlock()
