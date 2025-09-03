@@ -154,6 +154,42 @@ keys, err := client.List(ctx, "user:")
 err := client.Delete(ctx, "user:1")
 ```
 
+### Checking Key Existence
+
+```go
+// Check if a single key exists
+exists, err := client.HasKey(ctx, "user:1")
+if err != nil {
+    log.Fatal(err)
+}
+if exists {
+    fmt.Println("User 1 exists")
+}
+
+// Check if all keys exist
+allExist, err := client.HasKeys(ctx, []string{"user:1", "user:2", "user:3"})
+if err != nil {
+    log.Fatal(err)
+}
+if allExist {
+    fmt.Println("All users exist")
+} else {
+    fmt.Println("Some users are missing")
+}
+
+// Custom key matching with a prefix
+match, err := client.MatchKeys(ctx, "user:", func(keys []string) (bool, error) {
+    // Custom logic: check if we have more than 5 users
+    return len(keys) > 5, nil
+})
+if err != nil {
+    log.Fatal(err)
+}
+if match {
+    fmt.Println("More than 5 users found")
+}
+```
+
 ## Different Backends
 
 KiviGo supports multiple backends. Here are some quick examples:
