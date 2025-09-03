@@ -69,13 +69,37 @@ For maintainers: KiviGo uses an automated release workflow that creates tags for
 1. Go to the **Actions** tab in the GitHub repository
 2. Select the **Release** workflow
 3. Click **Run workflow**
-4. Enter the version (e.g., `v1.5.0`) following semantic versioning
-5. Choose whether to create a GitHub release (recommended: `true`)
+4. Configure the release options:
+   - **Version**: Enter the version (e.g., `v1.5.0`) following semantic versioning
+   - **Release type**: Choose what to release:
+     - `core+backends` (default): Creates both main project and backend tags
+     - `core`: Creates only the main project tag
+     - `backends`: Creates only backend module tags
+   - **Mark as latest**: Check to mark this release as the latest (default: unchecked)
+   - **Create GitHub release**: Check to create a GitHub release (default: checked)
 
 The workflow will automatically:
-- Create a main project tag (e.g., `v1.5.0`)
-- Create backend-specific tags (e.g., `backend/consul/v1.5.0`, `backend/redis/v1.5.0`)
-- Generate a GitHub release with usage instructions
+- Create tags based on your selection (main project and/or backend-specific tags)
+- Deploy documentation (for core releases)
+- Generate a GitHub release with usage instructions (if enabled)
+
+#### Release Type Examples
+
+**Core + Backends (default)**:
+- Creates main project tag: `v1.5.0`
+- Creates backend tags: `backend/consul/v1.5.0`, `backend/redis/v1.5.0`, etc.
+- Deploys documentation
+- Creates GitHub release
+
+**Core only**:
+- Creates only main project tag: `v1.5.0`
+- Deploys documentation  
+- Creates GitHub release
+
+**Backends only**:
+- Creates only backend tags: `backend/consul/v1.5.0`, `backend/redis/v1.5.0`, etc.
+- No documentation deployment
+- No GitHub release
 
 ### Manual Tagging (Alternative)
 

@@ -5,7 +5,7 @@ permissions:
   actions: write
   attestations: write
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       version:
