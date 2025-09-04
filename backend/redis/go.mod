@@ -3,8 +3,8 @@ module github.com/azrod/kivigo/backend/redis
 go 1.23.8
 
 require (
-	github.com/azrod/kivigo v1.3.0
-	github.com/redis/go-redis/v9 v9.12.1
+	github.com/azrod/kivigo v1.5.1
+	github.com/redis/go-redis/v9 v9.13.0
 	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.38.0
 )
