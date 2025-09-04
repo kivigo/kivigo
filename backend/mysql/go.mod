@@ -3,7 +3,7 @@ module github.com/azrod/kivigo/backend/mysql
 go 1.23.8
 
 require (
-	github.com/azrod/kivigo v1.3.0
+	github.com/azrod/kivigo v1.5.1
 	github.com/go-sql-driver/mysql v1.9.3
 	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.38.0
