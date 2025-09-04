@@ -5,13 +5,32 @@ permissions:
   actions: write
   attestations: write
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       version:
         description: 'Release version (e.g., v1.5.0)'
         required: true
         type: string
+      release_type:
+        description: 'What to release'
+        required: true
+        type: choice
+        default: 'core+backends'
+        options:
+          - 'core'
+          - 'backends'
+          - 'core+backends'
+      latest:
+        description: 'Mark this release as latest'
+        required: false
+        type: boolean
+        default: false
+      publish_docs:
+        description: 'Publish documentation'
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   validate-inputs:
@@ -19,11 +38,17 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.validate.outputs.version }}
+      release_type: ${{ steps.validate.outputs.release_type }}
+      latest: ${{ steps.validate.outputs.latest }}
+      publish_docs: ${{ steps.validate.outputs.publish_docs }}
     steps:
       - name: 🔍 Validate version format
         id: validate
         run: |
           version="${{ github.event.inputs.version }}"
+          release_type="${{ github.event.inputs.release_type }}"
+          latest="${{ github.event.inputs.latest }}"
+          publish_docs="${{ github.event.inputs.publish_docs }}"
           
           # Check if version starts with 'v' and follows semantic versioning
           if [[ ! "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -32,12 +57,20 @@ jobs:
           fi
           
           echo "✅ Version format is valid: $version"
+          echo "📦 Release type: $release_type"
+          echo "🏷️ Mark as latest: $latest"
+          echo "📚 Publish documentation: $publish_docs"
+          
           echo "version=$version" >> $GITHUB_OUTPUT
+          echo "release_type=$release_type" >> $GITHUB_OUTPUT
+          echo "latest=$latest" >> $GITHUB_OUTPUT
+          echo "publish_docs=$publish_docs" >> $GITHUB_OUTPUT
 
   discover-backends:
     name: 🔍 Discover Backends
     runs-on: ubuntu-latest
     needs: validate-inputs
+    if: ${{ needs.validate-inputs.outputs.release_type == 'backends' || needs.validate-inputs.outputs.release_type == 'core+backends' }}
     outputs:
       backends: ${{ steps.discover.outputs.backends }}
     steps:
@@ -69,6 +102,7 @@ jobs:
     name: 🏷️ Create and Push Tags
     runs-on: ubuntu-latest
     needs: [validate-inputs, discover-backends]
+    if: always() && !cancelled() && !failure()
     steps:
       - name: 🛎️ Checkout code
         uses: actions/checkout@v4
@@ -77,6 +111,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 🏷️ Create main project tag
+        if: ${{ needs.validate-inputs.outputs.release_type == 'core' || needs.validate-inputs.outputs.release_type == 'core+backends' }}
         run: |
           version="${{ needs.validate-inputs.outputs.version }}"
           
@@ -89,6 +124,7 @@ jobs:
           fi
 
       - name: 🏷️ Create backend tags
+        if: ${{ needs.validate-inputs.outputs.release_type == 'backends' || needs.validate-inputs.outputs.release_type == 'core+backends' }}
         run: |
           version="${{ needs.validate-inputs.outputs.version }}"
           backends='${{ needs.discover-backends.outputs.backends }}'
@@ -108,12 +144,19 @@ jobs:
             fi
           done
 
-      - name: 🚀 Push all tags
+      - name: 🚀 Push main project tag
+        if: ${{ needs.validate-inputs.outputs.release_type == 'core' || needs.validate-inputs.outputs.release_type == 'core+backends' }}
         run: |
           version="${{ needs.validate-inputs.outputs.version }}"
           
           echo "Pushing main project tag..."
           git push origin "$version" || echo "⚠️ Main project tag $version may already exist remotely"
+          echo "📤 Pushed main project tag: $version"
+
+      - name: 🚀 Push backend tags
+        if: ${{ needs.validate-inputs.outputs.release_type == 'backends' || needs.validate-inputs.outputs.release_type == 'core+backends' }}
+        run: |
+          version="${{ needs.validate-inputs.outputs.version }}"
           
           echo "Pushing backend tags..."
           backends='${{ needs.discover-backends.outputs.backends }}'
@@ -123,94 +166,13 @@ jobs:
             echo "📤 Pushed: $backend_tag"
           done
           
-          echo "🎉 All tags pushed successfully!"
+          echo "🎉 All backend tags pushed successfully!"
 
   deploy-docs:
-    name: 📚🚀 Deploy Documentation to GitHub Pages
-    runs-on: ubuntu-latest
+    name: 📚 Deploy Documentation
     needs: [validate-inputs, create-tags]
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    
-    steps:
-      - name: 🛎️ Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.CI_PAT }}
-
-      - name: 📋 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: website/package-lock.json
-
-      - name: 📦 Install dependencies
-        run: |
-          cd website
-          npm ci
-
-      - name: 📚 Create versioned documentation
-        run: |
-          cd website
-          version="${{ needs.validate-inputs.outputs.version }}"
-          # Remove 'v' prefix for Docusaurus version
-          doc_version=${version#v}
-          
-          echo "Creating versioned documentation for version: $doc_version"
-          
-          # Check if this version already exists
-          if [[ -f versions.json ]] && jq -e ". | index(\"$doc_version\")" versions.json > /dev/null; then
-            echo "ℹ️ Version $doc_version already exists, skipping versioning"
-          else
-            # Use Docusaurus versioning command to create the version
-            npm run version "$doc_version"
-            echo "✅ Created version $doc_version using Docusaurus versioning"
-          fi
-          
-          # Show current versions
-          if [[ -f versions.json ]]; then
-            echo "📋 Current versions:"
-            cat versions.json
-          fi
-
-      - name: 📝 Update Docusaurus current version label
-        run: |
-          cd website
-          version="${{ needs.validate-inputs.outputs.version }}"
-          doc_version=${version#v}
-          # Remplace la valeur de lastVersion dans docusaurus.config.ts
-          sed -i.bak -E "s/(lastVersion:\s*')[^']+(',)/\1${doc_version}\2/" docusaurus.config.ts
-          rm docusaurus.config.ts.bak
-
-      - name: 🏗️ Build website
-        run: |
-          cd website
-          npm run build
-
-      - name: 🗂️ Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: 📤 Upload to GitHub Pages
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: website/build
-
-      - name: 🚀 Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-
-      - name: 📚Commit and push changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "docs: add documentation for version"
-          commit_user_name: github-actions[bot]
-          commit_user_email: github-actions[bot]@users.noreply.github.com
-          commit_author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
+    if: ${{ needs.validate-inputs.outputs.publish_docs == 'true' && (needs.validate-inputs.outputs.release_type == 'core' || needs.validate-inputs.outputs.release_type == 'core+backends') }}
+    uses: ./.github/workflows/deploy-docs.yml
+    with:
+      version: ${{ needs.validate-inputs.outputs.version }}
+    secrets: inherit
