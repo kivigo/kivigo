@@ -39,15 +39,19 @@ err = client.Delete(ctx, "key")        // Remove data
 Follow these steps to start using KiviGo:
 
 ### 1. 📦 [Installation](./installation)
+
 Learn how to install KiviGo core and choose the right backend for your needs.
 
-### 2. 🚀 [Quick Start](./quick-start) 
+### 2. 🚀 [Quick Start](./quick-start)
+
 Get up and running with basic examples and understand the fundamentals.
 
 ### 3. ⚙️ [Operations](./operations)
+
 Master all available operations: Set, Get, List, Delete, and more.
 
 ### 4. 💡 [Examples](./examples)
+
 See practical, real-world examples including configuration management, caching, and session storage.
 
 ## Choose Your Path
@@ -71,7 +75,7 @@ Explore [Advanced Features](./advanced/health-checks) for custom backends, batch
 
 ## Community & Support
 
-- **📚 Documentation**: Complete guides and API reference at [kivigo.dev](https://azrod.github.io/kivigo/)
+- **📚 Documentation**: Complete guides and API reference at [azrod.github.io/kivigo/](https://azrod.github.io/kivigo/)
 - **🐛 Issues**: Report bugs and request features on [GitHub](https://github.com/azrod/kivigo/issues)
 - **💬 Discussions**: Ask questions and share ideas in [GitHub Discussions](https://github.com/azrod/kivigo/discussions)
 
