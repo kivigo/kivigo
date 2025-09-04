@@ -5,7 +5,7 @@ go 1.23.8
 toolchain go1.24.5
 
 require (
-	github.com/azrod/kivigo v1.3.0
+	github.com/azrod/kivigo v1.5.1
 	github.com/dgraph-io/badger/v4 v4.8.0
 )
 
