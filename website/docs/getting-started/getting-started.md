@@ -68,10 +68,10 @@ Jump to [Operations](./operations) for comprehensive operation guides
 Check out [Examples](./examples) for practical use cases
 
 **🗄️ Need a specific backend?**
-Browse [Backends](./backends/overview) to find the perfect storage solution
+Browse [Backends](../backends/overview) to find the perfect storage solution
 
 **🔧 Want advanced features?**
-Explore [Advanced Features](./advanced/health-checks) for custom backends, batch operations, and more
+Explore [Advanced Features](../advanced/health-checks) for custom backends, batch operations, and more
 
 ## Community & Support
 

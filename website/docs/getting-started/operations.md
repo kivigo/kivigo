@@ -361,6 +361,6 @@ if err != nil {
 Now that you understand all the basic operations:
 
 1. **Explore [Examples](./examples)** - See these operations in practical, real-world scenarios
-2. **Learn about [Backends](./backends/overview)** - Understand which operations work best with different backends
-3. **Advanced [Batch Operations](./advanced/batch-operations)** - Optimize performance with bulk operations
-4. **Custom [Error Handling](./advanced/health-checks)** - Build robust applications with proper error handling
+2. **Learn about [Backends](../backends/overview)** - Understand which operations work best with different backends
+3. **Advanced [Batch Operations](../advanced/batch-operations)** - Optimize performance with bulk operations
+4. **Custom [Error Handling](../advanced/health-checks)** - Build robust applications with proper error handling

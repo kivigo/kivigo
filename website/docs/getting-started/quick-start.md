@@ -226,5 +226,5 @@ Now that you understand the basics:
 
 1. **Learn about [Operations](./operations)** - Discover all available operations like List, Delete, and batch operations
 2. **See more [Examples](./examples)** - Explore practical patterns and advanced usage
-3. **Choose your [Backend](./backends/overview)** - Find the perfect storage backend for your use case
-4. **Explore [Advanced Features](./advanced/health-checks)** - Dive into custom backends, batch operations, and more
+3. **Choose your [Backend](../backends/overview)** - Find the perfect storage backend for your use case
+4. **Explore [Advanced Features](../advanced/health-checks)** - Dive into custom backends, batch operations, and more

@@ -575,7 +575,7 @@ func TestUserService(t *testing.T) {
 
 These examples demonstrate real-world usage patterns. To continue learning:
 
-1. **Explore [Backends](./backends/overview)** - Choose the right backend for your specific use case
-2. **Learn [Advanced Features](./advanced/health-checks)** - Implement robust error handling and monitoring
-3. **Try [Batch Operations](./advanced/batch-operations)** - Optimize performance for bulk operations
-4. **Build [Custom Backends](./advanced/custom-backend)** - Create your own storage implementations
+1. **Explore [Backends](../backends/overview)** - Choose the right backend for your specific use case
+2. **Learn [Advanced Features](../advanced/health-checks)** - Implement robust error handling and monitoring
+3. **Try [Batch Operations](../advanced/batch-operations)** - Optimize performance for bulk operations
+4. **Build [Custom Backends](../advanced/custom-backend)** - Create your own storage implementations
