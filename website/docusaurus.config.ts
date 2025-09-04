@@ -162,6 +162,30 @@ const config: Config = {
       ],
       copyright: `Copyright © ${new Date().getFullYear()} KiviGo. Built with Docusaurus.`,
     },
+    algolia: {
+      // The application ID provided by Algolia
+      appId: 'FLTTNEGAAP',
+
+      // Public API key: it is safe to commit it
+      apiKey: 'b6b4d2b5aa6dbbef9815f72e379efede', // Use the Search API Key, not the Write API Key
+
+      indexName: 'kivigo_v1', // Choose a meaningful name for your index
+
+      // Optional: see doc section below
+      contextualSearch: true,
+
+      // Optional: Specify domains where the navigation should occur through window.location instead on history.push
+      // externalUrlRegex: 'external\\.com|domain\\.com',
+
+      // Optional: Algolia search parameters
+      searchParameters: {},
+
+      // Optional: path for search page that enabled by default (`false` to disable it)
+      searchPagePath: 'search',
+
+      // Optional: whether the insights feature is enabled or not on Docsearch
+      insights: true,
+    },
     prism: {
       theme: prismThemes.gruvboxMaterialDark,
       additionalLanguages: ['go', 'bash', 'yaml', 'json'],
