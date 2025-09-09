@@ -44,3 +44,7 @@
   --docusaurus-highlighted-code-line-bg: #46691f;
   /* Vert très foncé */
 }
+
+.footer {
+  --ifm-footer-background-color: #46691f;
+}

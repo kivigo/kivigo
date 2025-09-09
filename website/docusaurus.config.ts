@@ -69,6 +69,7 @@ const config: Config = {
       disableSwitch: true,
       respectPrefersColorScheme: false,
     },
+    metadata: [{ name: 'google-site-verification', content: 'bjKXTjN1SpBskNglf5JXuQEKqY0qLLIl6MrnsGAM7qA' }],
     navbar: {
       title: 'KiviGo',
       logo: {
