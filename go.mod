@@ -1,13 +1,13 @@
 module github.com/azrod/kivigo
 
-go 1.23.8
+go 1.24.0
 
 toolchain go1.24.5
 
 require (
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.11.1
-	golang.org/x/sync v0.16.0
+	golang.org/x/sync v0.17.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
