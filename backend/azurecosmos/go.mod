@@ -1,14 +1,14 @@
 module github.com/kivigo/kivigo/backend/azurecosmos
 
-go 1.23.8
+go 1.24.0
 
 toolchain go1.24.5
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.16.0
 	github.com/Azure/azure-sdk-for-go/sdk/data/azcosmos v1.1.0
-	github.com/kivigo/kivigo v1.5.1
-	github.com/stretchr/testify v1.10.0
+	github.com/kivigo/kivigo v1.5.2-0.20250914210221-5ee7b6e0768f
+	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.38.0
 )
 

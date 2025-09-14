@@ -3,7 +3,7 @@ module github.com/kivigo/kivigo/backend/local
 go 1.24.5
 
 require (
-	github.com/kivigo/kivigo v1.5.1
+	github.com/kivigo/kivigo v1.5.2-0.20250914211630-6535becf59e9
 	github.com/stretchr/testify v1.11.1
 	go.etcd.io/bbolt v1.4.3
 )
