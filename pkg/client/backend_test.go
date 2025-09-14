@@ -7,9 +7,10 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/azrod/kivigo/pkg/client"
-	"github.com/azrod/kivigo/pkg/encoder"
-	"github.com/azrod/kivigo/pkg/mock"
+	"github.com/kivigo/encoders/json"
+
+	"github.com/kivigo/kivigo/pkg/client"
+	"github.com/kivigo/kivigo/pkg/mock"
 )
 
 func Test_Get(t *testing.T) {
@@ -55,7 +56,7 @@ func Test_Get(t *testing.T) {
 
 	mockKV := &mock.MockKV{Data: map[string][]byte{}}
 
-	c, err := client.New(mockKV, client.Option{Encoder: encoder.JSON})
+	c, err := client.New(mockKV, client.Option{Encoder: json.New()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -133,7 +134,7 @@ func Test_Set(t *testing.T) {
 
 	mockKV := &mock.MockKV{Data: map[string][]byte{}}
 
-	c, err := client.New(mockKV, client.Option{Encoder: encoder.JSON})
+	c, err := client.New(mockKV, client.Option{Encoder: json.New()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -194,7 +195,7 @@ func Test_Delete(t *testing.T) {
 		"existingKey": []byte(`"existingValue"`),
 	}}
 
-	c, err := client.New(mockKV, client.Option{Encoder: encoder.JSON})
+	c, err := client.New(mockKV, client.Option{Encoder: json.New()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -218,7 +219,7 @@ func Test_MatchKeys(t *testing.T) {
 		"other":    []byte(`"val3"`),
 	}}
 
-	c, err := client.New(mockKV, client.Option{Encoder: encoder.JSON})
+	c, err := client.New(mockKV, client.Option{Encoder: json.New()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -283,7 +284,7 @@ func Test_HasKey(t *testing.T) {
 	mockKV := &mock.MockKV{Data: map[string][]byte{
 		"foo": []byte(`"bar"`),
 	}}
-	c, err := client.New(mockKV, client.Option{Encoder: encoder.JSON})
+	c, err := client.New(mockKV, client.Option{Encoder: json.New()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -317,7 +318,7 @@ func Test_HasKeys(t *testing.T) {
 		"a": []byte(`"1"`),
 		"b": []byte(`"2"`),
 	}}
-	c, err := client.New(mockKV, client.Option{Encoder: encoder.JSON})
+	c, err := client.New(mockKV, client.Option{Encoder: json.New()})
 	if err != nil {
 		t.Fatal(err)
 	}

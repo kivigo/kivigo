@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/azrod/kivigo"
-	"github.com/azrod/kivigo/examples/custom_backend/internal/backend/memory"
+	"github.com/kivigo/kivigo"
+	"github.com/kivigo/kivigo/examples/custom_backend/internal/backend/memory"
 )
 
 func main() {

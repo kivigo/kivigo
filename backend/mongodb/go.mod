@@ -1,9 +1,9 @@
-module github.com/azrod/kivigo/backend/mongodb
+module github.com/kivigo/kivigo/backend/mongodb
 
 go 1.23.8
 
 require (
-	github.com/azrod/kivigo v1.5.1
+	github.com/kivigo/kivigo v1.5.1
 	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.38.0
 	go.mongodb.org/mongo-driver v1.17.4

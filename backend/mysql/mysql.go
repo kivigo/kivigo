@@ -8,8 +8,8 @@ import (
 
 	_ "github.com/go-sql-driver/mysql" // MySQL driver
 
-	"github.com/azrod/kivigo/pkg/errs"
-	"github.com/azrod/kivigo/pkg/models"
+	"github.com/kivigo/kivigo/pkg/errs"
+	"github.com/kivigo/kivigo/pkg/models"
 )
 
 var (

@@ -21,7 +21,9 @@ KiviGo is designed to simplify key-value storage operations in Go applications b
 ## ✨ Key Features
 
 ### 🔧 Multiple Backends
+
 Choose from a variety of storage backends:
+
 - **Embedded**: BadgerDB, BoltDB (local)
 - **Distributed**: Redis, Consul, etcd
 - **Cloud**: Azure Cosmos DB, DynamoDB
@@ -30,9 +32,11 @@ Choose from a variety of storage backends:
 - **In-Memory**: Memcached
 
 ### 📦 Modular Dependencies
+
 Each backend is provided as a separate Go module. If you only need Redis, you only get Redis dependencies - keeping your application lightweight.
 
 ### 🎯 Simple API
+
 ```go
 // Store any Go struct
 type User struct {
@@ -49,6 +53,7 @@ err = client.Get(ctx, "user:123", &retrievedUser)
 ```
 
 ### 🧪 Testing Made Easy
+
 Built-in mock backend for unit testing without external dependencies:
 
 ```go
@@ -71,15 +76,19 @@ KiviGo is perfect for:
 ## 🏗️ Design Philosophy
 
 ### 1. Zero-Boilerplate Usage
+
 No need to implement custom marshal/unmarshal methods. KiviGo automatically handles serialization using your chosen encoder.
 
 ### 2. Modular Go Packages
+
 Each backend is a separate Go module. This approach allows you to:
+
 - Fetch only the dependencies you need
 - Keep your project lightweight
 - Avoid version conflicts between different backend dependencies
 
 ### 3. Consistent Interface
+
 Whether you're using Redis, BadgerDB, or any other backend, the API remains the same:
 
 ```go
@@ -97,4 +106,4 @@ For backend-specific information, browse our [Backends](./backends/overview) sec
 
 ## 📝 License
 
-KiviGo is released under the [Mozilla Public License 2.0](https://github.com/azrod/kivigo/blob/main/LICENSE).
+KiviGo is released under the [Mozilla Public License 2.0](https://github.com/kivigo/kivigo/blob/main/LICENSE).

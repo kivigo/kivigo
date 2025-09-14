@@ -13,7 +13,7 @@ KiviGo comes with built-in support for several encoding formats:
 ### JSON Encoder (Default)
 
 ```go
-import "github.com/azrod/kivigo/pkg/encoder"
+import "github.com/kivigo/kivigo/pkg/encoder"
 
 client, err := client.New(kvStore, client.Option{
     Encoder: encoder.JSON, // This is the default
@@ -23,7 +23,7 @@ client, err := client.New(kvStore, client.Option{
 ### YAML Encoder
 
 ```go
-import "github.com/azrod/kivigo/pkg/encoder"
+import "github.com/kivigo/kivigo/pkg/encoder"
 
 client, err := client.New(kvStore, client.Option{
     Encoder: encoder.YAML,
@@ -42,9 +42,9 @@ import (
     "fmt"
     "log"
     
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/pkg/encoder"
-    "github.com/azrod/kivigo/backend/badger"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/pkg/encoder"
+    "github.com/kivigo/kivigo/backend/badger"
 )
 
 type User struct {
@@ -107,7 +107,7 @@ package main
 import (
     "encoding/xml"
     
-    "github.com/azrod/kivigo/pkg/models"
+    "github.com/kivigo/kivigo/pkg/models"
 )
 
 // Custom XML encoder
@@ -326,7 +326,7 @@ func BenchmarkEncoders(b *testing.B) {
 Handle encoding/decoding errors appropriately:
 
 ```go
-import "github.com/azrod/kivigo/pkg/errs"
+import "github.com/kivigo/kivigo/pkg/errs"
 
 func safeEncodeDecode() {
     var result MyStruct

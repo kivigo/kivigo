@@ -1,13 +1,13 @@
-module github.com/azrod/kivigo/examples/custom_backend
+module github.com/kivigo/kivigo/examples/custom_backend
 
 go 1.24.5
 
 replace (
-	github.com/azrod/kivigo => ../../
-	github.com/azrod/kivigo/backend/local => ../../backend/local
+	github.com/kivigo/kivigo => ../../
+	github.com/kivigo/kivigo/backend/local => ../../backend/local
 )
 
-require github.com/azrod/kivigo v0.0.0-00010101000000-000000000000
+require github.com/kivigo/kivigo v0.0.0-00010101000000-000000000000
 
 require (
 	github.com/kr/text v0.2.0 // indirect

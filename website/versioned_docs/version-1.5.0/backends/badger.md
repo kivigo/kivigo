@@ -9,7 +9,7 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
   description="BadgerDB is a fast, embedded key-value database written in Go. It's designed for high-performance read and write operations with built-in caching and efficient memory usage."
   category="Embedded Store"
   packageName="backend/badger"
-  importPath="github.com/azrod/kivigo/backend/badger"
+  importPath="github.com/kivigo/kivigo/backend/badger"
   features={[
     { name: "Basic Operations", supported: true, description: "Set, Get, Delete, List operations" },
     { name: "Batch Operations", supported: true, description: "BatchSet, BatchGet, BatchDelete for bulk operations" },
@@ -28,8 +28,8 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
   configurationExample={`package main
 
 import (
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/backend/badger"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/backend/badger"
 )
 
 func main() {
@@ -63,8 +63,8 @@ import (
     "fmt"
     "log"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/backend/badger"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/backend/badger"
 )
 
 type Config struct {
@@ -125,7 +125,7 @@ import (
     "log"
     "time"
 
-    "github.com/azrod/kivigo/backend/badger"
+    "github.com/kivigo/kivigo/backend/badger"
 )
 
 func main() {
@@ -171,8 +171,8 @@ import (
     "fmt"
     "log"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/backend/badger"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/backend/badger"
 )
 
 func main() {

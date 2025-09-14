@@ -5,9 +5,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/azrod/kivigo/pkg/client"
-	"github.com/azrod/kivigo/pkg/encoder"
-	"github.com/azrod/kivigo/pkg/mock"
+	"github.com/kivigo/encoders/json"
+
+	"github.com/kivigo/kivigo/pkg/client"
+	"github.com/kivigo/kivigo/pkg/mock"
 )
 
 func Test_BatchGet(t *testing.T) {
@@ -65,7 +66,7 @@ func Test_BatchGet(t *testing.T) {
 
 	mockKV := &mock.MockKV{Data: map[string][]byte{}}
 
-	c, err := client.New(mockKV, client.Option{Encoder: encoder.JSON})
+	c, err := client.New(mockKV, client.Option{Encoder: json.New()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -137,7 +138,7 @@ func Test_BatchSet(t *testing.T) {
 
 	mockKV := &mock.MockKV{Data: map[string][]byte{}}
 
-	c, err := client.New(mockKV, client.Option{Encoder: encoder.JSON})
+	c, err := client.New(mockKV, client.Option{Encoder: json.New()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -192,7 +193,7 @@ func Test_BatchGet_NotSupported(t *testing.T) {
 		Value string
 	}
 
-	c, err := client.New(&dummyKV{}, client.Option{Encoder: encoder.JSON})
+	c, err := client.New(&dummyKV{}, client.Option{Encoder: json.New()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -206,7 +207,7 @@ func Test_BatchGet_NotSupported(t *testing.T) {
 }
 
 func Test_BatchSet_NotSupported(t *testing.T) {
-	c, err := client.New(&dummyKV{}, client.Option{Encoder: encoder.JSON})
+	c, err := client.New(&dummyKV{}, client.Option{Encoder: json.New()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -225,13 +226,13 @@ func Test_BatchGet_DestTypeErrors(t *testing.T) {
 	// Backend supports batch
 	mockKV := &mock.MockKV{Data: map[string][]byte{}}
 
-	cBatch, err := client.New(mockKV, client.Option{Encoder: encoder.JSON})
+	cBatch, err := client.New(mockKV, client.Option{Encoder: json.New()})
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// Prepare a valid key/value for decoding
-	raw, _ := encoder.JSON.Encode(testStruct{Value: "foo"})
+	raw, _ := json.New().Encode(context.Background(), testStruct{Value: "foo"})
 	mockKV.Data["key1"] = raw
 
 	tests := []struct {
@@ -275,7 +276,7 @@ func Test_BatchGet_DecodeError(t *testing.T) {
 
 	batchKV := &mock.MockKV{Data: map[string][]byte{}}
 
-	c, err := client.New(batchKV, client.Option{Encoder: encoder.JSON})
+	c, err := client.New(batchKV, client.Option{Encoder: json.New()})
 	if err != nil {
 		t.Fatal(err)
 	}

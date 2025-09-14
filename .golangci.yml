@@ -154,11 +154,11 @@ formatters:
         - dot # Dot section: captures all dot imports.
       custom-order: true
     gofumpt:
-      module-path: github.com/azrod/kivigo
+      module-path: github.com/kivigo/kivigo
       extra-rules: true
     goimports:
       local-prefixes:
-        - github.com/azrod/kivigo
+        - github.com/kivigo/kivigo
   exclusions:
     generated: lax
     paths:

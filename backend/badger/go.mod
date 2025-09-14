@@ -1,11 +1,11 @@
-module github.com/azrod/kivigo/backend/badger
+module github.com/kivigo/kivigo/backend/badger
 
 go 1.23.8
 
 toolchain go1.24.5
 
 require (
-	github.com/azrod/kivigo v1.5.1
+	github.com/kivigo/kivigo v1.5.1
 	github.com/dgraph-io/badger/v4 v4.8.0
 )
 

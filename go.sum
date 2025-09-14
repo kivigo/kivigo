@@ -1,6 +1,10 @@
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/kivigo/encoders v0.0.0-20250914204035-08372f8a1b0f h1:jQVRicYoMZKFb3bbiaZ1YoN5Cuylk/NoZDuztKrZlX0=
+github.com/kivigo/encoders v0.0.0-20250914204035-08372f8a1b0f/go.mod h1:M6PxAe+gg0i37W42ofzCy3Lgwmie6MiKfkBtYnkkbns=
+github.com/kivigo/encoders/json v0.1.0 h1:NzNhptqxllKFHTAvLjeJoutM/g6DeiHe2QOgchxz31I=
+github.com/kivigo/encoders/json v0.1.0/go.mod h1:543vsp/Rti6ecjDH/JcDa3ZisSZL2Eyb3q2s5mF0ALo=
 github.com/kr/pretty v0.2.1/go.mod h1:ipq/a2n7PKx3OHsz4KJII5eveXtPO4qwEXGdVfWzfnI=
 github.com/kr/pretty v0.3.1 h1:flRD4NNwYAUpkphVc1HcthR4KEIFJ65n8Mw5qdRn3LE=
 github.com/kr/pretty v0.3.1/go.mod h1:hoEshYVHaxMs3cyo3Yncou5ZscifuDolrwPKZanG3xk=

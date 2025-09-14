@@ -9,7 +9,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/azrod/kivigo/pkg/errs"
+	"github.com/kivigo/kivigo/pkg/errs"
 )
 
 var testRedis *container

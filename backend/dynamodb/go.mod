@@ -1,4 +1,4 @@
-module github.com/azrod/kivigo/backend/dynamodb
+module github.com/kivigo/kivigo/backend/dynamodb
 
 go 1.23.8
 
@@ -9,7 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.31.8
 	github.com/aws/aws-sdk-go-v2/credentials v1.18.12
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.50.3
-	github.com/azrod/kivigo v1.5.1
+	github.com/kivigo/kivigo v1.5.1
 	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.38.0
 )

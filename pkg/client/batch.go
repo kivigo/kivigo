@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/azrod/kivigo/pkg/errs"
-	"github.com/azrod/kivigo/pkg/models"
+	"github.com/kivigo/kivigo/pkg/errs"
+	"github.com/kivigo/kivigo/pkg/models"
 )
 
 // BatchGet retrieves multiple values from the key-value store in a single batch operation.
@@ -62,7 +62,7 @@ func (c Client) BatchGet(ctx context.Context, keys []string, dest any) error { /
 	for k, raw := range raws {
 		// Create a zero value of the destination type to decode into
 		destValue := reflect.New(destValueType).Interface()
-		if err := c.opts.Encoder.Decode(raw, destValue); err != nil {
+		if err := c.opts.Encoder.Decode(ctx, raw, destValue); err != nil {
 			return fmt.Errorf("failed to decode value for key %s: %w", k, err)
 		}
 		// Set the decoded value in the destination map
@@ -88,7 +88,7 @@ func (c Client) BatchSet(ctx context.Context, kv map[string]any) error {
 		return err
 	}
 
-	raws, err := c.encodeBatchValues(kv)
+	raws, err := c.encodeBatchValues(ctx, kv)
 	if err != nil {
 		return err
 	}
@@ -127,11 +127,11 @@ func (c Client) validateBatchSetInput(kv map[string]any) error {
 }
 
 // encodeBatchValues encodes all values in the batch.
-func (c Client) encodeBatchValues(kv map[string]any) (map[string][]byte, error) {
+func (c Client) encodeBatchValues(ctx context.Context, kv map[string]any) (map[string][]byte, error) {
 	raws := make(map[string][]byte, len(kv))
 
 	for k, v := range kv {
-		raw, err := c.opts.Encoder.Encode(v)
+		raw, err := c.opts.Encoder.Encode(ctx, v)
 		if err != nil {
 			return nil, fmt.Errorf("failed to encode value for key %s: %w", k, err)
 		}

@@ -17,8 +17,8 @@ import (
     "context"
     "testing"
     
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/pkg/mock"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/pkg/mock"
     "github.com/stretchr/testify/assert"
     "github.com/stretchr/testify/require"
 )

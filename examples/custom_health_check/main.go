@@ -5,9 +5,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/azrod/kivigo"
-	"github.com/azrod/kivigo/backend/local"
-	"github.com/azrod/kivigo/pkg/client"
+	"github.com/kivigo/kivigo"
+	"github.com/kivigo/kivigo/backend/local"
+	"github.com/kivigo/kivigo/pkg/client"
 )
 
 func myCustomHealth(ctx context.Context, c client.Client) error {

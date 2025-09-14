@@ -10,7 +10,7 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
   description="Redis is an in-memory data structure store, used as a database, cache, and message broker. It supports data structures such as strings, hashes, lists, sets, and more."
   category="Distributed Cache"
   packageName="backend/redis"
-  importPath="github.com/azrod/kivigo/backend/redis"
+  importPath="github.com/kivigo/kivigo/backend/redis"
   features={[
     { name: "Basic Operations", supported: true, description: "Set, Get, Delete, List operations" },
     { name: "Batch Operations", supported: true, description: "Pipeline-based batch operations" },
@@ -30,8 +30,8 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
   configurationExample={`package main
 
 import (
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/backend/redis"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/backend/redis"
 )
 
 func main() {
@@ -87,8 +87,8 @@ import (
     "log"
     "time"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/backend/redis"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/backend/redis"
 )
 
 type Session struct {
@@ -157,7 +157,7 @@ import (
     "log"
     "time"
 
-    "github.com/azrod/kivigo/backend/redis"
+    "github.com/kivigo/kivigo/backend/redis"
 )
 
 func main() {
@@ -217,8 +217,8 @@ import (
     "fmt"
     "log"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/backend/redis"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/backend/redis"
 )
 
 func main() {

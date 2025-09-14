@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/azrod/kivigo"
-	"github.com/azrod/kivigo/backend/local"
+	"github.com/kivigo/kivigo"
+	"github.com/kivigo/kivigo/backend/local"
 )
 
 func main() {

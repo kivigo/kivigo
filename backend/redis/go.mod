@@ -1,4 +1,4 @@
-module github.com/azrod/kivigo/backend/redis
+module github.com/kivigo/kivigo/backend/redis
 
 go 1.23.8
 

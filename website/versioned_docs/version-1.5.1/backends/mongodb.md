@@ -10,7 +10,7 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
   description="MongoDB is a popular NoSQL document database that provides high performance, high availability, and easy scalability. It stores data in flexible, JSON-like documents with dynamic schemas."
   category="Document Database"
   packageName="backend/mongodb"
-  importPath="github.com/azrod/kivigo/backend/mongodb"
+  importPath="github.com/kivigo/kivigo/backend/mongodb"
   features={[
     { name: "Basic Operations", supported: true, description: "Set, Get, Delete, List operations" },
     { name: "Batch Operations", supported: true, description: "BatchSet, BatchGet, BatchDelete for bulk operations" },
@@ -33,8 +33,8 @@ import (
     "context"
     "time"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/backend/mongodb"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/backend/mongodb"
     "go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -86,8 +86,8 @@ import (
     "log"
     "time"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/backend/mongodb"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/backend/mongodb"
 )
 
 type DocumentMetadata struct {
@@ -172,7 +172,7 @@ import (
     "log"
     "time"
 
-    "github.com/azrod/kivigo/backend/mongodb"
+    "github.com/kivigo/kivigo/backend/mongodb"
 )
 
 func main() {
@@ -247,8 +247,8 @@ import (
     "log"
     "time"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/backend/mongodb"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/backend/mongodb"
 )
 
 func main() {

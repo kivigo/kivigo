@@ -79,21 +79,25 @@ For maintainers: KiviGo uses an automated release workflow that creates tags for
    - **Publish documentation**: Check to publish documentation (default: checked)
 
 The workflow will automatically:
+
 - Create tags based on your selection (main project and/or backend-specific tags)
 - Deploy documentation (for core releases, if enabled)
 
 #### Release Type Examples
 
 **Core + Backends (default)**:
+
 - Creates main project tag: `v1.5.0`
 - Creates backend tags: `backend/consul/v1.5.0`, `backend/redis/v1.5.0`, etc.
 - Deploys documentation (if enabled)
 
 **Core only**:
+
 - Creates only main project tag: `v1.5.0`
 - Deploys documentation (if enabled)
 
 **Backends only**:
+
 - Creates only backend tags: `backend/consul/v1.5.0`, `backend/redis/v1.5.0`, etc.
 - No documentation deployment
 
@@ -124,6 +128,7 @@ The documentation deployment is available as an independent workflow that can be
 4. Enter the version for which to deploy documentation (e.g., `v1.5.0`)
 
 This is useful when you need to:
+
 - Deploy documentation without creating a release
 - Re-deploy documentation for an existing version
 - Update documentation after fixing content issues
@@ -135,7 +140,7 @@ See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
 ## Need Help?
 
-- Open an [issue](https://github.com/azrod/kivigo/issues) for questions, bugs, or feature requests.
+- Open an [issue](https://github.com/kivigo/kivigo/issues) for questions, bugs, or feature requests.
 - For major changes, please open an issue first to discuss what you would like to change.
 
 Thank you for helping to make KiviGo better!

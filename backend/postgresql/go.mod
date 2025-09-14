@@ -1,9 +1,9 @@
-module github.com/azrod/kivigo/backend/postgresql
+module github.com/kivigo/kivigo/backend/postgresql
 
 go 1.23.8
 
 require (
-	github.com/azrod/kivigo v1.5.1
+	github.com/kivigo/kivigo v1.5.1
 	github.com/lib/pq v1.10.9
 	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.38.0

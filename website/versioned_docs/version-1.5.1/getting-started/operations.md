@@ -58,7 +58,7 @@ err := client.Get(ctx, "settings", &settings)
 ### Handling Missing Keys
 
 ```go
-import "github.com/azrod/kivigo/pkg/errs"
+import "github.com/kivigo/kivigo/pkg/errs"
 
 var value string
 err := client.Get(ctx, "missing-key", &value)

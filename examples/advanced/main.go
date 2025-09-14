@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/azrod/kivigo"
-	"github.com/azrod/kivigo/backend/redis"
-	"github.com/azrod/kivigo/pkg/client"
-	"github.com/azrod/kivigo/pkg/encoder"
+	"github.com/kivigo/kivigo"
+	"github.com/kivigo/kivigo/backend/redis"
+	"github.com/kivigo/kivigo/pkg/client"
+	"github.com/kivigo/kivigo/pkg/encoder"
 )
 
 func main() {

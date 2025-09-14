@@ -6,7 +6,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/azrod/kivigo/pkg/models"
+	"github.com/kivigo/kivigo/pkg/models"
 )
 
 var _ models.KV = (*BMemory)(nil)

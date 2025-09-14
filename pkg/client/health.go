@@ -6,7 +6,7 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
-	"github.com/azrod/kivigo/pkg/models"
+	"github.com/kivigo/kivigo/pkg/models"
 )
 
 // Health is a instantaneous check to see if the client is healthy.

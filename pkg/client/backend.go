@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/azrod/kivigo/pkg/errs"
+	"github.com/kivigo/kivigo/pkg/errs"
 )
 
 // HasKey checks if the specified key exists in the store.
@@ -89,7 +89,7 @@ func (c Client) Get(ctx context.Context, key string, value any) error {
 		return err
 	}
 
-	return c.opts.Encoder.Decode(vV, value)
+	return c.opts.Encoder.Decode(ctx, vV, value)
 }
 
 // Set stores the given value under the specified key.
@@ -103,7 +103,7 @@ func (c Client) Set(ctx context.Context, key string, value any) error {
 		return errs.ErrEmptyKey
 	}
 
-	vV, err := c.opts.Encoder.Encode(value)
+	vV, err := c.opts.Encoder.Encode(ctx, value)
 	if err != nil {
 		return err
 	}

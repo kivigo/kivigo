@@ -7,8 +7,8 @@ import (
 
 	bd "github.com/dgraph-io/badger/v4"
 
-	"github.com/azrod/kivigo/pkg/errs"
-	"github.com/azrod/kivigo/pkg/models"
+	"github.com/kivigo/kivigo/pkg/errs"
+	"github.com/kivigo/kivigo/pkg/models"
 )
 
 var (

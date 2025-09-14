@@ -18,8 +18,8 @@ import (
     "fmt"
     "log"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/backend/badger"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/backend/badger"
 )
 
 type AppConfig struct {
@@ -101,8 +101,8 @@ import (
     "log"
     "time"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/backend/redis"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/backend/redis"
 )
 
 type UserSession struct {
@@ -213,9 +213,9 @@ import (
     "log"
     "time"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/backend/redis"
-    "github.com/azrod/kivigo/pkg/errs"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/backend/redis"
+    "github.com/kivigo/kivigo/pkg/errs"
 )
 
 type CachedData struct {
@@ -370,9 +370,9 @@ import (
     "fmt"
     "log"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/pkg/errs"
-    "github.com/azrod/kivigo/backend/badger"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/pkg/errs"
+    "github.com/kivigo/kivigo/backend/badger"
 )
 
 type Config struct {
@@ -524,8 +524,8 @@ import (
     "context"
     "testing"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/pkg/mock"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/pkg/mock"
     "github.com/stretchr/testify/assert"
     "github.com/stretchr/testify/require"
 )

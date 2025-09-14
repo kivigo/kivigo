@@ -17,7 +17,7 @@ import (
     "context"
     "log"
     
-    "github.com/azrod/kivigo/backend/redis"
+    "github.com/kivigo/kivigo/backend/redis"
 )
 
 func main() {
@@ -95,8 +95,8 @@ import (
     "log"
     "time"
     
-    "github.com/azrod/kivigo/backend/redis"
-    "github.com/azrod/kivigo/pkg/models"
+    "github.com/kivigo/kivigo/backend/redis"
+    "github.com/kivigo/kivigo/pkg/models"
 )
 
 func startHealthMonitoring(kvStore models.KVWithHealth, interval time.Duration) {
@@ -151,7 +151,7 @@ import (
     "net/http"
     "time"
     
-    "github.com/azrod/kivigo/pkg/models"
+    "github.com/kivigo/kivigo/pkg/models"
 )
 
 type HealthResponse struct {
@@ -289,6 +289,7 @@ func (m *MultiBackendHealth) IsAllHealthy(ctx context.Context) bool {
 ## Best Practices
 
 ### 1. Set Appropriate Timeouts
+
 Always use context timeouts to prevent health checks from hanging:
 
 ```go
@@ -297,6 +298,7 @@ defer cancel()
 ```
 
 ### 2. Implement Graceful Degradation
+
 When backends are unhealthy, implement fallback mechanisms:
 
 ```go
@@ -313,6 +315,7 @@ func getData(primary, fallback models.KV, key string) (interface{}, error) {
 ```
 
 ### 3. Monitor Health Check Performance
+
 Track health check latency to detect performance degradation:
 
 ```go
@@ -330,6 +333,7 @@ func timedHealthCheck(kvStore models.KVWithHealth) (time.Duration, error) {
 ```
 
 ### 4. Avoid Health Check Storms
+
 Coordinate health checks across multiple instances to avoid overwhelming backends:
 
 ```go

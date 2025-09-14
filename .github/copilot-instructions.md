@@ -14,7 +14,7 @@ The documentation includes:
 - Advanced features (health checks, custom backends, encoders, mock testing, batch operations)
 - Code examples throughout
 
-For API reference, see [pkg.go.dev/github.com/azrod/kivigo](https://pkg.go.dev/github.com/azrod/kivigo).
+For API reference, see [pkg.go.dev/github.com/kivigo/kivigo](https://pkg.go.dev/github.com/kivigo/kivigo).
 
 ### Documentation Development
 
@@ -164,9 +164,9 @@ import (
     "fmt"
     "log"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/pkg/encoder"
-    "github.com/azrod/kivigo/pkg/mock"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/pkg/encoder"
+    "github.com/kivigo/kivigo/pkg/mock"
 )
 
 func main() {
@@ -364,9 +364,9 @@ cat > test_kivigo.go << 'EOF'
 package main
 import (
     "context"; "fmt"
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/pkg/encoder"
-    "github.com/azrod/kivigo/pkg/mock"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/pkg/encoder"
+    "github.com/kivigo/kivigo/pkg/mock"
 )
 func main() {
     mockKV := &mock.MockKV{Data: map[string][]byte{}}

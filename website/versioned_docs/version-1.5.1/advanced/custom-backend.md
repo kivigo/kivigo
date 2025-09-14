@@ -47,8 +47,8 @@ import (
     "strings"
     "sync"
     
-    "github.com/azrod/kivigo/pkg/errs"
-    "github.com/azrod/kivigo/pkg/models"
+    "github.com/kivigo/kivigo/pkg/errs"
+    "github.com/kivigo/kivigo/pkg/models"
 )
 
 // Ensure our backend implements the required interfaces
@@ -302,8 +302,8 @@ import (
     "strings"
     "sync"
     
-    "github.com/azrod/kivigo/pkg/errs"
-    "github.com/azrod/kivigo/pkg/models"
+    "github.com/kivigo/kivigo/pkg/errs"
+    "github.com/kivigo/kivigo/pkg/models"
 )
 
 var (
@@ -531,7 +531,7 @@ import (
     "github.com/stretchr/testify/assert"
     "github.com/stretchr/testify/require"
     
-    "github.com/azrod/kivigo/pkg/errs"
+    "github.com/kivigo/kivigo/pkg/errs"
 )
 
 func TestMemoryBackend(t *testing.T) {
@@ -643,7 +643,7 @@ import (
     "context"
     "log"
     
-    "github.com/azrod/kivigo"
+    "github.com/kivigo/kivigo"
     "your-module/memory" // Your custom backend
 )
 

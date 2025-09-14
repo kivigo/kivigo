@@ -1,8 +1,8 @@
 
-<img align="left" width="250"  src="https://raw.githubusercontent.com/azrod/kivigo/refs/heads/main/website/static/img/logo-kivigo.png" alt="KiviGo Logo" />
+<img align="left" width="250"  src="https://raw.githubusercontent.com/kivigo/kivigo/refs/heads/main/website/static/img/logo-kivigo.png" alt="KiviGo Logo" />
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/azrod/kivigo.svg)](https://pkg.go.dev/github.com/azrod/kivigo)
-[![Go Report Card](https://goreportcard.com/badge/github.com/azrod/kivigo)](https://goreportcard.com/report/github.com/azrod/kivigo)
+[![Go Reference](https://pkg.go.dev/badge/github.com/kivigo/kivigo.svg)](https://pkg.go.dev/github.com/kivigo/kivigo)
+[![Go Report Card](https://goreportcard.com/badge/github.com/kivigo/kivigo)](https://goreportcard.com/report/github.com/kivigo/kivigo)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Go Version](https://img.shields.io/badge/go-1.23+-blue.svg)](https://golang.org/dl/)
 
@@ -14,7 +14,7 @@ The name is a play on words: "Kivi" sounds like "key-value" (the core concept of
 ## ✨ Features
 
 - Unified interface for different backends ([Redis](pkg/backend/redis/redis.go), [local/BoltDB](pkg/backend/local/local.go), etc.)
-- Pluggable encoding/decoding ([JSON](pkg/encoder/json/json.go), [YAML](pkg/encoder/yaml/yaml.go), etc.)
+- [Pluggable encoding/decoding (JSON, YAML, etc.)](https://github.com/kivigo/encoders)
 - Health check support (with custom checks)
 - List, add, and delete keys
 - Easily extensible for new backends or encoders
@@ -28,7 +28,7 @@ Visit our comprehensive documentation at **[https://azrod.github.io/kivigo/](htt
 - **Advanced Features** - Health checks, custom backends, encoders, batch operations, and more
 - **Code Examples** - Real-world usage patterns and best practices
 
-For API reference, see [pkg.go.dev/github.com/azrod/kivigo](https://pkg.go.dev/github.com/azrod/kivigo).
+For API reference, see [pkg.go.dev/github.com/kivigo/kivigo](https://pkg.go.dev/github.com/kivigo/kivigo).
 
 ## 🥝 Motivation
 

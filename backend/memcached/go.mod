@@ -1,11 +1,11 @@
-module github.com/azrod/kivigo/backend/memcached
+module github.com/kivigo/kivigo/backend/memcached
 
 go 1.23.8
 
 toolchain go1.24.6
 
 require (
-	github.com/azrod/kivigo v1.5.1
+	github.com/kivigo/kivigo v1.5.1
 	github.com/bradfitz/gomemcache v0.0.0-20230905024940-24af94b03874
 	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.38.0

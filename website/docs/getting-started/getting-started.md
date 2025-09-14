@@ -76,8 +76,8 @@ Explore [Advanced Features](../advanced/health-checks) for custom backends, batc
 ## Community & Support
 
 - **📚 Documentation**: Complete guides and API reference at [azrod.github.io/kivigo/](https://azrod.github.io/kivigo/)
-- **🐛 Issues**: Report bugs and request features on [GitHub](https://github.com/azrod/kivigo/issues)
-- **💬 Discussions**: Ask questions and share ideas in [GitHub Discussions](https://github.com/azrod/kivigo/discussions)
+- **🐛 Issues**: Report bugs and request features on [GitHub](https://github.com/kivigo/kivigo/issues)
+- **💬 Discussions**: Ask questions and share ideas in [GitHub Discussions](https://github.com/kivigo/kivigo/discussions)
 
 ## What's Next?
 

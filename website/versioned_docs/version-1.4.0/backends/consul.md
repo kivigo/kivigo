@@ -9,7 +9,7 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
   description="Consul is a service discovery and configuration management tool. It provides a distributed key-value store that's perfect for configuration management and service coordination in microservices architectures."
   category="Distributed Store"
   packageName="backend/consul"
-  importPath="github.com/azrod/kivigo/backend/consul"
+  importPath="github.com/kivigo/kivigo/backend/consul"
   features={[
     { name: "Basic Operations", supported: true },
     { name: "Batch Operations", supported: true },
@@ -28,8 +28,8 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
   configurationExample={`package main
 
 import (
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/backend/consul"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/backend/consul"
 )
 
 func main() {
@@ -65,8 +65,8 @@ import (
     "fmt"
     "log"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/backend/consul"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/backend/consul"
 )
 
 type ServiceConfig struct {

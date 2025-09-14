@@ -11,7 +11,7 @@ This guide covers how to install KiviGo and its backends for your Go projects.
 First, install the main KiviGo library:
 
 ```bash
-go get github.com/azrod/kivigo@v1.5.0
+go get github.com/kivigo/kivigo@v1.5.0
 ```
 
 ## Backend Installation
@@ -25,13 +25,13 @@ For local, embedded storage that doesn't require external services:
 #### BadgerDB Backend
 
 ```bash
-go get github.com/azrod/kivigo/backend/badger@v1.5.0
+go get github.com/kivigo/kivigo/backend/badger@v1.5.0
 ```
 
 #### Local/BoltDB Backend
 
 ```bash
-go get github.com/azrod/kivigo/backend/local@v1.5.0
+go get github.com/kivigo/kivigo/backend/local@v1.5.0
 ```
 
 ### Distributed Storage Backends
@@ -41,25 +41,25 @@ For distributed storage that requires external services:
 #### Redis Backend
 
 ```bash
-go get github.com/azrod/kivigo/backend/redis@v1.5.0
+go get github.com/kivigo/kivigo/backend/redis@v1.5.0
 ```
 
 #### Consul Backend
 
 ```bash
-go get github.com/azrod/kivigo/backend/consul@v1.5.0
+go get github.com/kivigo/kivigo/backend/consul@v1.5.0
 ```
 
 #### etcd Backend
 
 ```bash
-go get github.com/azrod/kivigo/backend/etcd@v1.5.0
+go get github.com/kivigo/kivigo/backend/etcd@v1.5.0
 ```
 
 #### Memcached Backend
 
 ```bash
-go get github.com/azrod/kivigo/backend/memcached@v1.5.0
+go get github.com/kivigo/kivigo/backend/memcached@v1.5.0
 ```
 
 ### Database Backends
@@ -69,19 +69,19 @@ For traditional SQL and NoSQL databases:
 #### MongoDB Backend
 
 ```bash
-go get github.com/azrod/kivigo/backend/mongodb@v1.5.0
+go get github.com/kivigo/kivigo/backend/mongodb@v1.5.0
 ```
 
 #### MySQL Backend
 
 ```bash
-go get github.com/azrod/kivigo/backend/mysql@v1.5.0
+go get github.com/kivigo/kivigo/backend/mysql@v1.5.0
 ```
 
 #### PostgreSQL Backend
 
 ```bash
-go get github.com/azrod/kivigo/backend/postgresql@v1.5.0
+go get github.com/kivigo/kivigo/backend/postgresql@v1.5.0
 ```
 
 ### Cloud Backends
@@ -91,13 +91,13 @@ For cloud-native storage services:
 #### AWS DynamoDB Backend
 
 ```bash
-go get github.com/azrod/kivigo/backend/dynamodb@v1.5.0
+go get github.com/kivigo/kivigo/backend/dynamodb@v1.5.0
 ```
 
 #### Azure Cosmos DB Backend
 
 ```bash
-go get github.com/azrod/kivigo/backend/azurecosmos@v1.5.0
+go get github.com/kivigo/kivigo/backend/azurecosmos@v1.5.0
 ```
 
 ## Version Management
@@ -108,8 +108,8 @@ To ensure reproducible builds, always specify a version:
 
 ```bash
 # Install a specific version
-go get github.com/azrod/kivigo@v1.5.0
-go get github.com/azrod/kivigo/backend/redis@v1.5.0
+go get github.com/kivigo/kivigo@v1.5.0
+go get github.com/kivigo/kivigo/backend/redis@v1.5.0
 ```
 
 ### Using Latest Version
@@ -118,8 +118,8 @@ To get the latest release:
 
 ```bash
 # Get the latest release
-go get github.com/azrod/kivigo@latest
-go get github.com/azrod/kivigo/backend/redis@latest
+go get github.com/kivigo/kivigo@latest
+go get github.com/kivigo/kivigo/backend/redis@latest
 ```
 
 ### Updating Dependencies
@@ -128,10 +128,10 @@ To update to a newer version:
 
 ```bash
 # Update to a specific version
-go get -u github.com/azrod/kivigo@v1.5.0
+go get -u github.com/kivigo/kivigo@v1.5.0
 
 # Update to latest
-go get -u github.com/azrod/kivigo@latest
+go get -u github.com/kivigo/kivigo@latest
 ```
 
 ## Verification
@@ -146,8 +146,8 @@ import (
     "fmt"
     "log"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/pkg/mock"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/pkg/mock"
 )
 
 func main() {

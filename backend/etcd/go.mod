@@ -1,9 +1,9 @@
-module github.com/azrod/kivigo/backend/etcd
+module github.com/kivigo/kivigo/backend/etcd
 
 go 1.23.8
 
 require (
-	github.com/azrod/kivigo v1.5.1
+	github.com/kivigo/kivigo v1.5.1
 	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.38.0
 	go.etcd.io/etcd/client/v3 v3.6.4

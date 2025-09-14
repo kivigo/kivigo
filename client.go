@@ -3,9 +3,10 @@ package kivigo
 import (
 	"fmt"
 
-	"github.com/azrod/kivigo/pkg/client"
-	"github.com/azrod/kivigo/pkg/encoder"
-	"github.com/azrod/kivigo/pkg/models"
+	"github.com/kivigo/encoders/json"
+
+	"github.com/kivigo/kivigo/pkg/client"
+	"github.com/kivigo/kivigo/pkg/models"
 )
 
 // New creates and returns a new KiviGo client instance using the provided backend and options.
@@ -21,8 +22,8 @@ import (
 // Basic usage with the local backend (BoltDB):
 //
 //		import (
-//		    "github.com/azrod/kivigo"
-//		    "github.com/azrod/kivigo/backend/local"
+//		    "github.com/kivigo/kivigo"
+//		    "github.com/kivigo/kivigo/backend/local"
 //		)
 //		func main() {
 //		    kvStore, err := local.New(local.Option{Path: "./"})
@@ -40,10 +41,10 @@ import (
 // Usage with Redis backend and YAML encoder:
 //
 //	import (
-//	    "github.com/azrod/kivigo"
-//	    "github.com/azrod/kivigo/backend/redis"
-//	    "github.com/azrod/kivigo/pkg/client"
-//	    "github.com/azrod/kivigo/pkg/encoder"
+//	    "github.com/kivigo/kivigo"
+//	    "github.com/kivigo/kivigo/backend/redis"
+//	    "github.com/kivigo/kivigo/pkg/client"
+//	    "github.com/kivigo/encoders/yaml"
 //	)
 //	func main() {
 //	    kvStore, err := redis.New(redis.Option{Addr: "localhost:6379"})
@@ -51,7 +52,7 @@ import (
 //	        panic(err)
 //	    }
 //	    client, err := kivigo.New(kvStore, func(opt client.Option) client.Option {
-//	        opt.Encoder = encoder.YAML
+//	        opt.Encoder = yaml.New()
 //	        return opt
 //	    })
 //	    if err != nil {
@@ -75,7 +76,7 @@ func New(backend models.KV, opts ...client.Options) (client.Client, error) {
 	}
 
 	if opt.Encoder == nil {
-		opt.Encoder = encoder.JSON
+		opt.Encoder = json.New()
 	}
 
 	return client.New(backend, opt)

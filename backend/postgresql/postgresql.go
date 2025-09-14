@@ -8,8 +8,8 @@ import (
 
 	_ "github.com/lib/pq" // PostgreSQL driver
 
-	"github.com/azrod/kivigo/pkg/errs"
-	"github.com/azrod/kivigo/pkg/models"
+	"github.com/kivigo/kivigo/pkg/errs"
+	"github.com/kivigo/kivigo/pkg/models"
 )
 
 var (

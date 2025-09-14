@@ -17,7 +17,7 @@ import (
 // - treat each coverage line "<file>:<start>.<col>,<end>.<col> <numStmts> <count>"
 // - key = "<file>:<start>.<col>,<end>.<col> <numStmts>"
 // - sum counts for identical keys across files
-func main() {
+func main() { //nolint:cyclop
 	outPath := flag.String("o", "", "output merged coverprofile")
 	flag.Parse()
 	inputs := flag.Args()
@@ -46,7 +46,7 @@ func main() {
 				if mode == "" {
 					mode = m
 				} else if mode != m {
-					log.Fatalf("coverage mode mismatch: %s vs %s (file %s)", mode, m, p)
+					log.Fatalf("coverage mode mismatch: %s vs %s (file %s)", mode, m, p) //nolint:gocritic
 				}
 				continue
 			}

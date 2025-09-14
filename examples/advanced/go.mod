@@ -1,15 +1,15 @@
-module github.com/azrod/kivigo/examples/advanced
+module github.com/kivigo/kivigo/examples/advanced
 
 go 1.24.5
 
 replace (
-	github.com/azrod/kivigo => ../../
-	github.com/azrod/kivigo/backend/redis => ../../backend/redis
+	github.com/kivigo/kivigo => ../../
+	github.com/kivigo/kivigo/backend/redis => ../../backend/redis
 )
 
 require (
-	github.com/azrod/kivigo v1.2.0
-	github.com/azrod/kivigo/backend/redis v0.0.0-00010101000000-000000000000
+	github.com/kivigo/kivigo v1.2.0
+	github.com/kivigo/kivigo/backend/redis v0.0.0-00010101000000-000000000000
 )
 
 require (

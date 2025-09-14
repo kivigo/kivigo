@@ -10,7 +10,7 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
   description="BoltDB is a pure Go key/value store inspired by Howard Chu's LMDB. It provides a simple, fast, and reliable database for projects that don't require a full database server."
   category="Embedded Store"
   packageName="backend/local"
-  importPath="github.com/azrod/kivigo/backend/local"
+  importPath="github.com/kivigo/kivigo/backend/local"
   features={[
     { name: "Basic Operations", supported: true },
     { name: "Batch Operations", supported: true },

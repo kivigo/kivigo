@@ -43,8 +43,8 @@ import (
     "context"
     "log"
     
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/backend/redis"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/backend/redis"
 )
 
 func main() {

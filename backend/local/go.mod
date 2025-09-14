@@ -1,9 +1,9 @@
-module github.com/azrod/kivigo/backend/local
+module github.com/kivigo/kivigo/backend/local
 
 go 1.24.5
 
 require (
-	github.com/azrod/kivigo v1.5.1
+	github.com/kivigo/kivigo v1.5.1
 	github.com/stretchr/testify v1.11.1
 	go.etcd.io/bbolt v1.4.3
 )

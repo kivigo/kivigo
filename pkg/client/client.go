@@ -4,7 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/azrod/kivigo/pkg/models"
+	mencoder "github.com/kivigo/encoders/model"
+
+	"github.com/kivigo/kivigo/pkg/models"
 )
 
 type (
@@ -17,7 +19,7 @@ type (
 	Options func(Option) Option
 
 	Option struct {
-		Encoder models.Encoder
+		Encoder mencoder.Encoder
 	}
 
 	HealthFunc func(ctx context.Context, c Client) error

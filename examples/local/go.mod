@@ -1,15 +1,15 @@
-module github.com/azrod/kivigo/examples/local
+module github.com/kivigo/kivigo/examples/local
 
 go 1.24.5
 
 replace (
-	github.com/azrod/kivigo => ../../
-	github.com/azrod/kivigo/backend/local => ../../backend/local
+	github.com/kivigo/kivigo => ../../
+	github.com/kivigo/kivigo/backend/local => ../../backend/local
 )
 
 require (
-	github.com/azrod/kivigo v1.3.0
-	github.com/azrod/kivigo/backend/local v0.0.0-00010101000000-000000000000
+	github.com/kivigo/kivigo v1.3.0
+	github.com/kivigo/kivigo/backend/local v0.0.0-00010101000000-000000000000
 )
 
 require (

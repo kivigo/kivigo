@@ -45,7 +45,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/azrod/kivigo/tree/main/website/',
+            'https://github.com/kivigo/kivigo/tree/main/website/',
           versions: {
             current: {
               label: 'current',
@@ -108,7 +108,7 @@ const config: Config = {
           dropdownActiveClassDisabled: true,
         },
         {
-          href: 'https://github.com/azrod/kivigo',
+          href: 'https://github.com/kivigo/kivigo',
           label: 'GitHub',
           position: 'right',
         },
@@ -139,11 +139,11 @@ const config: Config = {
           items: [
             {
               label: 'GitHub Issues',
-              href: 'https://github.com/azrod/kivigo/issues',
+              href: 'https://github.com/kivigo/kivigo/issues',
             },
             {
               label: 'Go Reference',
-              href: 'https://pkg.go.dev/github.com/azrod/kivigo',
+              href: 'https://pkg.go.dev/github.com/kivigo/kivigo',
             },
           ],
         },
@@ -152,11 +152,11 @@ const config: Config = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/azrod/kivigo',
+              href: 'https://github.com/kivigo/kivigo',
             },
             {
               label: 'License',
-              href: 'https://github.com/azrod/kivigo/blob/main/LICENSE',
+              href: 'https://github.com/kivigo/kivigo/blob/main/LICENSE',
             },
           ],
         },

@@ -41,9 +41,9 @@ import (
     "context"
     "log"
     
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/pkg/encoder"
-    "github.com/azrod/kivigo/backend/redis"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/pkg/encoder"
+    "github.com/kivigo/kivigo/backend/redis"
 )
 
 func main() {
@@ -278,7 +278,7 @@ import (
     "log"
     "time"
     
-    "github.com/azrod/kivigo/pkg/client"
+    "github.com/kivigo/kivigo/pkg/client"
 )
 
 type AuditEvent struct {
@@ -340,7 +340,7 @@ import (
     "context"
     "strings"
     
-    "github.com/azrod/kivigo/pkg/client"
+    "github.com/kivigo/kivigo/pkg/client"
 )
 
 type CacheInvalidator struct {
@@ -403,7 +403,7 @@ import (
     "context"
     "time"
     
-    "github.com/azrod/kivigo/pkg/client"
+    "github.com/kivigo/kivigo/pkg/client"
     "github.com/prometheus/client_golang/prometheus"
 )
 
@@ -449,7 +449,7 @@ import (
     "context"
     "encoding/json"
     
-    "github.com/azrod/kivigo/pkg/client"
+    "github.com/kivigo/kivigo/pkg/client"
     "github.com/gorilla/websocket"
 )
 

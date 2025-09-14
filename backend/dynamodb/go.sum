@@ -36,8 +36,8 @@ github.com/aws/aws-sdk-go-v2/service/sts v1.38.4 h1:PR00NXRYgY4FWHqOGx3fC3lhVKjs
 github.com/aws/aws-sdk-go-v2/service/sts v1.38.4/go.mod h1:Z+Gd23v97pX9zK97+tX4ppAgqCt3Z2dIXB02CtBncK8=
 github.com/aws/smithy-go v1.23.0 h1:8n6I3gXzWJB2DxBDnfxgBaSX6oe0d/t10qGz7OKqMCE=
 github.com/aws/smithy-go v1.23.0/go.mod h1:t1ufH5HMublsJYulve2RKmHDC15xu1f26kHCp/HgceI=
-github.com/azrod/kivigo v1.5.1 h1:bC9hwoYLkuKMHkmQthM3jfZlnMcbF/xzLcHMBCYTL7Q=
-github.com/azrod/kivigo v1.5.1/go.mod h1:UUh9M4OWSXnVSkhVmnusoYXcf3RNzWLFDwijol/tH0U=
+github.com/kivigo/kivigo v1.5.1 h1:bC9hwoYLkuKMHkmQthM3jfZlnMcbF/xzLcHMBCYTL7Q=
+github.com/kivigo/kivigo v1.5.1/go.mod h1:UUh9M4OWSXnVSkhVmnusoYXcf3RNzWLFDwijol/tH0U=
 github.com/cenkalti/backoff/v4 v4.2.1 h1:y4OZtCnogmCPw98Zjyt5a6+QwPLGkiQsYW5oUqylYbM=
 github.com/cenkalti/backoff/v4 v4.2.1/go.mod h1:Y3VNntkOUPxTVeUxJ/G5vcM//AlwfmyYozVcomhLiZE=
 github.com/containerd/errdefs v1.0.0 h1:tg5yIfIlQIrxYtu9ajqY42W3lpS19XqdxRQeEwYG8PI=

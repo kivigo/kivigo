@@ -6,7 +6,7 @@
 //
 // Example usage:
 //
-//	import "github.com/azrod/kivigo/backend/postgresql"
+//	import "github.com/kivigo/kivigo/backend/postgresql"
 //
 //	// Create a new PostgreSQL client
 //	client, err := postgresql.New(postgresql.DefaultOptions())

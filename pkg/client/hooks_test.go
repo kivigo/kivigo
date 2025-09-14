@@ -7,8 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/azrod/kivigo/pkg/encoder"
-	"github.com/azrod/kivigo/pkg/mock"
+	"github.com/kivigo/encoders/json"
+
+	"github.com/kivigo/kivigo/pkg/mock"
 )
 
 func TestHookRegistry_RegisterAndUnregister(t *testing.T) {
@@ -289,7 +290,7 @@ func TestHookRegistry_TimeoutHandling(t *testing.T) {
 
 func TestClient_HookIntegration(t *testing.T) {
 	mockKV := &mock.MockKV{Data: map[string][]byte{}}
-	c, err := New(mockKV, Option{Encoder: encoder.JSON})
+	c, err := New(mockKV, Option{Encoder: json.New()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -367,7 +368,7 @@ func TestClient_HookIntegration(t *testing.T) {
 
 func TestClient_HookErrorsDoNotFailOperations(t *testing.T) {
 	mockKV := &mock.MockKV{Data: map[string][]byte{}}
-	c, err := New(mockKV, Option{Encoder: encoder.JSON})
+	c, err := New(mockKV, Option{Encoder: json.New()})
 	if err != nil {
 		t.Fatal(err)
 	}

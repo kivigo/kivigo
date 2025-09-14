@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/azrod/kivigo/pkg/errs"
+	"github.com/kivigo/kivigo/pkg/errs"
 )
 
 // TestInterfaces ensures the interfaces are properly defined and can be implemented

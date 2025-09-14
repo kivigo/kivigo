@@ -9,7 +9,7 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
   description="MySQL is the world's most popular open source relational database. It provides robust, scalable, and reliable data storage with full SQL support and ACID compliance for mission-critical applications."
   category="Relational Database"
   packageName="backend/mysql"
-  importPath="github.com/azrod/kivigo/backend/mysql"
+  importPath="github.com/kivigo/kivigo/backend/mysql"
   features={[
     { name: "Basic Operations", supported: true, description: "Set, Get, Delete, List operations" },
     { name: "Batch Operations", supported: true, description: "BatchSet, BatchGet, BatchDelete for bulk operations" },
@@ -32,8 +32,8 @@ import (
     "database/sql"
     "time"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/backend/mysql"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/backend/mysql"
 )
 
 func main() {
@@ -83,8 +83,8 @@ import (
     "log"
     "time"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/backend/mysql"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/backend/mysql"
 )
 
 type OrderData struct {
@@ -176,7 +176,7 @@ import (
     "log"
     "time"
 
-    "github.com/azrod/kivigo/backend/mysql"
+    "github.com/kivigo/kivigo/backend/mysql"
 )
 
 func main() {
@@ -255,8 +255,8 @@ import (
     "log"
     "time"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/backend/mysql"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/backend/mysql"
 )
 
 func main() {

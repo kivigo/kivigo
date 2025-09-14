@@ -1,7 +1,7 @@
 {
     "gopls": {
         "ui.semanticTokens": true,
-        "formatting.local": "github.com/azrod/kivigo",
+        "formatting.local": "github.com/kivigo/kivigo",
     },
     "go.lintTool": "golangci-lint",
     "go.lintFlags": [

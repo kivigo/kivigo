@@ -11,13 +11,13 @@ This guide will help you get up and running with KiviGo in just a few minutes.
 First, install the main KiviGo library:
 
 ```bash
-go get github.com/azrod/kivigo
+go get github.com/kivigo/kivigo
 ```
 
 Then install the backend you want to use. For example, to use the BadgerDB backend:
 
 ```bash
-go get github.com/azrod/kivigo/backend/badger
+go get github.com/kivigo/kivigo/backend/badger
 ```
 
 ## Quick Start Example
@@ -32,8 +32,8 @@ import (
     "fmt"
     "log"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/backend/badger"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/backend/badger"
 )
 
 func main() {
@@ -161,11 +161,11 @@ KiviGo supports multiple backends. Here are some quick examples:
 ### Redis Backend
 
 ```bash
-go get github.com/azrod/kivigo/backend/redis
+go get github.com/kivigo/kivigo/backend/redis
 ```
 
 ```go
-import "github.com/azrod/kivigo/backend/redis"
+import "github.com/kivigo/kivigo/backend/redis"
 
 opt := redis.DefaultOptions()
 opt.Addr = "localhost:6379"
@@ -175,11 +175,11 @@ kvStore, err := redis.New(opt)
 ### Local/BoltDB Backend
 
 ```bash
-go get github.com/azrod/kivigo/backend/local
+go get github.com/kivigo/kivigo/backend/local
 ```
 
 ```go
-import "github.com/azrod/kivigo/backend/local"
+import "github.com/kivigo/kivigo/backend/local"
 
 kvStore, err := local.New(local.Option{Path: "./data.db"})
 ```
@@ -187,11 +187,11 @@ kvStore, err := local.New(local.Option{Path: "./data.db"})
 ### Consul Backend
 
 ```bash
-go get github.com/azrod/kivigo/backend/consul
+go get github.com/kivigo/kivigo/backend/consul
 ```
 
 ```go
-import "github.com/azrod/kivigo/backend/consul"
+import "github.com/kivigo/kivigo/backend/consul"
 
 opt := consul.DefaultOptions()
 opt.Address = "localhost:8500"
@@ -205,7 +205,7 @@ By default, KiviGo uses JSON encoding. You can specify different encoders:
 ### YAML Encoder
 
 ```go
-import "github.com/azrod/kivigo/pkg/encoder"
+import "github.com/kivigo/kivigo/pkg/encoder"
 
 client, err := client.New(kvStore, client.Option{
     Encoder: encoder.YAML,
@@ -215,7 +215,7 @@ client, err := client.New(kvStore, client.Option{
 ### JSON Encoder (Default)
 
 ```go
-import "github.com/azrod/kivigo/pkg/encoder"
+import "github.com/kivigo/kivigo/pkg/encoder"
 
 client, err := client.New(kvStore, client.Option{
     Encoder: encoder.JSON, // This is the default
@@ -227,7 +227,7 @@ client, err := client.New(kvStore, client.Option{
 KiviGo provides specific error types for common scenarios:
 
 ```go
-import "github.com/azrod/kivigo/pkg/errs"
+import "github.com/kivigo/kivigo/pkg/errs"
 
 var value string
 err := client.Get(ctx, "nonexistent", &value)
@@ -274,9 +274,9 @@ import (
     "fmt"
     "log"
 
-    "github.com/azrod/kivigo"
-    "github.com/azrod/kivigo/pkg/errs"
-    "github.com/azrod/kivigo/backend/badger"
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/kivigo/pkg/errs"
+    "github.com/kivigo/kivigo/backend/badger"
 )
 
 type Config struct {

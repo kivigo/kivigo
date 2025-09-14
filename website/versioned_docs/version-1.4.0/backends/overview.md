@@ -99,10 +99,10 @@ All backends follow a consistent installation pattern:
 
 ```bash
 # Main library
-go get github.com/azrod/kivigo
+go get github.com/kivigo/kivigo
 
 # Specific backend
-go get github.com/azrod/kivigo/backend/{backend-name}
+go get github.com/kivigo/kivigo/backend/{backend-name}
 ```
 
 ## Usage Patterns
@@ -111,11 +111,11 @@ All backends implement the same interface, so switching is easy:
 
 ```go
 // BadgerDB
-import "github.com/azrod/kivigo/backend/badger"
+import "github.com/kivigo/kivigo/backend/badger"
 kvStore, err := badger.New(badger.DefaultOptions("./data"))
 
 // Redis  
-import "github.com/azrod/kivigo/backend/redis"
+import "github.com/kivigo/kivigo/backend/redis"
 kvStore, err := redis.New(redis.DefaultOptions())
 
 // The client usage is identical regardless of backend
