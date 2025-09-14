@@ -215,5 +215,5 @@ jobs:
           
           echo "" >> $GITHUB_STEP_SUMMARY
           if [ "${{ needs.test-main.result }}" = "success" ] || [ "${{ needs.test-backends.result }}" = "success" ]; then
-            echo "📊 **Coverage Report**: Check [Coveralls](https://coveralls.io/github/azrod/kivigo) for detailed coverage information" >> $GITHUB_STEP_SUMMARY
+            echo "📊 **Coverage Report**: Check [Coveralls](https://coveralls.io/github/kivigo/kivigo) for detailed coverage information" >> $GITHUB_STEP_SUMMARY
           fi

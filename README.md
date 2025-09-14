@@ -21,7 +21,7 @@ The name is a play on words: "Kivi" sounds like "key-value" (the core concept of
 
 ## 📚 Documentation
 
-Visit our comprehensive documentation at **[https://azrod.github.io/kivigo/](https://azrod.github.io/kivigo/)** for:
+Visit our comprehensive documentation at **[https://kivigo.github.io/kivigo/](https://kivigo.github.io/kivigo/)** for:
 
 - **Getting Started Guide** - Set up your first key-value store in minutes
 - **Complete Backend Documentation** - Detailed guides for all supported backends

@@ -6,7 +6,7 @@ KiviGo is a lightweight, modular key-value store library for Go that provides a 
 
 ## 📚 Documentation
 
-KiviGo has comprehensive documentation available at [https://azrod.github.io/kivigo/](https://azrod.github.io/kivigo/) built with Docusaurus.
+KiviGo has comprehensive documentation available at [https://kivigo.github.io/kivigo/](https://kivigo.github.io/kivigo/) built with Docusaurus.
 
 The documentation includes:
 - Getting started guide

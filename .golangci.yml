@@ -149,7 +149,7 @@ formatters:
       sections:
         - standard # Standard section: captures all standard packages.
         - default # Default section: contains all imports that could not be matched to another section type.
-        - prefix(github.com/azrod)
+        - prefix(github.com/kivigo)
         - blank # Blank section: captures all blank lines.
         - dot # Dot section: captures all dot imports.
       custom-order: true

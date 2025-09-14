@@ -3,4 +3,4 @@ Allow: /
 
 # Algolia-Crawler-Verif: E7BDC0903F60D7AB
 
-Sitemap: https://azrod.github.io/kivigo/sitemap.xml
+Sitemap: https://kivigo.github.io/kivigo/sitemap.xml
