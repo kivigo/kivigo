@@ -18,13 +18,13 @@ jobs:
     
     steps:
       - name: 🛎️ Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           token: ${{ secrets.CI_PAT }}
 
       - name: 📋 Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '20'
           cache: 'npm'
@@ -41,10 +41,10 @@ jobs:
           npm run build
 
       - name: 🗂️ Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
 
       - name: 📤 Upload to GitHub Pages
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: website/build
 
