@@ -48,6 +48,10 @@ jobs:
       latest: ${{ steps.validate.outputs.latest }}
       publish_docs: ${{ steps.validate.outputs.publish_docs }}
     steps:
+      - name: 🛎️ Checkout code
+        uses: actions/checkout@v4
+      - name: Fetch all tags
+        run: git fetch --tags --force
       - name: 🔍 Validate version format
         id: validate
         run: |
