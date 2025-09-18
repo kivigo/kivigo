@@ -49,7 +49,7 @@ jobs:
       publish_docs: ${{ steps.validate.outputs.publish_docs }}
     steps:
       - name: 🛎️ Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Fetch all tags
         run: git fetch --tags --force
       - name: 🔍 Validate version format
