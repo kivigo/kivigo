@@ -110,7 +110,7 @@ export default function BackendTemplate({
           className={styles.versionTagsLink}
           style={{ marginLeft: 10, fontSize: 14 }}
         >
-          Voir toutes les versions
+          View all versions
         </a>
       </div>
       <CodeBlock language="bash">
