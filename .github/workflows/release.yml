@@ -10,24 +10,29 @@ permissions:
 "on":
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Release version (e.g., v1.5.0)'
+      automatic_tag:
+        description: 'Automatically increment version and construct tag'
         required: true
-        type: string
-      release_type:
-        description: 'What to release'
-        required: true
-        type: choice
-        default: 'core+backends'
-        options:
-          - 'core'
-          - 'backends'
-          - 'core+backends'
-      latest:
-        description: 'Mark this release as latest'
-        required: false
+        default: true
         type: boolean
-        default: false
+      latest:
+        description: 'Also create/update the "latest" tag for this backend'
+        required: true
+        default: true
+        type: boolean
+      bump:
+        description: 'If Automatic Tag is enabled, select which part to bump'
+        required: false
+        default: 'patch'
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+      version:
+        description: 'Release version (e.g., v1.5.0). Ignored if Automatic Tag is enabled.'
+        required: false
+        type: string
       publish_docs:
         description: 'Publish documentation'
         required: false
@@ -40,7 +45,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.validate.outputs.version }}
-      release_type: ${{ steps.validate.outputs.release_type }}
       latest: ${{ steps.validate.outputs.latest }}
       publish_docs: ${{ steps.validate.outputs.publish_docs }}
     steps:
@@ -48,63 +52,40 @@ jobs:
         id: validate
         run: |
           version="${{ github.event.inputs.version }}"
-          release_type="${{ github.event.inputs.release_type }}"
           latest="${{ github.event.inputs.latest }}"
           publish_docs="${{ github.event.inputs.publish_docs }}"
           
           # Check if version starts with 'v' and follows semantic versioning
-          if [[ ! "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          if [[ ! "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ && "${{ github.event.inputs.automatic_tag }}" != "true" ]]; then
             echo "❌ Error: Version must follow semantic versioning format (e.g., v1.5.0)"
             exit 1
           fi
           
           echo "✅ Version format is valid: $version"
-          echo "📦 Release type: $release_type"
           echo "🏷️ Mark as latest: $latest"
           echo "📚 Publish documentation: $publish_docs"
           
           echo "version=$version" >> $GITHUB_OUTPUT
-          echo "release_type=$release_type" >> $GITHUB_OUTPUT
           echo "latest=$latest" >> $GITHUB_OUTPUT
           echo "publish_docs=$publish_docs" >> $GITHUB_OUTPUT
 
-  discover-backends:
-    name: 🔍 Discover Backends
-    runs-on: ubuntu-latest
-    needs: validate-inputs
-    if: ${{ needs.validate-inputs.outputs.release_type == 'backends' || needs.validate-inputs.outputs.release_type == 'core+backends' }}
-    outputs:
-      backends: ${{ steps.discover.outputs.backends }}
-    steps:
-      - name: 🛎️ Checkout code
-        uses: actions/checkout@v4
+  lint:
+    name: 🧹 Run Go Lint
+    needs: [validate-inputs]
+    if: needs.validate-inputs.result == 'success'
+    uses: ./.github/workflows/go-lint.yml
 
-      - name: 🔍 Discover backends
-        id: discover
-        run: |
-          # Find all backend directories that have go.mod files
-          backends=$(find backend -mindepth 1 -maxdepth 1 -type d | sort)
-          
-          # Filter to only include directories with go.mod files
-          backend_list=()
-          for backend in $backends; do
-            if [[ -f "$backend/go.mod" ]]; then
-              backend_name=$(basename "$backend")
-              backend_list+=("$backend_name")
-              echo "✅ Found backend: $backend_name"
-            fi
-          done
-          
-          # Convert to JSON array
-          backends_json=$(printf '%s\n' "${backend_list[@]}" | jq -R . | jq -s . | jq -c .)
-          echo "backends=$backends_json" >> $GITHUB_OUTPUT
-          echo "📦 Discovered backends: $backends_json"
+  test:
+    name: 🧪 Run Go Tests
+    needs: [validate-inputs]
+    if: needs.validate-inputs.result == 'success'
+    uses: ./.github/workflows/go-test.yml
 
   create-tags:
     name: 🏷️ Create and Push Tags
     runs-on: ubuntu-latest
-    needs: [validate-inputs, discover-backends]
-    if: always() && !cancelled() && !failure()
+    needs: [validate-inputs, lint, test]
+    if: always() && !cancelled() && needs.validate-inputs.result == 'success' && needs.lint.result == 'success' && needs.test.result == 'success'
     steps:
       - name: 🛎️ Checkout code
         uses: actions/checkout@v4
@@ -113,7 +94,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 🏷️ Create main project tag
-        if: ${{ needs.validate-inputs.outputs.release_type == 'core' || needs.validate-inputs.outputs.release_type == 'core+backends' }}
         run: |
           version="${{ needs.validate-inputs.outputs.version }}"
           
@@ -125,29 +105,7 @@ jobs:
             echo "✅ Created main project tag: $version"
           fi
 
-      - name: 🏷️ Create backend tags
-        if: ${{ needs.validate-inputs.outputs.release_type == 'backends' || needs.validate-inputs.outputs.release_type == 'core+backends' }}
-        run: |
-          version="${{ needs.validate-inputs.outputs.version }}"
-          backends='${{ needs.discover-backends.outputs.backends }}'
-          
-          echo "Creating backend tags for version: $version"
-          
-          # Parse backends JSON array
-          echo "$backends" | jq -r '.[]' | while read -r backend; do
-            backend_tag="backend/${backend}/${version}"
-            
-            # Check if tag already exists
-            if git tag -l | grep -q "^${backend_tag}$"; then
-              echo "⚠️ Tag $backend_tag already exists"
-            else
-              git tag "$backend_tag"
-              echo "✅ Created backend tag: $backend_tag"
-            fi
-          done
-
       - name: 🚀 Push main project tag
-        if: ${{ needs.validate-inputs.outputs.release_type == 'core' || needs.validate-inputs.outputs.release_type == 'core+backends' }}
         run: |
           version="${{ needs.validate-inputs.outputs.version }}"
           
@@ -155,26 +113,9 @@ jobs:
           git push origin "$version" || echo "⚠️ Main project tag $version may already exist remotely"
           echo "📤 Pushed main project tag: $version"
 
-      - name: 🚀 Push backend tags
-        if: ${{ needs.validate-inputs.outputs.release_type == 'backends' || needs.validate-inputs.outputs.release_type == 'core+backends' }}
-        run: |
-          version="${{ needs.validate-inputs.outputs.version }}"
-          
-          echo "Pushing backend tags..."
-          backends='${{ needs.discover-backends.outputs.backends }}'
-          echo "$backends" | jq -r '.[]' | while read -r backend; do
-            backend_tag="backend/${backend}/${version}"
-            git push origin "$backend_tag" || echo "⚠️ Backend tag $backend_tag may already exist remotely"
-            echo "📤 Pushed: $backend_tag"
-          done
-          
-          echo "🎉 All backend tags pushed successfully!"
-
   deploy-docs:
     name: 📚 Deploy Documentation
     needs: [validate-inputs, create-tags]
-    if: ${{ needs.validate-inputs.outputs.publish_docs == 'true' && (needs.validate-inputs.outputs.release_type == 'core' || needs.validate-inputs.outputs.release_type == 'core+backends') }}
+    if: ${{ needs.validate-inputs.outputs.publish_docs == 'true' }}
     uses: ./.github/workflows/deploy-docs.yml
-    with:
-      version: ${{ needs.validate-inputs.outputs.version }}
     secrets: inherit

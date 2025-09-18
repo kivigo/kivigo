@@ -1,5 +1,27 @@
 version: 2
 updates:
+  # GitHub Actions updates
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "ci"
+      - "github-actions"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+  # --------------------------
+
   # Main project dependencies
   - package-ecosystem: "gomod"
     directory: "/"
@@ -15,213 +37,7 @@ updates:
       - "dependencies"
       - "go"
       - "main"
-
-  # Badger backend dependencies
-  - package-ecosystem: "gomod"
-    directory: "/backend/badger"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:30"
-    open-pull-requests-limit: 3
-    commit-message:
-      prefix: "deps(badger)"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "go"
-      - "backend"
-      - "badger"
     groups:
-      badger-dependencies:
-        patterns:
-          - "*"
-
-  # Consul backend dependencies  
-  - package-ecosystem: "gomod"
-    directory: "/backend/consul"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "10:00"
-    open-pull-requests-limit: 3
-    commit-message:
-      prefix: "deps(consul)"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "go"
-      - "backend"
-      - "consul"
-    groups:
-      consul-dependencies:
-        patterns:
-          - "*"
-
-  # DynamoDB backend dependencies
-  - package-ecosystem: "gomod"
-    directory: "/backend/dynamodb"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "10:30"
-    open-pull-requests-limit: 3
-    commit-message:
-      prefix: "deps(dynamodb)"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "go"
-      - "backend"
-      - "dynamodb"
-    groups:
-      dynamodb-dependencies:
-        patterns:
-          - "*"
-
-  # etcd backend dependencies
-  - package-ecosystem: "gomod"
-    directory: "/backend/etcd"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "11:00"
-    open-pull-requests-limit: 3
-    commit-message:
-      prefix: "deps(etcd)"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "go"
-      - "backend"
-      - "etcd"
-    groups:
-      etcd-dependencies:
-        patterns:
-          - "*"
-
-  # Local/BoltDB backend dependencies
-  - package-ecosystem: "gomod"
-    directory: "/backend/local"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "11:30"
-    open-pull-requests-limit: 3
-    commit-message:
-      prefix: "deps(local)"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "go"
-      - "backend"
-      - "local"
-    groups:
-      local-dependencies:
-        patterns:
-          - "*"
-
-  # Memcached backend dependencies
-  - package-ecosystem: "gomod"
-    directory: "/backend/memcached"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "12:00"
-    open-pull-requests-limit: 3
-    commit-message:
-      prefix: "deps(memcached)"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "go"
-      - "backend"
-      - "memcached"
-    groups:
-      memcached-dependencies:
-        patterns:
-          - "*"
-
-  # MongoDB backend dependencies
-  - package-ecosystem: "gomod"
-    directory: "/backend/mongodb"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "12:15"
-    open-pull-requests-limit: 3
-    commit-message:
-      prefix: "deps(mongodb)"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "go"
-      - "backend"
-      - "mongodb"
-    groups:
-      mongodb-dependencies:
-        patterns:
-          - "*"
-
-  # Redis backend dependencies
-  - package-ecosystem: "gomod"
-    directory: "/backend/redis"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "12:30"
-    open-pull-requests-limit: 3
-    commit-message:
-      prefix: "deps(redis)"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "go"
-      - "backend"
-      - "redis"
-    groups:
-      redis-dependencies:
-        patterns:
-          - "*"
-
-  # MySQL backend dependencies
-  - package-ecosystem: "gomod"
-    directory: "/backend/mysql"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "13:00"
-    open-pull-requests-limit: 3
-    commit-message:
-      prefix: "deps(mysql)"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "go"
-      - "backend"
-      - "mysql"
-    groups:
-      mysql-dependencies:
-        patterns:
-          - "*"
-
-  # PostgreSQL backend dependencies
-  - package-ecosystem: "gomod"
-    directory: "/backend/postgresql"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "13:30"
-    open-pull-requests-limit: 3
-    commit-message:
-      prefix: "deps(postgresql)"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "go"
-      - "backend"
-      - "postgresql"
-    groups:
-      postgresql-dependencies:
+      main-dependencies:
         patterns:
           - "*"

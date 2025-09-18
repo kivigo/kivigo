@@ -23,7 +23,7 @@ import (
 //
 //		import (
 //		    "github.com/kivigo/kivigo"
-//		    "github.com/kivigo/kivigo/backend/local"
+//		    "github.com/kivigo/backends/local"
 //		)
 //		func main() {
 //		    kvStore, err := local.New(local.Option{Path: "./"})
@@ -42,7 +42,7 @@ import (
 //
 //	import (
 //	    "github.com/kivigo/kivigo"
-//	    "github.com/kivigo/kivigo/backend/redis"
+//	    "github.com/kivigo/backends/redis"
 //	    "github.com/kivigo/kivigo/pkg/client"
 //	    "github.com/kivigo/encoders/yaml"
 //	)
