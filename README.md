@@ -58,12 +58,12 @@ KiviGo helps you focus on your application logic, not on backend-specific detail
 
 There are several Go libraries for key-value storage, each with different goals and trade-offs. Here’s how KiviGo compares to some popular alternatives:
 
-| Library         | Unified API | Pluggable Backends | Pluggable Encoders | Health Checks | Batch Ops | Mock/Test Support | Extensible |
-|-----------------|:----------:|:------------------:|:------------------:|:-------------:|:--------:|:-----------------:|:----------:|
-| **KiviGo**      | ✅         | ✅                 | ✅                 | ✅            | ✅       | ✅                | ✅         |
-| [gokv](https://github.com/philippgille/gokv)  | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ➖ |
-| [libkv](https://github.com/docker/libkv) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ➖ |
-| [gokvstores](https://github.com/ulule/gokvstores) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ➖ |
+| Library         | Unified API | Pluggable Backends | Pluggable Encoders | Health Checks | Batch Ops | Mock/Test Support |
+|-----------------|:----------:|:------------------:|:------------------:|:-------------:|:--------:|:-----------------:|
+| **KiviGo**      | ✅         | ✅                 | ✅                 | ✅            | ✅       | ✅                |
+| [gokv](https://github.com/philippgille/gokv)  | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| [libkv](https://github.com/docker/libkv) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| [gokvstores](https://github.com/ulule/gokvstores) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 KiviGo is designed for projects that need flexibility, testability, and the ability to swap storage or serialization strategies with minimal code changes.
 
