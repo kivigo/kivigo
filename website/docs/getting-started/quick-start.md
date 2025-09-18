@@ -19,7 +19,7 @@ import (
     "log"
 
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/backend/badger"
+    "github.com/kivigo/backends/badger"
 )
 
 func main() {
@@ -138,7 +138,7 @@ KiviGo's unified interface means you can easily switch between backends:
 ### Redis Backend
 
 ```go
-import "github.com/kivigo/kivigo/backend/redis"
+import "github.com/kivigo/backends/redis"
 
 opt := redis.DefaultOptions()
 opt.Addr = "localhost:6379"
@@ -148,7 +148,7 @@ kvStore, err := redis.New(opt)
 ### Local/BoltDB Backend
 
 ```go
-import "github.com/kivigo/kivigo/backend/local"
+import "github.com/kivigo/backends/local"
 
 kvStore, err := local.New(local.Option{Path: "./data.db"})
 ```
@@ -156,7 +156,7 @@ kvStore, err := local.New(local.Option{Path: "./data.db"})
 ### Consul Backend
 
 ```go
-import "github.com/kivigo/kivigo/backend/consul"
+import "github.com/kivigo/backends/consul"
 
 opt := consul.DefaultOptions()
 opt.Address = "localhost:8500"

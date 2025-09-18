@@ -55,7 +55,7 @@ import (
     
     "github.com/kivigo/kivigo"
     "github.com/kivigo/encoders/json"
-    "github.com/kivigo/kivigo/backend/badger"
+    "github.com/kivigo/backends/badger"
 )
 
 type User struct {
