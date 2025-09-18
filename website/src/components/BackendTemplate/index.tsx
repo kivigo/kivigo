@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import CodeBlock from '@theme/CodeBlock';
@@ -52,11 +52,46 @@ export default function BackendTemplate({
   notes = [],
   links = []
 }: BackendTemplateProps) {
+  // State for latest version
+  const [latestVersion, setLatestVersion] = useState<string>('');
+  const [installCmd, setInstallCmd] = useState<string>(`go get ${importPath}`);
+
+  // Nettoyage du packageName pour ne garder que le nom du backend (ex: "local" à partir de "backend/local")
+  function extractBackendName(pkg: string) {
+    const parts = pkg.split('/');
+    return parts[parts.length - 1];
+  }
+
+  // Fetch latest tag from GitHub on mount
+  useEffect(() => {
+    const backend = extractBackendName(packageName).toLowerCase();
+    fetch('https://api.github.com/repos/kivigo/backends/tags?per_page=100')
+      .then(res => res.json())
+      .then((tags: { name: string }[]) => {
+        // Filter tags for this backend
+        const filtered = tags
+          .map(tag => tag.name)
+          .filter(tag => tag.startsWith(`${backend}/`))
+          .map(tag => tag.split('/')[1]);
+        if (filtered.length > 0) {
+          // On prend la première version (GitHub renvoie les tags du plus récent au plus ancien)
+          setLatestVersion(filtered[0]);
+          setInstallCmd(`go get ${importPath}@${filtered[0]}`);
+        }
+      })
+      .catch(() => {
+        setLatestVersion('');
+        setInstallCmd(`go get ${importPath}`);
+      });
+  }, [importPath, packageName]);
+
+  // Lien vers la page des tags GitHub pour ce backend
+  const backendName = extractBackendName(packageName).toLowerCase();
+  const tagsUrl = `https://github.com/kivigo/backends/tags?q=${backendName}%2F`;
+
   return (
     <div className={styles['backend-template']}>
       <div className={styles['backend-header']}>
-
-        {/* container dédié pour les badges */}
         <div className={styles.badges}>
           <span className={`${styles.badge} ${styles['badge-light']}`}>{category}</span>
           <span className={`${styles.badge} ${styles['badge-green']}`}>{packageName}</span>
@@ -66,8 +101,20 @@ export default function BackendTemplate({
       <p className="backend-description">{description}</p>
 
       <h2>📦 Installation</h2>
+      <div className={styles.versionRow}>
+        <span className={styles.versionLabel}>Latest version : {latestVersion}</span>
+        <a
+          href={tagsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.versionTagsLink}
+          style={{ marginLeft: 10, fontSize: 14 }}
+        >
+          Voir toutes les versions
+        </a>
+      </div>
       <CodeBlock language="bash">
-        {`go get ${importPath}`}
+        {installCmd}
       </CodeBlock>
 
       {installationNotes && (

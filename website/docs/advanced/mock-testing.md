@@ -30,7 +30,7 @@ func TestMyService(t *testing.T) {
     }
     
     // Create KiviGo client with mock backend
-    client, err := client.New(mockKV, client.Option{})
+    client, err := kivigo.New(mockKV, kivigo.Option{})
     require.NoError(t, err)
     
     ctx := context.Background()
@@ -61,7 +61,7 @@ func TestWithPreData(t *testing.T) {
         },
     }
     
-    client, err := client.New(mockKV, client.Option{})
+    client, err := kivigo.New(mockKV, kivigo.Option{})
     require.NoError(t, err)
     
     ctx := context.Background()
@@ -106,7 +106,7 @@ type User struct {
 }
 
 func (s *UserService) CreateUser(ctx context.Context, user User) error {
-    client, err := client.New(s.kv, client.Option{})
+    client, err := kivigo.New(s.kv, kivigo.Option{})
     if err != nil {
         return err
     }
@@ -116,7 +116,7 @@ func (s *UserService) CreateUser(ctx context.Context, user User) error {
 }
 
 func (s *UserService) GetUser(ctx context.Context, id int) (User, error) {
-    client, err := client.New(s.kv, client.Option{})
+    client, err := kivigo.New(s.kv, kivigo.Option{})
     if err != nil {
         return User{}, err
     }
@@ -128,7 +128,7 @@ func (s *UserService) GetUser(ctx context.Context, id int) (User, error) {
 }
 
 func (s *UserService) ListUsers(ctx context.Context) ([]User, error) {
-    client, err := client.New(s.kv, client.Option{})
+    client, err := kivigo.New(s.kv, kivigo.Option{})
     if err != nil {
         return nil, err
     }
@@ -267,7 +267,7 @@ Test your code under concurrent conditions:
 ```go
 func TestConcurrentAccess(t *testing.T) {
     mockKV := &mock.MockKV{Data: map[string][]byte{}}
-    client, err := client.New(mockKV, client.Option{})
+    client, err := kivigo.New(mockKV, kivigo.Option{})
     require.NoError(t, err)
     
     ctx := context.Background()
@@ -364,7 +364,7 @@ Create reusable test helpers for common patterns:
 // Test helper functions
 func setupTestClient(t *testing.T) client.Client {
     mockKV := &mock.MockKV{Data: map[string][]byte{}}
-    client, err := client.New(mockKV, client.Option{})
+    client, err := kivigo.New(mockKV, kivigo.Option{})
     require.NoError(t, err)
     return client
 }
@@ -379,7 +379,7 @@ func setupTestClientWithData(t *testing.T, data map[string]interface{}) client.C
     }
     
     mockKV := &mock.MockKV{Data: encoded}
-    client, err := client.New(mockKV, client.Option{})
+    client, err := kivigo.New(mockKV, kivigo.Option{})
     require.NoError(t, err)
     return client
 }

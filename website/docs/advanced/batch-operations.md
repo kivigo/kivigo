@@ -44,7 +44,7 @@ import (
     "log"
     
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/backend/redis"
+    "github.com/kivigo/backends/redis"
 )
 
 func main() {

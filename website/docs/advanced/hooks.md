@@ -42,8 +42,8 @@ import (
     "log"
     
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/pkg/encoder"
-    "github.com/kivigo/kivigo/backend/redis"
+    "github.com/kivigo/encoders/json"
+    "github.com/kivigo/backends/redis"
 )
 
 func main() {
@@ -55,7 +55,7 @@ func main() {
     }
 
     client, err := kivigo.New(backend, kivigo.Option{
-        Encoder: encoder.JSON,
+        Encoder: json.New(),
     })
     if err != nil {
         log.Fatal(err)
@@ -102,7 +102,7 @@ id, errCh, unregister := client.RegisterHook(
     client.HookOptions{
         Events:  []client.EventType{client.EventSet, client.EventDelete}, // Only Set and Delete
         Filter:  client.PrefixFilter("user:"),                            // Only keys starting with "user:"
-        Async:   true,                                                     // Execute asynchronously
+        Async:   true,                                                    // Execute asynchronously
         Timeout: 5 * time.Second,                                         // Timeout for sync hooks (ignored for async)
     },
 )
@@ -666,7 +666,7 @@ type ClientWithHooks struct {
 }
 
 func NewClientWithHooks(backend models.KV, logger *log.Logger) *ClientWithHooks {
-    c, _ := client.New(backend, client.Option{Encoder: encoder.JSON})
+    c, _ := kivigo.New(backend, kivigo.Option{Encoder: encoder.JSON})
     
     cwh := &ClientWithHooks{
         Client: c,

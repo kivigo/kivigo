@@ -10,7 +10,7 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
   description="Redis is an in-memory data structure store, used as a database, cache, and message broker. It supports data structures such as strings, hashes, lists, sets, and more."
   category="Distributed Cache"
   packageName="backend/redis"
-  importPath="github.com/kivigo/kivigo/backend/redis"
+  importPath="github.com/kivigo/backends/redis"
   features={[
     { name: "Basic Operations", supported: true, description: "Set, Get, Delete, List operations" },
     { name: "Batch Operations", supported: true, description: "Pipeline-based batch operations" },
@@ -31,7 +31,7 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
 
 import (
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/backend/redis"
+    "github.com/kivigo/backends/redis"
 )
 
 func main() {
@@ -88,7 +88,7 @@ import (
     "time"
 
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/backend/redis"
+    "github.com/kivigo/backends/redis"
 )
 
 type Session struct {
@@ -157,7 +157,7 @@ import (
     "log"
     "time"
 
-    "github.com/kivigo/kivigo/backend/redis"
+    "github.com/kivigo/backends/redis"
 )
 
 func main() {
@@ -218,7 +218,7 @@ import (
     "log"
 
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/backend/redis"
+    "github.com/kivigo/backends/redis"
 )
 
 func main() {

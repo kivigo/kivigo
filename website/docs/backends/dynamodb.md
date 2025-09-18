@@ -10,7 +10,7 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
   description="Amazon DynamoDB is a fully managed NoSQL database service that provides fast and predictable performance with seamless scalability. It's designed for applications that need consistent, single-digit millisecond latency at any scale."
   category="Cloud Database"
   packageName="backend/dynamodb"
-  importPath="github.com/kivigo/kivigo/backend/dynamodb"
+  importPath="github.com/kivigo/backends/dynamodb"
   features={[
     { name: "Basic Operations", supported: true, description: "Set, Get, Delete, List operations" },
     { name: "Batch Operations", supported: true, description: "BatchSet, BatchGet, BatchDelete for bulk operations" },
@@ -31,7 +31,7 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
 
 import (
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/backend/dynamodb"
+    "github.com/kivigo/backends/dynamodb"
     "github.com/aws/aws-sdk-go-v2/config"
 )
 
@@ -78,7 +78,7 @@ import (
     "log"
 
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/backend/dynamodb"
+    "github.com/kivigo/backends/dynamodb"
     "github.com/aws/aws-sdk-go-v2/config"
 )
 
@@ -155,7 +155,7 @@ import (
     "log"
     "time"
 
-    "github.com/kivigo/kivigo/backend/dynamodb"
+    "github.com/kivigo/backends/dynamodb"
     "github.com/aws/aws-sdk-go-v2/config"
 )
 
@@ -219,7 +219,7 @@ import (
     "log"
 
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/backend/dynamodb"
+    "github.com/kivigo/backends/dynamodb"
     "github.com/aws/aws-sdk-go-v2/config"
 )
 

@@ -10,7 +10,7 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
   description="etcd is a distributed, reliable key-value store for the most critical data of a distributed system. It's the backing store for Kubernetes and provides strong consistency guarantees."
   category="Distributed Store"
   packageName="backend/etcd"
-  importPath="github.com/kivigo/kivigo/backend/etcd"
+  importPath="github.com/kivigo/backends/etcd"
   features={[
     { name: "Basic Operations", supported: true },
     { name: "Batch Operations", supported: true },

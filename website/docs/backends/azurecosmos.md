@@ -10,7 +10,7 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
   description="Azure Cosmos DB is Microsoft's globally distributed, multi-model database service. It provides low-latency, elastic scale, and comprehensive SLAs for throughput, latency, availability, and consistency."
   category="Cloud Database"
   packageName="backend/azurecosmos"
-  importPath="github.com/kivigo/kivigo/backend/azurecosmos"
+  importPath="github.com/kivigo/backends/azurecosmos"
   features={[
     { name: "Basic Operations", supported: true, description: "Set, Get, Delete, List operations" },
     { name: "Batch Operations", supported: true, description: "BatchSet, BatchGet, BatchDelete for bulk operations" },
@@ -31,7 +31,7 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
 
 import (
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/backend/azurecosmos"
+    "github.com/kivigo/backends/azurecosmos"
 )
 
 func main() {
@@ -71,7 +71,7 @@ import (
     "log"
 
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/backend/azurecosmos"
+    "github.com/kivigo/backends/azurecosmos"
 )
 
 type UserProfile struct {
@@ -138,7 +138,7 @@ import (
     "log"
     "time"
 
-    "github.com/kivigo/kivigo/backend/azurecosmos"
+    "github.com/kivigo/backends/azurecosmos"
 )
 
 func main() {
@@ -199,7 +199,7 @@ import (
     "log"
 
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/backend/azurecosmos"
+    "github.com/kivigo/backends/azurecosmos"
 )
 
 func main() {

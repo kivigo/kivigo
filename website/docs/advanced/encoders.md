@@ -13,20 +13,31 @@ KiviGo comes with built-in support for several encoding formats:
 ### JSON Encoder (Default)
 
 ```go
-import "github.com/kivigo/kivigo/pkg/encoder"
+import (
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/encoders/json"
+)
 
-client, err := client.New(kvStore, client.Option{
-    Encoder: encoder.JSON, // This is the default
+[ ... ]
+
+client, err := kivigo.New(kvStore, kivigo.Option{
+    Encoder: json.New(), // This is the default
 })
 ```
 
 ### YAML Encoder
 
 ```go
-import "github.com/kivigo/kivigo/pkg/encoder"
+import (
+    "github.com/kivigo/kivigo"
+    "github.com/kivigo/encoders/yaml"
+)
 
-client, err := client.New(kvStore, client.Option{
-    Encoder: encoder.YAML,
+[ ... ]
+
+
+client, err := kivigo.New(kvStore, kivigo.Option{
+    Encoder: yaml.New(),
 })
 ```
 
@@ -43,7 +54,7 @@ import (
     "log"
     
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/pkg/encoder"
+    "github.com/kivigo/encoders/json"
     "github.com/kivigo/kivigo/backend/badger"
 )
 
@@ -58,8 +69,8 @@ func main() {
     defer kvStore.Close()
     
     // JSON encoder (default)
-    jsonClient, err := client.New(kvStore, client.Option{
-        Encoder: encoder.JSON,
+    jsonClient, err := kivigo.New(kvStore, kivigo.Option{
+        Encoder: json.New(),
     })
     if err != nil {
         log.Fatal(err)
@@ -89,8 +100,8 @@ func main() {
 
 ```go
 // YAML encoder
-yamlClient, err := client.New(kvStore, client.Option{
-    Encoder: encoder.YAML,
+yamlClient, err := kivigo.New(kvStore, kivigo.Option{
+    Encoder: yaml.New(),
 })
 
 // Same API, different encoding

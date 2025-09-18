@@ -46,13 +46,13 @@ const config: Config = {
           // Remove this to remove the "edit this page" links.
           editUrl:
             'https://github.com/kivigo/kivigo/tree/main/website/',
-          versions: {
-            current: {
-              label: 'current',
-            },
-          },
-          lastVersion: '1.5.1',
-          includeCurrentVersion: true
+          // versions: {
+          //   current: {
+          //     label: 'current',
+          //   },
+          // },
+          // lastVersion: '1.5.1',
+          // includeCurrentVersion: true
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -101,11 +101,6 @@ const config: Config = {
           sidebarId: 'documentationSidebar',
           position: 'left',
           label: 'Documentation',
-        },
-        {
-          type: 'docsVersionDropdown',
-          position: 'right',
-          dropdownActiveClassDisabled: true,
         },
         {
           href: 'https://github.com/kivigo/kivigo',

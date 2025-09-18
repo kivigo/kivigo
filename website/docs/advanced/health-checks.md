@@ -17,7 +17,7 @@ import (
     "context"
     "log"
     
-    "github.com/kivigo/kivigo/backend/redis"
+    "github.com/kivigo/backends/redis"
 )
 
 func main() {
@@ -27,6 +27,8 @@ func main() {
         log.Fatal(err)
     }
     defer kvStore.Close()
+
+    [...]
     
     ctx := context.Background()
     
@@ -95,7 +97,7 @@ import (
     "log"
     "time"
     
-    "github.com/kivigo/kivigo/backend/redis"
+    "github.com/kivigo/backends/redis"
     "github.com/kivigo/kivigo/pkg/models"
 )
 
@@ -129,6 +131,8 @@ func main() {
         log.Fatal(err)
     }
     defer kvStore.Close()
+
+    [...]
     
     // Start health monitoring every 30 seconds
     go startHealthMonitoring(kvStore, 30*time.Second)
@@ -193,6 +197,8 @@ func main() {
         log.Fatal(err)
     }
     defer kvStore.Close()
+
+    [...]
     
     // Register health endpoint
     http.HandleFunc("/health", healthHandler(kvStore, "redis"))

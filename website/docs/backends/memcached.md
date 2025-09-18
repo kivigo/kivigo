@@ -10,7 +10,7 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
   description="Memcached is a high-performance, distributed memory object caching system. It's designed to speed up dynamic web applications by alleviating database load through caching data and objects in RAM."
   category="In-Memory Cache"
   packageName="backend/memcached"
-  importPath="github.com/kivigo/kivigo/backend/memcached"
+  importPath="github.com/kivigo/backends/memcached"
   features={[
     { name: "Basic Operations", supported: true, description: "Set, Get, Delete, List operations" },
     { name: "Batch Operations", supported: true, description: "BatchSet, BatchGet, BatchDelete for bulk operations" },
@@ -33,7 +33,7 @@ import (
     "time"
 
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/backend/memcached"
+    "github.com/kivigo/backends/memcached"
 )
 
 func main() {
@@ -79,7 +79,7 @@ import (
     "time"
 
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/backend/memcached"
+    "github.com/kivigo/backends/memcached"
 )
 
 type CacheItem struct {
@@ -169,7 +169,7 @@ import (
     "log"
     "time"
 
-    "github.com/kivigo/kivigo/backend/memcached"
+    "github.com/kivigo/backends/memcached"
 )
 
 func main() {
@@ -242,7 +242,7 @@ import (
     "log"
 
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/backend/memcached"
+    "github.com/kivigo/backends/memcached"
 )
 
 func main() {

@@ -19,7 +19,7 @@ import (
     "log"
 
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/backend/badger"
+    "github.com/kivigo/backends/badger"
 )
 
 type AppConfig struct {
@@ -102,7 +102,7 @@ import (
     "time"
 
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/backend/redis"
+    "github.com/kivigo/backends/redis"
 )
 
 type UserSession struct {
@@ -213,8 +213,8 @@ import (
     "log"
     "time"
 
+    "github.com/kivigo/backends/redis"
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/backend/redis"
     "github.com/kivigo/kivigo/pkg/errs"
 )
 
@@ -372,7 +372,7 @@ import (
 
     "github.com/kivigo/kivigo"
     "github.com/kivigo/kivigo/pkg/errs"
-    "github.com/kivigo/kivigo/backend/badger"
+    "github.com/kivigo/backends/badger"
 )
 
 type Config struct {

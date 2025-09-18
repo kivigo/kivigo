@@ -1,0 +1,108 @@
+---
+sidebar_position: 2
+---
+
+import React, { useEffect, useState } from 'react';
+
+# Installation
+
+This guide covers how to install KiviGo and its backends for your Go projects.
+
+## Core Library
+
+<DynamicKivigoInstall />
+
+## Backend Installation
+
+KiviGo uses a modular architecture where each backend is a separate Go module. This keeps your dependencies minimal - you only install what you need. Retrieve the backend installation instructions on each backend's documentation page. See backends overview to choose the right one for your use case: [Backends Overview](../backends/overview).
+
+## Troubleshooting
+
+### Common Issues
+
+**Module not found errors:**
+
+- Ensure you're using Go 1.21 or later
+- Run `go mod tidy` after installation
+- Check your `GOPROXY` settings if behind a corporate proxy
+
+**Version conflicts:**
+
+- Use `go mod graph` to identify conflicting dependencies
+- Pin specific versions using `go get package@version`
+
+**Build errors:**
+
+- Some backends require CGO (like BadgerDB) - ensure you have a C compiler
+- Check backend-specific documentation for additional requirements
+
+## Next Steps
+
+Now that KiviGo is installed:
+
+1. **Start with [Quick Start](./quick-start)** - Learn the basics with simple examples
+2. **Explore [Operations](./operations)** - Understand all available operations
+3. **Try [Examples](./examples)** - See practical usage patterns
+4. **Choose your [Backend](../backends/overview)** - Pick the right storage for your use case
+
+---
+
+export function DynamicKivigoInstall() {
+  const [latest, setLatest] = React.useState(null);
+  const [error, setError] = React.useState(null);
+
+  React.useEffect(() => {
+    fetch('https://api.github.com/repos/kivigo/kivigo/tags?per_page=1')
+      .then(res => res.json())
+      .then((tags) => {
+        if (tags.length > 0) {
+          setLatest(tags[0].name);
+        } else {
+          setError('No release found');
+        }
+      })
+      .catch(() => {
+        setError('Unable to fetch latest version');
+      });
+  }, []);
+
+  return (
+    <div style={{ marginBottom: 24 }}>
+      <p>
+        <b>Install the main KiviGo library:</b>
+      </p>
+      <pre style={{
+        background: 'var(--ifm-pre-background, #222)',
+        color: 'var(--ifm-font-color-base, #eaeaea)',
+        borderRadius: 8,
+        padding: 16,
+        fontSize: 16,
+        fontFamily: 'var(--ifm-font-family-monospace, monospace)',
+        marginBottom: 8,
+        overflowX: 'auto'
+      }}>
+        {latest
+          ? `go get github.com/kivigo/kivigo@${latest}`
+          : 'go get github.com/kivigo/kivigo@latest'}
+      </pre>
+      <div style={{ fontSize: 14, color: 'var(--ifm-color-success-dark, #7fba00)' }}>
+        {latest && <>Latest version: <b>{latest}</b></>}
+        {error && <span style={{ color: 'var(--ifm-color-danger, #e5534b)' }}>{error}</span>}
+      </div>
+      <div style={{ marginTop: 4 }}>
+        <a
+          href="https://github.com/kivigo/kivigo/tags"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontSize: 14,
+            color: 'var(--ifm-color-primary)',
+            textDecoration: 'underline'
+          }}
+        >
+          Voir toutes les versions
+        </a>
+      </div>
+    </div>
+  );
+}

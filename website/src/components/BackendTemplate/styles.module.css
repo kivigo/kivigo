@@ -197,6 +197,42 @@
   opacity: 0.75;
 }
 
+
+.versionRow {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 1rem;
+}
+
+.versionLabel {
+  /* font-weight: 600;
+  font-size: 1rem; */
+  background: linear-gradient(180deg, rgba(122, 193, 66, 0.12), rgba(122, 193, 66, 0.06));
+  /* color: var(--ifm-color-success-dark, #7fba00); */
+  border: 1.5px solid;
+  border-color: rgba(122, 193, 66, 0.18);
+  border-radius: 0.5rem;
+  padding: 0.18rem 1.1rem 0.18rem 1.1rem;
+  display: flex;
+  align-items: center;
+  user-select: none;
+}
+
+
+.versionTagsLink {
+  color: var(--ifm-color-primary);
+  font-weight: 500;
+  transition: color 0.15s;
+}
+
+.versionTagsLink:hover {
+  color: var(--ifm-color-primary-dark, #3a7f1c);
+  text-decoration: underline;
+}
+
+
+
 /* responsive: <=900px max 2 columns; <=600px 1 column */
 @media (max-width: 900px) {
 

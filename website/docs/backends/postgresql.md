@@ -10,7 +10,7 @@ import BackendTemplate from '@site/src/components/BackendTemplate';
   description="PostgreSQL is a powerful, open source object-relational database system with a strong reputation for reliability, feature robustness, and performance. It supports both SQL and JSON querying."
   category="Relational Database"
   packageName="backend/postgresql"
-  importPath="github.com/kivigo/kivigo/backend/postgresql"
+  importPath="github.com/kivigo/backends/postgresql"
   features={[
     { name: "Basic Operations", supported: true, description: "Set, Get, Delete, List operations" },
     { name: "Batch Operations", supported: true, description: "BatchSet, BatchGet, BatchDelete for bulk operations" },
@@ -33,7 +33,7 @@ import (
     "time"
 
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/backend/postgresql"
+    "github.com/kivigo/backends/postgresql"
 )
 
 func main() {
@@ -85,7 +85,7 @@ import (
     "time"
 
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/backend/postgresql"
+    "github.com/kivigo/backends/postgresql"
 )
 
 type EventLog struct {
@@ -189,7 +189,7 @@ import (
     "log"
     "time"
 
-    "github.com/kivigo/kivigo/backend/postgresql"
+    "github.com/kivigo/backends/postgresql"
 )
 
 func main() {
@@ -270,7 +270,7 @@ import (
     "time"
 
     "github.com/kivigo/kivigo"
-    "github.com/kivigo/kivigo/backend/postgresql"
+    "github.com/kivigo/backends/postgresql"
 )
 
 func main() {
