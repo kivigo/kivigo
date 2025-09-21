@@ -13,7 +13,6 @@ linters:
     - errorlint # Linter for error strings [fast: false, auto-fix: false]
     - goconst # Finds repeated strings [fast: true, auto-fix: false]
     - gocritic # Provides diagnostics that check for bugs, performance and style issues. [fast: false, auto-fix: false]
-    - gocyclo # Computes and checks the cyclomatic complexity of functions [fast: true, auto-fix: false]
     - goheader # Checks is file header matches to pattern [fast: true, auto-fix: false]
     - gomoddirectives # Manage the use of 'replace', 'retract', and 'excludes' directives in go.mod. [fast: true, auto-fix: false]
     - gomodguard # Allow and block list linter for direct Go module dependencies. This is different from depguard where there are different block types for example version constraints and module recommendations. [fast: true, auto-fix: false]
