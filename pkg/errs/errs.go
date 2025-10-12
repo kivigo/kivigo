@@ -10,6 +10,7 @@ var (
 	ErrEmptyFunc             = errors.New("function is nil")
 	ErrClientNotInitialized  = errors.New("client is not initialized")
 	ErrEmptyBatch            = errors.New("empty batch provided")
+	ErrEmptyEncoder          = errors.New("encoder is nil")
 )
 
 var ErrHealthCheckFailed = func(err error) error {
