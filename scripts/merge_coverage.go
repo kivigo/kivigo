@@ -46,7 +46,7 @@ func main() { //nolint:cyclop
 				if mode == "" {
 					mode = m
 				} else if mode != m {
-					log.Fatalf("coverage mode mismatch: %s vs %s (file %s)", mode, m, p) //nolint:gocritic
+					log.Fatalf("coverage mode mismatch: %s vs %s (file %s)", mode, m, p)
 				}
 				continue
 			}
@@ -83,7 +83,7 @@ func main() { //nolint:cyclop
 	defer out.Close()
 
 	if mode == "" {
-		log.Fatalf("no mode found in inputs")
+		log.Fatalf("no mode found in inputs") //nolint:gocritic
 	}
 	fmt.Fprintf(out, "mode: %s\n", mode)
 
