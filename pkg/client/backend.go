@@ -79,9 +79,13 @@ func (c Client) MatchKeys(ctx context.Context, prefix string, f MatchKeysFunc) (
 //
 //	var value string
 //	err := client.Get(ctx, "myKey", &value)
-func (c Client) Get(ctx context.Context, key string, value any) error {
+func (c Client) Get(ctx context.Context, key string, value any, opts ...Options) error {
 	if key == "" {
 		return errs.ErrEmptyKey
+	}
+
+	for _, opt := range opts {
+		opt(c.opts)
 	}
 
 	vV, err := c.GetRaw(ctx, key)
@@ -98,9 +102,13 @@ func (c Client) Get(ctx context.Context, key string, value any) error {
 // Example:
 //
 //	err := client.Set(ctx, "myKey", "myValue")
-func (c Client) Set(ctx context.Context, key string, value any) error {
+func (c Client) Set(ctx context.Context, key string, value any, opts ...Options) error {
 	if key == "" {
 		return errs.ErrEmptyKey
+	}
+
+	for _, opt := range opts {
+		opt(c.opts)
 	}
 
 	vV, err := c.opts.Encoder.Encode(ctx, value)
