@@ -13,7 +13,7 @@ The name is a play on words: "Kivi" sounds like "key-value" (the core concept of
 
 ## ✨ Features
 
-- Unified interface for different backends ([Redis](pkg/backend/redis/redis.go), [local/BoltDB](pkg/backend/local/local.go), etc.)
+- Unified interface for different backends (Redis, BoltDB, MySQL, etc.) [List of supported backends](https://kivigo.github.io/docs/backends/overview)
 - [Pluggable encoding/decoding (JSON, YAML, etc.)](https://github.com/kivigo/encoders)
 - Health check support (with custom checks)
 - List, add, and delete keys
@@ -21,7 +21,7 @@ The name is a play on words: "Kivi" sounds like "key-value" (the core concept of
 
 ## 📚 Documentation
 
-Visit our comprehensive documentation at **[https://kivigo.github.io/kivigo/](https://kivigo.github.io/kivigo/)** for:
+Visit our comprehensive documentation at **[https://kivigo.github.io/](https://kivigo.github.io/)** for:
 
 - **Getting Started Guide** - Set up your first key-value store in minutes
 - **Complete Backend Documentation** - Detailed guides for all supported backends
