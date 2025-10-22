@@ -2,20 +2,82 @@ package key
 
 import (
 	"context"
+	"strings"
 	"testing"
 )
+
+func TestTemplateKeyBuilder_Transformations(t *testing.T) {
+	tpl, err := Template("user:{id|upper}:{field|default('profile')}")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	key, err := tpl.Build(context.Background(), map[string]interface{}{"id": "abc123"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if key != "user:ABC123:profile" {
+		t.Errorf("got %q, want %q", key, "user:ABC123:profile")
+	}
+}
+
+func TestTemplateKeyBuilder_SlugifyAndIntAdd(t *testing.T) {
+	tpl, err := Template("slug:{name|slugify}:n+1:{n|intadd(1)}")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	key, err := tpl.Build(context.Background(), map[string]interface{}{"name": "Hello World", "n": 4})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if key != "slug:hello-world:n+1:5" {
+		t.Errorf("got %q, want %q", key, "slug:hello-world:n+1:5")
+	}
+}
+
+func TestTemplateKeyBuilder_CustomFunc(t *testing.T) {
+	tpl, err := Template("custom:{val|reverse}")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	tpl.RegisterFunc("reverse", func(val string, _ ...string) (string, error) {
+		runes := []rune(val)
+		for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+			runes[i], runes[j] = runes[j], runes[i]
+		}
+		return string(runes), nil
+	})
+	key, err := tpl.Build(context.Background(), map[string]interface{}{"val": "abcde"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if key != "custom:edcba" {
+		t.Errorf("got %q, want %q", key, "custom:edcba")
+	}
+}
+
+func TestTemplateKeyBuilder_UnknownFunc(t *testing.T) {
+	tpl, err := Template("{foo|notafunc}")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	_, err = tpl.Build(context.Background(), map[string]interface{}{"foo": "bar"})
+	if err == nil || !strings.Contains(err.Error(), "unknown transform function") {
+		t.Errorf("expected unknown transform function error, got %v", err)
+	}
+}
 
 func TestTemplateKeyBuilder_FieldDelimiters(t *testing.T) {
 	cases := []struct {
 		template string
 		data     map[string]interface{}
 		want     string
+		wantErr  bool
 	}{
-		{"foo:{foo-bar}", map[string]interface{}{"foo-bar": "A"}, "foo:A"},
-		{"foo:{foo_bar}", map[string]interface{}{"foo_bar": "B"}, "foo:B"},
-		{"foo:{foo/bar}", map[string]interface{}{"foo/bar": "C"}, "foo:C"},
-		{"foo:{foo|bar}", map[string]interface{}{"foo|bar": "D"}, "foo:D"},
-		{"foo:{foo:bar}", map[string]interface{}{"foo:bar": "E"}, "foo:E"},
+		{"foo:{foo-bar}", map[string]interface{}{"foo-bar": "A"}, "foo:A", false},
+		{"foo:{foo_bar}", map[string]interface{}{"foo_bar": "B"}, "foo:B", false},
+		{"foo:{foo/bar}", map[string]interface{}{"foo/bar": "C"}, "foo:C", false},
+		{"foo:{foo|bar}", map[string]interface{}{"foo|bar": "D"}, "", true}, // unknown function 'bar'
+		{"foo:{foo:bar}", map[string]interface{}{"foo:bar": "E"}, "foo:E", false},
 	}
 	for _, tc := range cases {
 		builder, err := Template(tc.template)
@@ -23,6 +85,12 @@ func TestTemplateKeyBuilder_FieldDelimiters(t *testing.T) {
 			t.Fatalf("unexpected error for template %q: %v", tc.template, err)
 		}
 		key, err := builder.Build(context.Background(), tc.data)
+		if tc.wantErr {
+			if err == nil {
+				t.Errorf("expected error for Build on template %q, got none", tc.template)
+			}
+			continue
+		}
 		if err != nil {
 			t.Fatalf("unexpected error for Build on template %q: %v", tc.template, err)
 		}
@@ -88,16 +156,16 @@ func TestTemplateKeyBuilder_KeyVars(t *testing.T) {
 }
 
 func TestTemplateKeyBuilder_MissingFields(t *testing.T) {
-	builder, err := Template("user:{userID}:data:{dataID}")
+	builder, err := Template("user:{userID}:data:{dataID|default('x')}")
 	if err != nil {
 		t.Fatalf("unexpected error for template: %v", err)
 	}
-	_, err = builder.Build(context.Background(), map[string]interface{}{"userID": 42})
-	if err == nil {
-		t.Fatal("expected error for missing field")
+	key, err := builder.Build(context.Background(), map[string]interface{}{"userID": 42})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
 	}
-	if got, want := err.Error(), "missing template fields: [dataID]"; got != want {
-		t.Errorf("got error %q, want %q", got, want)
+	if key != "user:42:data:x" {
+		t.Errorf("got %q, want %q", key, "user:42:data:x")
 	}
 }
 
