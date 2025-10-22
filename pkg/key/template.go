@@ -5,65 +5,49 @@ import (
 	"fmt"
 	"reflect"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
-// TemplateKeyBuilder is a KeyBuilder implementation that builds a key from a template string.
-//
-// Example:
-//
-//	builder := &TemplateKeyBuilder{Template: "user:{userID}:data:{dataID}"}
-//	key, _ := builder.Build(ctx, map[string]any{"userID": 42, "dataID": "abc"}) // key == "user:42:data:abc"
-//
-// Useful for readable, structured keys.
 // KeyVars is an optional interface for custom structs to provide template variables.
 type KeyVars interface { //nolint:revive
 	KeyVars() map[string]interface{}
 }
 
-// TemplateKeyBuilder builds keys from a template string.
+// TransformFunc is a function that transforms a string value (with optional args).
+type TransformFunc func(val string, args ...string) (string, error)
+
+// TemplateKeyBuilder builds keys from a template string with dynamic variables, transformations, and conditionals.
 type TemplateKeyBuilder struct {
 	Template string
+	funcs    map[string]TransformFunc
 }
 
+// Template creates a new TemplateKeyBuilder with built-in functions.
 func Template(tmpl string) (*TemplateKeyBuilder, error) {
-	// Basic validation: must not be empty, braces must be balanced, fields must be non-empty, and only allowed characters
 	if len(tmpl) == 0 {
 		return nil, fmt.Errorf("template string cannot be empty")
 	}
-	allowedRegex := regexp.MustCompile(`^[a-zA-Z0-9/_|:\-{}]+$`)
+	allowedRegex := regexp.MustCompile(`^[a-zA-Z0-9/_|:\-{}(),\"' +]+$`)
 	if !allowedRegex.MatchString(tmpl) {
-		return nil, fmt.Errorf("template contains invalid characters. Allowed: a-z, A-Z, 0-9, /, |, -, _, :, {}")
+		return nil, fmt.Errorf("template contains invalid characters. Allowed: a-z, A-Z, 0-9, /, |, -, _, :, {}, (), ',', \" and space")
 	}
-	fieldRegex := regexp.MustCompile(`^[a-zA-Z0-9/_|:\-]+$`)
-	for i := 0; i < len(tmpl); i++ {
-		if tmpl[i] == '{' {
-			j := strings.IndexByte(tmpl[i:], '}')
-			if j == -1 {
-				return nil, fmt.Errorf("template contains unclosed '{'")
-			}
-			j += i
-			if j == i+1 {
-				return nil, fmt.Errorf("template contains empty field name: {}")
-			}
-			field := tmpl[i+1 : j]
-			if !fieldRegex.MatchString(field) {
-				return nil, fmt.Errorf("template field contains invalid characters in {%s}. Allowed: a-z, A-Z, 0-9", field)
-			}
-			i = j
-		}
+	tb := &TemplateKeyBuilder{
+		Template: tmpl,
+		funcs:    make(map[string]TransformFunc),
 	}
-	return &TemplateKeyBuilder{Template: tmpl}, nil
+	for k, v := range builtinFuncs {
+		tb.funcs[k] = v
+	}
+	return tb, nil
 }
 
-// Build replaces {field} in the template using data from map, struct, or KeyVars interface.
-//
-// Data source priority (highest to lowest):
-//  1. If data implements KeyVars, uses KeyVars() map.
-//  2. If data is map[string]interface{}, uses map values.
-//  3. If data is a struct, uses exported struct fields.
-//
-// Returns an error if any template fields are missing.
+// RegisterFunc registers a custom transformation function for this template.
+func (t *TemplateKeyBuilder) RegisterFunc(name string, fn TransformFunc) {
+	t.funcs[name] = fn
+}
+
+// Build (Render) replaces {field|func1|func2(args)} in the template using data and applies transformations, defaults, and conditionals.
 func (t *TemplateKeyBuilder) Build(ctx context.Context, data any) (string, error) { //nolint:cyclop
 	vars := make(map[string]interface{})
 	switch v := data.(type) {
@@ -80,44 +64,182 @@ func (t *TemplateKeyBuilder) Build(ctx context.Context, data any) (string, error
 			rt := rv.Type()
 			for i := 0; i < rt.NumField(); i++ {
 				f := rt.Field(i)
-				if f.PkgPath == "" { // exported
+				if f.PkgPath == "" {
 					vars[f.Name] = rv.Field(i).Interface()
 				}
 			}
 		}
 	}
 
-	key := t.Template
-	missing := []string{}
+	tmpl := t.Template
 	result := ""
 	start := 0
 	for {
-		i := strings.Index(key[start:], "{")
-		if i == -1 {
-			result += key[start:]
+		op := strings.Index(tmpl[start:], "{")
+		if op == -1 {
+			result += tmpl[start:]
 			break
 		}
-		i += start
-		result += key[start:i]
-		j := strings.Index(key[i:], "}")
-		if j == -1 {
-			// Unclosed brace, treat as literal
-			result += key[i:]
+		op += start
+		result += tmpl[start:op]
+		cl := strings.Index(tmpl[op:], "}")
+		if cl == -1 {
+			result += tmpl[op:]
 			break
 		}
-		j += i
-		field := key[i+1 : j]
-		val, ok := vars[field]
-		if ok {
-			result += fmt.Sprintf("%v", val)
-		} else {
-			missing = append(missing, field)
-			result += "{" + field + "}"
+		cl += op
+		tok := tmpl[op+1 : cl]
+		val, err := t.evalToken(tok, vars)
+		if err != nil {
+			return "", err
 		}
-		start = j + 1
-	}
-	if len(missing) > 0 {
-		return "", fmt.Errorf("missing template fields: %v", missing)
+		result += val
+		start = cl + 1
 	}
 	return result, nil
+}
+
+// evalToken parses and evaluates a token like "field|upper|default('x')".
+func (t *TemplateKeyBuilder) evalToken(token string, vars map[string]interface{}) (string, error) {
+	parts := strings.Split(token, "|")
+	if len(parts) == 0 {
+		return "", nil
+	}
+	name := parts[0]
+	val, ok := vars[name]
+	var sval string
+	if ok {
+		sval = fmt.Sprintf("%v", val)
+	} else {
+		sval = ""
+	}
+	for _, fncall := range parts[1:] {
+		fn, args := parseFuncCall(fncall)
+		f, ok := t.funcs[fn]
+		if !ok {
+			return "", fmt.Errorf("unknown transform function: %s", fn)
+		}
+		var err error
+		sval, err = f(sval, args...)
+		if err != nil {
+			return "", err
+		}
+	}
+	return sval, nil
+}
+
+// parseFuncCall parses "func(arg1,arg2)" or "func".
+func parseFuncCall(s string) (string, []string) {
+	op := strings.Index(s, "(")
+	if op == -1 {
+		return s, nil
+	}
+	cl := strings.LastIndex(s, ")")
+	if cl == -1 || cl < op {
+		return s, nil
+	}
+	fn := s[:op]
+	args := parseArgs(s[op+1 : cl])
+	return fn, args
+}
+
+// parseArgs splits a comma-separated argument string, handling quotes and escapes.
+func parseArgs(s string) []string { //nolint:cyclop
+	var args []string
+	var arg strings.Builder
+	inSingle := false
+	inDouble := false
+	escape := false
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		if escape {
+			arg.WriteByte(c)
+			escape = false
+			continue
+		}
+		switch c {
+		case '\\':
+			escape = true
+		case '\'':
+			if !inDouble {
+				inSingle = !inSingle
+				continue
+			}
+			arg.WriteByte(c)
+		case '"':
+			if !inSingle {
+				inDouble = !inDouble
+				continue
+			}
+			arg.WriteByte(c)
+		case ',':
+			if !inSingle && !inDouble {
+				args = append(args, strings.TrimSpace(arg.String()))
+				arg.Reset()
+				continue
+			}
+			arg.WriteByte(c)
+		default:
+			arg.WriteByte(c)
+		}
+	}
+	if arg.Len() > 0 {
+		args = append(args, strings.TrimSpace(arg.String()))
+	}
+	// Remove surrounding quotes from each argument, and unescape quotes
+	for i := range args {
+		a := args[i]
+		if len(a) >= 2 && ((a[0] == '\'' && a[len(a)-1] == '\'') || (a[0] == '"' && a[len(a)-1] == '"')) {
+			a = a[1 : len(a)-1]
+		}
+		a = strings.ReplaceAll(a, `\'`, `'`)
+		a = strings.ReplaceAll(a, `\"`, `"`)
+		args[i] = a
+	}
+	return args
+}
+
+// Built-in transformation functions
+var builtinFuncs = map[string]TransformFunc{
+	"upper": func(val string, _ ...string) (string, error) {
+		return strings.ToUpper(val), nil
+	},
+	"lower": func(val string, _ ...string) (string, error) {
+		return strings.ToLower(val), nil
+	},
+	"trim": func(val string, _ ...string) (string, error) {
+		return strings.TrimSpace(val), nil
+	},
+	"default": func(val string, args ...string) (string, error) {
+		if val == "" && len(args) > 0 {
+			return args[0], nil
+		}
+		return val, nil
+	},
+	"slugify": func(val string, _ ...string) (string, error) {
+		return strings.ToLower(strings.ReplaceAll(strings.TrimSpace(val), " ", "-")), nil
+	},
+	"if": func(val string, args ...string) (string, error) {
+		if len(args) < 2 {
+			return val, nil
+		}
+		if val != "" && val != "0" && val != "false" {
+			return args[0], nil
+		}
+		return args[1], nil
+	},
+	"intadd": func(val string, args ...string) (string, error) {
+		if len(args) == 0 {
+			return "", fmt.Errorf("intadd: missing argument for addition")
+		}
+		v, err := strconv.Atoi(val)
+		if err != nil {
+			return "", fmt.Errorf("intadd: cannot parse value %q as int: %w", val, err)
+		}
+		delta, err := strconv.Atoi(args[0])
+		if err != nil {
+			return "", fmt.Errorf("intadd: cannot parse argument %q as int: %w", args[0], err)
+		}
+		return strconv.Itoa(v + delta), nil
+	},
 }
