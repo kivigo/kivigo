@@ -49,7 +49,7 @@ jobs:
       publish_docs: ${{ steps.validate.outputs.publish_docs }}
     steps:
       - name: 🛎️ Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Fetch all tags
         run: git fetch --tags --force
       - name: 🔍 Validate version format
@@ -128,7 +128,7 @@ jobs:
     if: always() && !cancelled() && needs.validate-inputs.result == 'success' && needs.lint.result == 'success' && needs.test.result == 'success'
     steps:
       - name: 🛎️ Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
